@@ -6,9 +6,12 @@ part of log_tracking;
 class Logger {
   String className = "";
 
-  Logger(Type type) {
+  Logger(Type? type) {
     if (type != null) className = type.toString();
   }
+
+
+//test
 
   Future<void> i(String text,
       {String? methodName, StackTrace? stackTrace}) async {
