@@ -6,7 +6,7 @@ import 'package:package_info/package_info.dart';
 /// on 24 May 2021
 
 class Util {
-  static String? _version;
+  static String? _version = "";
   static String deviceId = "";
   static final bool isNotWeb = (Platform.isAndroid ||
       Platform.isIOS ||
