@@ -1,6 +1,6 @@
 name: log_tracking
 description: A package that stores the logs used in the project
-version: 0.0.9
+version: 0.0.10
 homepage:
 
 environment:

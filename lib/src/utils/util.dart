@@ -25,7 +25,7 @@ class Util {
   }
 
   static Future<String?>? get version async {
-    if (_version == null && isNotWeb) {
+    if ((_version == null || _version!.isEmpty) && isNotWeb) {
       PackageInfo packageInfo = await PackageInfo.fromPlatform();
       _version = packageInfo.version;
     }
