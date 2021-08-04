@@ -1,4 +1,6 @@
 library log_tracking;
+import 'dart:io';
+
 import 'package:log_tracking/src/enum/log_level.dart';
 import 'package:log_tracking/src/model/log.dart';
 import 'package:log_tracking/src/repo/log_repo.dart';

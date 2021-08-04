@@ -5,11 +5,16 @@ part of log_tracking;
 
 class Logger {
   String className = "";
+  static bool isNotWeb = (Platform.isAndroid ||
+      Platform.isIOS ||
+      Platform.isWindows ||
+      Platform.isMacOS ||
+      Platform.isLinux ||
+      Platform.isFuchsia);
 
   Logger(Type? type) {
     if (type != null) className = type.toString();
   }
-
 
 //test
 
@@ -58,8 +63,10 @@ class Logger {
   }
 
   Future<void> _save(Log log) async {
-    // if(kReleaseMode) {
-    await LogRepo().add(log);
+    var environment = Platform.environment;
+    if (isNotWeb)
+      // if(kReleaseMode) {
+      await LogRepo().add(log);
     // }
   }
 }
