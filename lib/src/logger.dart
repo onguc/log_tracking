@@ -21,7 +21,7 @@ class Logger {
     log.dateTime = DateTimeUtil.getDateTimeForLog(DateTime.now());
     log.stackTrace = stackTrace;
     log.version = await Util.version;
-    print(log);
+    printLog(log);
     await _save(log);
   }
 
@@ -39,7 +39,7 @@ class Logger {
     if (stackTrace != null) log.stackTrace = stackTrace;
     log.error = error;
     log.version = await Util.version;
-    print(log);
+    printLog(log);
     await _save(log);
   }
 
@@ -52,8 +52,14 @@ class Logger {
     log.dateTime = DateTimeUtil.getDateTimeForLog(DateTime.now());
     log.stackTrace = stackTrace;
     log.version = await Util.version;
-    print(log);
+    printLog(log);
     await _save(log);
+  }
+
+  printLog(var log) {
+    if (Util.isNotWeb) {
+      print(log);
+    }
   }
 
   Future<void> _save(Log log) async {
