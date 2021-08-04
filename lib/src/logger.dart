@@ -57,7 +57,6 @@ class Logger {
   }
 
   Future<void> _save(Log log) async {
-    var environment = Platform.environment;
     if (Util.isNotWeb)
       // if(kReleaseMode) {
       await LogRepo().add(log);
