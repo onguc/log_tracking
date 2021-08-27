@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:package_info/package_info.dart';
 
 /// Created by İrfan Öngüç
@@ -8,9 +9,9 @@ import 'package:package_info/package_info.dart';
 class Util {
   static String? _version = "";
   static String deviceId = "";
-  static final bool isNotWeb = _isPlatformWeb;
+  static final bool isCanPrintLog = _isPlatformNotWeb || kDebugMode;
 
-  static bool get _isPlatformWeb {
+  static bool get _isPlatformNotWeb {
     try {
       bool isNotWeb = (Platform.isAndroid ||
           Platform.isIOS ||
@@ -25,7 +26,7 @@ class Util {
   }
 
   static Future<String?>? get version async {
-    if ((_version == null || _version!.isEmpty) && isNotWeb) {
+    if ((_version == null || _version!.isEmpty) && _isPlatformNotWeb) {
       PackageInfo packageInfo = await PackageInfo.fromPlatform();
       _version = packageInfo.version;
     }

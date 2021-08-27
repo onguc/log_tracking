@@ -57,13 +57,13 @@ class Logger {
   }
 
   printLog(var log) {
-    if (Util.isNotWeb) {
+    if (Util.isCanPrintLog) {
       print(log);
     }
   }
 
   Future<void> _save(Log log) async {
-    if (Util.isNotWeb)
+    if (Util.isCanPrintLog)
       // if(kReleaseMode) {
       await LogRepo().add(log);
     // }
