@@ -1,7 +1,7 @@
 import 'package:log_tracking/src/model/log.dart';
 
 logFromMap(Map<String, dynamic> json) {
-  Log data = Log();
+  LogModel data = LogModel();
   if (json['id'] != null) {
     data.id =
         json['id'] is String ? int.tryParse(json['id']) : json['id'].toInt();
@@ -33,7 +33,7 @@ logFromMap(Map<String, dynamic> json) {
   return data;
 }
 
-Map<String, dynamic> logToJson(Log entity) {
+Map<String, dynamic> logToJson(LogModel entity) {
   final Map<String, dynamic> data = new Map<String, dynamic>();
   data['id'] = entity.id;
   data['className'] = entity.className;

@@ -22,8 +22,6 @@ class LogRepo {
 
   LogRepo({this.onChangeTextProgress});
 
-  var _log = Logger(LogRepo);
-
   Future<Database> get db async {
     if (_db == null) {
       DbLogHelper dbHelper = DbLogHelper.instance;
@@ -45,8 +43,7 @@ class LogRepo {
     String query = "DELETE FROM Log WHERE dateTime<=?";
     var dbClient = await db;
     int count = await dbClient.rawDelete(query, [dateTimeString]);
-    _log.i("$count row deleted from Log Table",
-        methodName: "deleteDbLogsBefore30Days");
+    Log.i("$count row deleted from Log Table");
   }
 
   Future<bool> exportLogLastWeek() async {
@@ -58,13 +55,13 @@ class LogRepo {
   }
 
   Future<bool> exportLogsByLastDays(int days) async {
-    List<Log> logs = await _getLogsLastByDay(days);
+    List<LogModel> logs = await _getLogsLastByDay(days);
     String pathFile = await _getPathFile();
     bool isSuccess = await _createFile(pathFile, logs);
     return isSuccess;
   }
 
-  Future<List<Log>> _getLogsLastByDay(int days) async {
+  Future<List<LogModel>> _getLogsLastByDay(int days) async {
     var dbClient = await db;
     // String orgCode = Util.selectedOrgCode;
     DateTime beforeAWeek = DateTime.now().subtract(Duration(days: days));
@@ -75,13 +72,13 @@ class LogRepo {
     var result = await dbClient.rawQuery(query, [dateTimeString]);
     // var result = await dbClient.rawQuery(query, [dateTimeString, orgCode, currentVersion]);
     if (result != null && result.length > 0) {
-      List<Log> list = result.map((e) => fromMap(e)).toList();
+      List<LogModel> list = result.map((e) => fromMap(e)).toList();
       return list;
     }
     return [];
   }
 
-  Future<bool> _createFile(String pathFile, List<Log> logs) async {
+  Future<bool> _createFile(String pathFile, List<LogModel> logs) async {
     try {
       StringBuffer buffer = StringBuffer();
       buffer.write("DeviceId = ${Util.deviceId}\n\n");
@@ -116,7 +113,7 @@ class LogRepo {
       }
       return false;
     } catch (e) {
-      _log.e(error: e, methodName: "_createFile");
+      Log.e(error: e);
       print(e);
       return false;
     }
@@ -141,7 +138,7 @@ class LogRepo {
           onChangeTextProgress!("Downloading Logs  $i/$pieces");
         }
         int offset = i * LIMIT;
-        List<Log> logs = await _getLogsLastWeek2(offset);
+        List<LogModel> logs = await _getLogsLastWeek2(offset);
         bool isSuccess = await _printLogToFile(file, logs);
         if (isSuccess) {
           logs = [];
@@ -149,7 +146,7 @@ class LogRepo {
         }
       } catch (e) {
         errorList.add(e);
-        _log.e(error: e, methodName: "exportLog");
+        Log.e(error: e);
       }
     }
     return errorList;
@@ -170,7 +167,7 @@ class LogRepo {
     return 0;
   }
 
-  Future<List<Log>> _getLogsLastWeek2(int offset) async {
+  Future<List<LogModel>> _getLogsLastWeek2(int offset) async {
     var dbClient = await db;
     // String orgCode = Util.selectedOrgCode;
     DateTime beforeAWeek = DateTime.now().subtract(Duration(days: 7));
@@ -180,7 +177,7 @@ class LogRepo {
     var result =
         await dbClient.rawQuery(query, [dateTimeString, offset, LIMIT]);
     if (result != null && result.length > 0) {
-      List<Log> list = result.map((e) => fromMap(e)).toList();
+      List<LogModel> list = result.map((e) => fromMap(e)).toList();
       result = [];
       return list;
     }
@@ -188,7 +185,7 @@ class LogRepo {
   }
 
   @override
-  Future<List<Log>> getAll() async {
+  Future<List<LogModel>> getAll() async {
     var dbClient = await db;
     var result = await dbClient.query(tableName,
         orderBy: "dateTime ASC, mobileId ASC",
@@ -230,7 +227,7 @@ class LogRepo {
     return false;
   }
 
-  Future<bool> _printLogToFile(File file, List<Log> logs) async {
+  Future<bool> _printLogToFile(File file, List<LogModel> logs) async {
     StringBuffer buffer = StringBuffer();
 
     try {
@@ -262,18 +259,19 @@ class LogRepo {
   }
 
   Future<String>? get _pathDirectory async {
-    return ExternalStorage.getExternalStoragePublicDirectory(ExternalStorage.DIRECTORY_DOWNLOADS);
+    return ExternalStorage.getExternalStoragePublicDirectory(
+        ExternalStorage.DIRECTORY_DOWNLOADS);
     // List<Directory> directoryList = await getExternalStorageDirectories(type: StorageDirectory.downloads);
     // Directory directory = directoryList?.first;
     // return directory.path;
   }
 
-  Log fromMap(Map<String, dynamic> map) {
-    Log t = logFromMap(map);
+  LogModel fromMap(Map<String, dynamic> map) {
+    LogModel t = logFromMap(map);
     return t;
   }
 
-  Future<int> add(Log log) async {
+  Future<int> add(LogModel log) async {
     try {
       if (log == null) return 0;
       var dbClient = await db;

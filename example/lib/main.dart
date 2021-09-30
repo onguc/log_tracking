@@ -9,10 +9,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    Logger log = Logger(this.runtimeType);
-    log.i("deneme", methodName: "build");
-    log.e(error: "hata", methodName: "build");
-    log.w("uyarı", methodName: "build");
+    Log.i("deneme");
+    Log.e(error: "hata");
+    Log.w("uyarı");
 
     return MaterialApp(
       title: 'Flutter Demo',

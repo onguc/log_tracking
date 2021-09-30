@@ -4,8 +4,8 @@ import 'package:log_tracking/src/utils/string_util.dart';
 /// Created by İrfan Öngüç
 /// on 14 October 2020
 
-class Log {
-  Log({this.className});
+class LogModel {
+  LogModel({this.className});
 
   int? id;
   String? className;
@@ -22,8 +22,6 @@ class Log {
   EnumLogType? _logType;
   String? stacktraceString;
 
-  // @JSONField(serialize: false, deserialize: false)
-  StackTrace? _stackTrace;
   String? version;
   String? createDate;
 
@@ -39,15 +37,6 @@ class Log {
     logTypeString = LogTypeConverter.fromEnumToString(value);
   }
 
-  StackTrace? get stackTrace {
-    return _stackTrace;
-  }
-
-  set stackTrace(StackTrace? value) {
-    stacktraceString = value?.toString();
-    _stackTrace = value;
-  }
-
   dynamic get error {
     return _error;
   }
@@ -55,12 +44,6 @@ class Log {
   set error(dynamic value) {
     errorString = value?.toString();
     _error = value;
-    if (value is StackTrace) {
-      stackTrace = value;
-    }
-    if (value is Error) {
-      stackTrace = value.stackTrace;
-    }
   }
 
   @override
