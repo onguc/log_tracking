@@ -67,9 +67,9 @@ class Log {
   static void _setClassAndMethodName(LogModel log) {
     DateTime dateTime = DateTime.now();
     String stackTrace = StackTrace.current.toString();
-    int lastIndex = stackTrace.indexOf(" (file:");
-    int firstIndex = stackTrace.indexOf("#2      ") + 8;
-    var substring = stackTrace.toString().substring(firstIndex, lastIndex);
+    int firstIndex = stackTrace.indexOf("#2") + 8;
+    var substring1 = stackTrace.toString().substring(firstIndex);
+    var substring = substring1.substring(0,substring1.indexOf(" ("));
     var list = substring.split(".");
     log.className = list[0];
     log.methodName = list.length == 1 ? list[0] : list[1];
