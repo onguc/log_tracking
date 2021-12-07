@@ -8,7 +8,7 @@ import 'package:log_tracking/src/helper/log_helper.dart';
 import 'package:log_tracking/src/model/log.dart';
 import 'package:log_tracking/src/utils/date_time_util.dart';
 import 'package:log_tracking/src/utils/util.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sqflite/sqlite_api.dart';
 
 /// Created by İrfan Öngüç
