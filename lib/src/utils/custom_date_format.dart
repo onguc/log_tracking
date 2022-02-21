@@ -11,12 +11,6 @@ class CustomDateFormat extends DateFormat {
   CustomDateFormat([this.newPattern]):super(newPattern);
 
 
-  static String formatByTimeZone(DateTime dateTime) {
-    var customFormat = CustomDateFormat(_timeZoneFormat);
-    String dateString = customFormat.format(dateTime);
-    return dateString;
-  }
-
   @override
   String format(DateTime date) {
     if (date != null) {
@@ -63,26 +57,9 @@ class CustomDateFormat extends DateFormat {
     return "";
   }
 
-  String getDateTimeStringNowForLocal() {
-    DateTime dateTime = DateTime.now();
-    DateTime dateTimeLocal = dateTime.toLocal();
-    return dateTimeLocal.toString();
-  }
-
-  DateTime? parseForLocal(String dateString) {
-    try {
-      if (StringUtil.isEmptyString(dateString)) return null;
-      DateTime dateTime = DateTime.parse(dateString);
-      DateTime dateTimeLocal = dateTime.toLocal();
-      return dateTimeLocal;
-    } catch (e) {
-      return null;
-    }
-  }
 
   @override
   DateTime parse(String inputString, [bool utc = false]) {
-    // TODO: implement parse
     return super.parse(inputString, utc);
   }
 
