@@ -29,7 +29,7 @@ class Log {
     dynamic error}) async {
     var log = LogModel();
     _setClassAndMethodName(log);
-    if (StringUtil.isEmptyString(message)) message = "IN CATCH";
+    // if (StringUtil.isEmptyString(message)) message = "IN CATCH";
     log.logType = EnumLogType.ERROR;
     log.text = message;
     log.dateTime = DateTimeUtil.getDateTimeForLog(DateTime.now());

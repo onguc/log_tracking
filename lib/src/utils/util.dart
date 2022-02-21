@@ -13,12 +13,7 @@ class Util {
 
   static bool get _isPlatformNotWeb {
     try {
-      bool isNotWeb = (Platform.isAndroid ||
-          Platform.isIOS ||
-          Platform.isWindows ||
-          Platform.isMacOS ||
-          Platform.isLinux ||
-          Platform.isFuchsia);
+      bool isNotWeb = (Platform.isAndroid || Platform.isIOS || Platform.isWindows || Platform.isMacOS || Platform.isLinux || Platform.isFuchsia);
       return isNotWeb;
     } catch (e) {
       return false;
@@ -27,8 +22,12 @@ class Util {
 
   static Future<String?>? get version async {
     if ((_version == null || _version!.isEmpty) && _isPlatformNotWeb) {
-      PackageInfo packageInfo = await PackageInfo.fromPlatform();
-      _version = packageInfo.version;
+      try {
+        PackageInfo packageInfo = await PackageInfo.fromPlatform();
+        _version = packageInfo.version;
+      } catch (e) {
+        return "";
+      }
     }
     return _version;
   }
