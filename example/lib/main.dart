@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:log_tracking/log_tracking.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Log.init("");
   runApp(MyApp());
 }
 
@@ -10,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Log.i("deneme");
-    Log.e(error: "hata");
+    Log.e("hata");
     Log.w("uyarı");
 
     return MaterialApp(

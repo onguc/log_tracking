@@ -5,73 +5,109 @@ part of log_tracking;
 
 class Log {
   String className = "";
-  static LogRepo logRepo = LogRepo();
 
   Log(Type? type) {
     if (type != null) className = type.toString();
   }
 
-//test
+  static Future<void> init(String url) async {
+    await DeviceInfo.init();
+    LogService.url = url;
+    await Hive.initFlutter();
+    await NgcLogRepo.initHive();
+    await NgcLogStatusRepo.initHive();
+    await IndexRepo.initHive();
+    // await xx.initializeDateFormatting('tr_TR',null);
+    Future.delayed(Duration(seconds: 1)).then((value) async {
+      IndexRepo.instance.increaseAppStartupIndex();
+      if (LogService.url.isEmpty) return;
+      isOnlineNotifier.addListener(() async {
+        try {
+          if (isOnlineNotifier.value == true) {
+            var isSentSuccess = await LogService.instance.sendAllLogs();
+            if (isSentSuccess) await NgcLogRepo.instance.deleteLogsFrom7DaysAgo();
+          }
+        } catch (e) {
+          Log.e(e);
+        }
+      });
+      print("logger.init içindeki işlem tamamlandı");
+    });
+  }
 
   static Future<void> i(String text) async {
-    var log = LogModel();
-    _setClassAndMethodName(log);
+    NgcLog log = _newLog(text);
     log.logType = EnumLogType.INFO;
-    log.text = text;
-    log.dateTime = DateTimeUtil.getDateTimeForLog(DateTime.now());
-    log.version = await Util.version;
     _printLog(log);
     await _save(log);
   }
 
-  static Future<void> e({
-    String? message,
-    dynamic error}) async {
-    var log = LogModel();
-    _setClassAndMethodName(log);
-    // if (StringUtil.isEmptyString(message)) message = "IN CATCH";
+  static Future<void> e(dynamic error, {EnumLogLevel? logLevel = EnumLogLevel.MEDIUM, String? message}) async {
+    NgcLog log = _newLog(message);
     log.logType = EnumLogType.ERROR;
-    log.text = message;
-    log.dateTime = DateTimeUtil.getDateTimeForLog(DateTime.now());
+    log.logLevel = logLevel;
+    if (kDebugMode) log.logTypeGroup = EnumLogTypeGroup.DEBUG;
+
     log.error = error;
-    log.version = await Util.version;
     _printLog(log);
     await _save(log);
+    NgcLogStatus ngcLogStatus = NgcLogStatus()
+      ..enumStatus = EnumStatus.UNSENT
+      ..keyId = log.keyId;
+    await NgcLogStatusRepo.instance.save(ngcLogStatus);
+    IndexRepo.instance.increaseAppErrorLogIndex();
+    List<NgcLog> lastLogList = await NgcLogRepo.instance.getLastLogsByErrorLogKeyId(log.keyId!);
+    if (LogService.url.isEmpty) return;
+    LogService.instance.sendLogList(lastLogList).catchError((error, stackTrace) {
+      Log.e(error);
+    });
   }
 
   static Future<void> w(String text) async {
-    var log = LogModel();
-    _setClassAndMethodName(log);
+    NgcLog log = _newLog(text);
     log.logType = EnumLogType.WARNING;
-    log.text = text;
-    log.dateTime = DateTimeUtil.getDateTimeForLog(DateTime.now());
-    log.version = await Util.version;
     _printLog(log);
     await _save(log);
   }
 
-  static void _printLog(var log) {
+  static NgcLog _newLog(String? text) {
+    var log = NgcLog();
+    log.text = text;
+    log.version = DeviceInfo.instance.appVersion;
+    _setClassAndMethodName(log);
+    return log;
+  }
+
+  static void _printLog(NgcLog log1) {
     if (Util.isCanPrintLog) {
-      print(log);
+      if (Platform.isIOS)
+        print(log1.toString());
+      else
+        print(log1.toStringWithColorCode());
     }
   }
 
-  static Future<void> _save(LogModel log) async {
+  static Future<void> _save(NgcLog log) async {
     if (Util.isCanPrintLog)
       // if(kReleaseMode) {
-      await logRepo.add(log);
+      await NgcLogRepo.instance.save(log);
     // }
   }
 
-  static void _setClassAndMethodName(LogModel log) {
+  static void _setClassAndMethodName(NgcLog log) {
     String stackTrace = StackTrace.current.toString();
-    int index = stackTrace.indexOf("#2") + 8;
+    int index = stackTrace.indexOf("#3") + 8;
     var substring1 = stackTrace.toString().substring(index);
     int index2 = substring1.indexOf(" (");
     var substring2 = substring1.substring(0, index2);
     var list = substring2.split(".");
     var val = list[0];
-    log.className =  val.substring(val.indexOf(" ")+1,val.length);
+    log.className = val.substring(val.indexOf(" ") + 1, val.length);
     log.methodName = list.length == 1 ? list[0] : list[1];
+  }
+
+  static close() async {
+    await NgcLogRepo.instance.close();
+    await NgcLogStatusRepo.instance.close();
   }
 }

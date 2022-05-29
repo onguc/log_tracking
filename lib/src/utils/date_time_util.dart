@@ -1,4 +1,3 @@
-import 'package:intl/intl.dart';
 import 'package:log_tracking/src/utils/custom_date_format.dart';
 
 /// Created by İrfan Öngüç
@@ -6,16 +5,27 @@ import 'package:log_tracking/src/utils/custom_date_format.dart';
 
 class DateTimeUtil {
   static String getDateTimeForLog(DateTime dateTime) {
-    String _timeZoneFormat = "yyyy-MM-ddTHH:mm:ssTZD";
-    var customFormat = CustomDateFormat(_timeZoneFormat);
+    // String _timeZoneFormat = "yyyy-MM-ddTHH:mm:ss.SSSTZD";
+    // var customFormat = getCustomDateFormat("yyyy-MM-ddTHH:mm:ss.SSS");
+    var customFormat = CustomDateFormat("yyyy-MM-ddTHH:mm:ss.SSS");
     String dateString = customFormat.format(dateTime);
     return dateString;
   }
 
   static dateStringForFileName(DateTime dateTime) {
-    String _timeZoneFormat = "yyyy_MM_dd__HHmmss";
-    var customFormat = CustomDateFormat(_timeZoneFormat);
+    var customFormat = getCustomDateFormat("yyyy_MM_dd__HHmmss");
     String dateString = customFormat.format(dateTime);
     return dateString;
   }
+
+  static DateTime parseDateTime(String dateTimeString) {
+    // var customFormat = getCustomDateFormat("yyyy-MM-ddTHH:mm:ss.SSS");
+    var customFormat = CustomDateFormat("yyyy-MM-ddTHH:mm:ss.SSS");
+    DateTime parse = customFormat.parse(dateTimeString);
+    return parse;
+  }
+
+  static CustomDateFormat getCustomDateFormat(newPatter) => customDateFormat..newPattern = newPatter;
+
+  static CustomDateFormat customDateFormat = CustomDateFormat();
 }
