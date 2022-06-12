@@ -80,6 +80,13 @@ class NgcLog extends BaseHiveModel {
     return "[${logType?.name}] [$version] [$dateTime][$timeZone]  [$className]  [$methodName]  $text  $errorStr  $stactraceStr";
   }
 
+  String toStringForIos() {
+    String errorStr = StringUtil.isNotEmpty(errorString) ? "\n-->ERROR-DETAIL: $_error" : "";
+    String stactraceStr = StringUtil.isNotEmpty(stacktraceString) ? "\n-->STACK-TRACE: $stacktraceString" : "";
+
+    return "[${logType?.name}] [$version] [$dateTime][$timeZone]  [$className]  [$methodName]  $text  $errorStr  $stactraceStr";
+  }
+
   String toStringWithColorCode() {
     String errorStr = StringUtil.isNotEmpty(errorString) ? "\n${_getColorRed("-->ERROR-DETAIL")}: $errorString" : "";
     String stactraceStr = StringUtil.isNotEmpty(stacktraceString) ? "\n${_getColorRed("-->STACK-TRACE")}: $stacktraceString" : "";

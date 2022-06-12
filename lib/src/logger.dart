@@ -81,7 +81,7 @@ class Log {
   static void _printLog(NgcLog log1) {
     if (Util.isCanPrintLog) {
       if (Platform.isIOS)
-        print(log1.toString());
+        print(log1.toStringForIos());
       else
         print(log1.toStringWithColorCode());
     }
