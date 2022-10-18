@@ -1,6 +1,6 @@
 name: log_tracking
 description: A package that stores the logs used in the project
-version: 0.1.8
+version: 0.1.9
 homepage:
 
 environment:
@@ -14,11 +14,12 @@ dependencies:
   hive_flutter: ^1.1.0
   intl: ^0.17.0
 #  device_info: ^2.0.1
-  device_info_plus: any
+  device_info_plus: ^7.0.0
   package_info_plus: any
   connectivity_plus: any
   dio: ^4.0.4
   json_annotation: ^4.5.0
+  android_id: any
 
 #  ext_storage: ^1.0.3
 

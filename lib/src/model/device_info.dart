@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:android_id/android_id.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -60,13 +61,15 @@ class DeviceInfo {
         isPhysicalDevice: data.isPhysicalDevice,
       );
     } else if (Platform.isAndroid) {
+
       var data = await deviceInfoPlugin.androidInfo; // deviceId: 0696220404946b51
+      final String? androidId = await AndroidId().getId();
       _instance = DeviceInfo(
         deviceType: EnumDeviceType.ANDROID,
         versionSdkInt: "${data.version.sdkInt}",
         model: data.model,
         brand: data.brand,
-        deviceId: data.androidId,
+        deviceId: androidId,
         appVersion: appVersion,
         isPhysicalDevice: data.isPhysicalDevice ?? false,
       );
