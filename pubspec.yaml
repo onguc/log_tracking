@@ -1,6 +1,6 @@
 name: log_tracking
 description: A package that stores the logs used in the project
-version: 0.1.7
+version: 0.1.8
 homepage:
 
 environment:
@@ -16,7 +16,7 @@ dependencies:
 #  device_info: ^2.0.1
   device_info_plus: any
   package_info_plus: any
-  connectivity_plus: ^2.3.0
+  connectivity_plus: any
   dio: ^4.0.4
   json_annotation: ^4.5.0
 
