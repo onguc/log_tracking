@@ -5,12 +5,13 @@ part of log_tracking;
 
 class Log {
   String className = "";
-
+  static PackageInfo? packageInfo;
   Log(Type? type) {
     if (type != null) className = type.toString();
   }
 
   static Future<void> init(String url) async {
+    packageInfo = await PackageInfo.fromPlatform();
     await DeviceInfo.init();
     LogService.url = url;
     await Hive.initFlutter();

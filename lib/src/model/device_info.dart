@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:android_id/android_id.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:log_tracking/log_tracking.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../enum/enum_device_type.dart';
@@ -23,6 +24,7 @@ class DeviceInfo {
   String? deviceId;
   String? appVersion;
   bool isPhysicalDevice;
+  String? appName;
 
   DeviceInfo({
     this.deviceType,
@@ -46,8 +48,7 @@ class DeviceInfo {
   // Map<String, dynamic> toJson() => _$DeviceInfoToJson(this);
 
   static Future<void> init() async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    String appVersion = await packageInfo.version;
+    String appVersion = Log.packageInfo!.version;
     var deviceInfoPlugin = DeviceInfoPlugin();
     if (Platform.isIOS) {
       var data = await deviceInfoPlugin.iosInfo; // deviceId: 48FFBBAC-B260-47C2-9B5F-BDB2EEF1D1A8
@@ -61,7 +62,6 @@ class DeviceInfo {
         isPhysicalDevice: data.isPhysicalDevice,
       );
     } else if (Platform.isAndroid) {
-
       var data = await deviceInfoPlugin.androidInfo; // deviceId: 0696220404946b51
       final String? androidId = await AndroidId().getId();
       _instance = DeviceInfo(
@@ -71,7 +71,7 @@ class DeviceInfo {
         brand: data.brand,
         deviceId: androidId,
         appVersion: appVersion,
-        isPhysicalDevice: data.isPhysicalDevice ?? false,
+        isPhysicalDevice: data.isPhysicalDevice,
       );
     } else if (Platform.isMacOS) {
       var data = await deviceInfoPlugin.macOsInfo;
