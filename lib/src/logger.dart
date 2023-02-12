@@ -6,6 +6,7 @@ part of log_tracking;
 class Log {
   String className = "";
   static PackageInfo? packageInfo;
+
   Log(Type? type) {
     if (type != null) className = type.toString();
   }
@@ -97,14 +98,21 @@ class Log {
 
   static void _setClassAndMethodName(NgcLog log) {
     String stackTrace = StackTrace.current.toString();
-    int index = stackTrace.indexOf("#3") + 8;
-    var substring1 = stackTrace.toString().substring(index);
-    int index2 = substring1.indexOf(" (");
-    var substring2 = substring1.substring(0, index2);
-    var list = substring2.split(".");
-    var val = list[0];
-    log.className = val.substring(val.indexOf(" ") + 1, val.length);
-    log.methodName = list.length == 1 ? list[0] : list[1];
+    print("\nstackTrace22 = ${stackTrace}");
+    if (kIsWeb) {
+      var appName = Log.packageInfo!.appName;
+      var xx = stackTrace.indexOf(appName);
+      print("xxx = $xx");
+    } else {
+      int index = stackTrace.indexOf("#3") + 8;
+      var substring1 = stackTrace.toString().substring(index);
+      int index2 = substring1.indexOf(" (");
+      var substring2 = substring1.substring(0, index2);
+      var list = substring2.split(".");
+      var val = list[0];
+      log.className = val.substring(val.indexOf(" ") + 1, val.length);
+      log.methodName = list.length == 1 ? list[0] : list[1];
+    }
   }
 
   static close() async {
