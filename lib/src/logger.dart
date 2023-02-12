@@ -82,7 +82,7 @@ class Log {
 
   static void _printLog(NgcLog log1) {
     if (Util.isCanPrintLog) {
-      if (Platform.isIOS)
+      if (defaultTargetPlatform == TargetPlatform.iOS)
         print(log1.toStringForIos());
       else
         print(log1.toStringWithColorCode());
@@ -98,11 +98,20 @@ class Log {
 
   static void _setClassAndMethodName(NgcLog log) {
     String stackTrace = StackTrace.current.toString();
-    print("\nstackTrace22 = ${stackTrace}");
+    // print("\nstackTrace22 = ${stackTrace}");
     if (kIsWeb) {
       var appName = Log.packageInfo!.appName;
-      var xx = stackTrace.indexOf(appName);
-      print("xxx = $xx");
+      var index = stackTrace.indexOf(appName);
+      var substring1 = stackTrace.toString().substring(index);
+      int index2 = substring1.indexOf('\n');
+      var substring2 = substring1.substring(0, index2);
+      var list = substring2.split("/");
+      var val = list.last;
+      var split = val.split(RegExp(r'\d+:\d+'));
+      if (split.length == 2) {
+        log.className = split[0];
+        log.methodName = split[1];
+      }
     } else {
       int index = stackTrace.indexOf("#3") + 8;
       var substring1 = stackTrace.toString().substring(index);

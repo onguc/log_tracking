@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:android_id/android_id.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:log_tracking/log_tracking.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 import '../enum/enum_device_type.dart';
 
@@ -50,7 +50,15 @@ class DeviceInfo {
   static Future<void> init() async {
     String appVersion = Log.packageInfo!.version;
     var deviceInfoPlugin = DeviceInfoPlugin();
-    if (Platform.isIOS) {
+    if (kIsWeb) {
+      var data = await deviceInfoPlugin.webBrowserInfo; // deviceId: 0696220404946b51
+      _instance = DeviceInfo(
+        deviceType: EnumDeviceType.WEB,
+        brand: data.browserName.name,
+        appVersion: appVersion,
+        isPhysicalDevice: true,
+      );
+    } else if (Platform.isIOS) {
       var data = await deviceInfoPlugin.iosInfo; // deviceId: 48FFBBAC-B260-47C2-9B5F-BDB2EEF1D1A8
       _instance = DeviceInfo(
         deviceType: EnumDeviceType.IOS,

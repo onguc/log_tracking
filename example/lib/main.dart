@@ -1,3 +1,5 @@
+import 'package:example/test.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:log_tracking/log_tracking.dart';
 
@@ -11,7 +13,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -53,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage(title: "deneme_${++_counter}")));
+    // Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage(title: "deneme_${++_counter}")));
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
@@ -64,8 +65,13 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void testMethod() {
+    Log.e("test 63");
+  }
+
   @override
   Widget build(BuildContext context) {
+    Test().testMethod();
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -95,11 +101,16 @@ class _MyHomePageState extends State<MyHomePage> {
               alignment: Alignment.center,
               children: [
                 Align(
-                  child: Text("kk",style: TextStyle(color: Colors.red),),
+                  child: Text(
+                    "kk",
+                    style: TextStyle(color: Colors.red),
+                  ),
                   alignment: Alignment(1.1, 1),
                 ),
-                Positioned(child: Text("kkkk",style: TextStyle(color: Colors.red)),bottom: -2,),
-
+                Positioned(
+                  child: Text("kkkk", style: TextStyle(color: Colors.red)),
+                  bottom: -2,
+                ),
               ],
             ),
           ),

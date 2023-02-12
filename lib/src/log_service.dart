@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import '../log_tracking.dart';
 import 'enum/enum_log_type.dart';
@@ -142,7 +143,7 @@ class LogService {
     //   });
     // }
 
-    if (Platform.isAndroid) {
+    if (defaultTargetPlatform==TargetPlatform.android) {
       (_dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (client) {
         client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
         return client;
