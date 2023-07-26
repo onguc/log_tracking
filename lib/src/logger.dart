@@ -38,38 +38,79 @@ class Log {
   }
 
   static Future<void> i(String text) async {
-    NgcLog log = _newLog(text);
-    log.logType = EnumLogType.INFO;
-    _printLog(log);
-    await _save(log);
+    try {
+      NgcLog log = _newLog(text);
+      log.logType = EnumLogType.INFO;
+      _printLog(log);
+      if (kDebugMode) {
+        log.logTypeGroup = EnumLogTypeGroup.DEBUG;
+      } else {
+        log.logTypeGroup = EnumLogTypeGroup.PRODUCTION;
+        FirebaseCrashlytics.instance.log(text);
+      }
+      // await _save(log);
+    } catch (e, s) {
+      print("$e \n$s");
+    }
   }
 
-  static Future<void> e(dynamic error, {EnumLogLevel? logLevel = EnumLogLevel.MEDIUM, String? message}) async {
+  static Future<void> e(dynamic error, {StackTrace? stack, EnumLogLevel? logLevel = EnumLogLevel.MEDIUM, String? message}) async {
     NgcLog log = _newLog(message);
     log.logType = EnumLogType.ERROR;
     log.logLevel = logLevel;
-    if (kDebugMode) log.logTypeGroup = EnumLogTypeGroup.DEBUG;
+    if (kDebugMode) {
+      log.logTypeGroup = EnumLogTypeGroup.DEBUG;
+    } else {
+      log.logTypeGroup = EnumLogTypeGroup.PRODUCTION;
+
+      var current = StackTrace.current.toString();
+      var currentNew = current.substring(current.indexOf("#1"));
+      var previusStack = StackTrace.fromString(currentNew);
+
+      log.stacktraceString = currentNew;
+      var isCrashlyticsCollectionEnabled = FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled;
+      FirebaseCrashlytics.instance.recordFlutterError(
+        FlutterErrorDetails(exception: error, stack: previusStack),
+        fatal: true,
+      );
+    }
 
     log.error = error;
     _printLog(log);
-    await _save(log);
-    NgcLogStatus ngcLogStatus = NgcLogStatus()
-      ..enumStatus = EnumStatus.UNSENT
-      ..keyId = log.keyId;
-    await NgcLogStatusRepo.instance.save(ngcLogStatus);
-    IndexRepo.instance.increaseAppErrorLogIndex();
-    List<NgcLog> lastLogList = await NgcLogRepo.instance.getLastLogsByErrorLogKeyId(log.keyId!);
-    if (LogService.url.isEmpty) return;
-    LogService.instance.sendLogList(lastLogList).catchError((error, stackTrace) {
-      Log.e(error);
-    });
+
+    // await _save(log);
+    // NgcLogStatus ngcLogStatus = NgcLogStatus()
+    //   ..enumStatus = EnumStatus.UNSENT
+    //   ..keyId = log.keyId;
+    // await NgcLogStatusRepo.instance.save(ngcLogStatus);
+    // IndexRepo.instance.increaseAppErrorLogIndex();
+    // List<NgcLog> lastLogList = await NgcLogRepo.instance.getLastLogsByErrorLogKeyId(log.keyId!);
+    // if (LogService.url.isEmpty) return;
+    // LogService.instance.sendLogList(lastLogList).catchError((error, stackTrace) {
+    //   Log.e(error);
+    // });
   }
 
   static Future<void> w(String text) async {
     NgcLog log = _newLog(text);
     log.logType = EnumLogType.WARNING;
     _printLog(log);
-    await _save(log);
+    if (kDebugMode) {
+      log.logTypeGroup = EnumLogTypeGroup.DEBUG;
+    } else {
+      log.logTypeGroup = EnumLogTypeGroup.PRODUCTION;
+      var current = StackTrace.current.toString();
+      var currentNew = current.substring(current.indexOf("#1"));
+      var previusStack = StackTrace.fromString(currentNew);
+      FirebaseCrashlytics.instance.recordFlutterError(
+        FlutterErrorDetails(
+          exception: "WARNING:  $text}",
+          stack: previusStack,
+        ),
+        fatal: true,
+      );
+    }
+    // await _save(log);
   }
 
   static NgcLog _newLog(String? text) {

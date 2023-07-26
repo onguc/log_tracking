@@ -1,6 +1,6 @@
 name: log_tracking
 description: A package that stores the logs used in the project
-version: 0.1.19
+version: 0.1.20
 homepage:
 
 environment:
@@ -19,7 +19,8 @@ dependencies:
   dio: ^5.2.1+1
   json_annotation: ^4.8.1
   android_id: ^0.3.3
-
+  firebase_core: ^2.15.0
+  firebase_crashlytics: ^3.3.4
 #  ext_storage: ^1.0.3
 
 dev_dependencies:
