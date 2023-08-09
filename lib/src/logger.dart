@@ -45,8 +45,10 @@ class Log {
       if (kDebugMode) {
         log.logTypeGroup = EnumLogTypeGroup.DEBUG;
       } else {
-        log.logTypeGroup = EnumLogTypeGroup.PRODUCTION;
-        FirebaseCrashlytics.instance.log(text);
+        if (!kIsWeb) {
+          log.logTypeGroup = EnumLogTypeGroup.PRODUCTION;
+          FirebaseCrashlytics.instance.log(text);
+        }
       }
       // await _save(log);
     } catch (e, s) {
@@ -65,30 +67,19 @@ class Log {
 
       var current = StackTrace.current.toString();
       var currentNew = current.substring(current.indexOf("#1"));
-      var previusStack = StackTrace.fromString(currentNew);
-
       log.stacktraceString = currentNew;
-      var isCrashlyticsCollectionEnabled = FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled;
-      FirebaseCrashlytics.instance.recordFlutterError(
-        FlutterErrorDetails(exception: error, stack: previusStack),
-        fatal: true,
-      );
+      if (!kIsWeb) {
+        var previusStack = StackTrace.fromString(currentNew);
+        var isCrashlyticsCollectionEnabled = FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled;
+        FirebaseCrashlytics.instance.recordFlutterError(
+          FlutterErrorDetails(exception: error, stack: previusStack),
+          fatal: true,
+        );
+      }
     }
 
     log.error = error;
     _printLog(log);
-
-    // await _save(log);
-    // NgcLogStatus ngcLogStatus = NgcLogStatus()
-    //   ..enumStatus = EnumStatus.UNSENT
-    //   ..keyId = log.keyId;
-    // await NgcLogStatusRepo.instance.save(ngcLogStatus);
-    // IndexRepo.instance.increaseAppErrorLogIndex();
-    // List<NgcLog> lastLogList = await NgcLogRepo.instance.getLastLogsByErrorLogKeyId(log.keyId!);
-    // if (LogService.url.isEmpty) return;
-    // LogService.instance.sendLogList(lastLogList).catchError((error, stackTrace) {
-    //   Log.e(error);
-    // });
   }
 
   static Future<void> w(String text) async {
@@ -102,13 +93,15 @@ class Log {
       var current = StackTrace.current.toString();
       var currentNew = current.substring(current.indexOf("#1"));
       var previusStack = StackTrace.fromString(currentNew);
-      FirebaseCrashlytics.instance.recordFlutterError(
-        FlutterErrorDetails(
-          exception: "WARNING:  $text}",
-          stack: previusStack,
-        ),
-        fatal: true,
-      );
+      if (!kIsWeb) {
+        FirebaseCrashlytics.instance.recordFlutterError(
+          FlutterErrorDetails(
+            exception: "WARNING:  $text}",
+            stack: previusStack,
+          ),
+          fatal: true,
+        );
+      }
     }
     // await _save(log);
   }
