@@ -106,6 +106,26 @@ class Log {
     // await _save(log);
   }
 
+  static Future<void> test(String text) async {
+    NgcLog log = _newLog(text);
+    log.logType = EnumLogType.WARNING;
+    // _printLog(log);
+    log.logTypeGroup = EnumLogTypeGroup.PRODUCTION;
+    var current = StackTrace.current.toString();
+    var currentNew = current.substring(current.indexOf("#1"));
+    var previusStack = StackTrace.fromString(currentNew);
+    if (!kIsWeb) {
+      FirebaseCrashlytics.instance.recordFlutterError(
+        FlutterErrorDetails(
+          exception: "WARNING:  $text}",
+          stack: previusStack,
+        ),
+        fatal: true,
+      );
+    }
+    // await _save(log);
+  }
+
   static NgcLog _newLog(String? text) {
     var log = NgcLog();
     log.text = text;
