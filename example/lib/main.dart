@@ -1,11 +1,10 @@
 import 'package:example/test.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:log_tracking/log_tracking.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Log.init("");
+  await Log.init(url: "");
   runApp(MyApp());
 }
 

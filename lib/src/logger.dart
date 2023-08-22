@@ -11,10 +11,11 @@ class Log {
     if (type != null) className = type.toString();
   }
 
-  static Future<void> init(String url) async {
+  static Future<void> init({String? url, FirebaseOptions? options}) async {
     packageInfo = await PackageInfo.fromPlatform();
+    await Firebase.initializeApp(options: options);
     await DeviceInfo.init();
-    LogService.url = url;
+    LogService.url = url ?? "";
     await Hive.initFlutter();
     await NgcLogRepo.initHive();
     await NgcLogStatusRepo.initHive();
