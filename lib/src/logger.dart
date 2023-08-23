@@ -63,8 +63,8 @@ class Log {
     log.logLevel = logLevel;
     if (stack != null) {
       log.stacktraceString = stack.toString();
-    } else if (e is StateError) {
-      stack = (e as StateError).stackTrace;
+    } else if (error is StateError) {
+      stack = error.stackTrace;
       log.stacktraceString = stack.toString();
     } else {
       var current = StackTrace.current.toString();
