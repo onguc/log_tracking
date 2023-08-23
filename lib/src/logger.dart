@@ -61,19 +61,25 @@ class Log {
     NgcLog log = _newLog(message);
     log.logType = EnumLogType.ERROR;
     log.logLevel = logLevel;
+    if (stack != null) {
+      log.stacktraceString = stack.toString();
+    } else if (e is StateError) {
+      stack = (e as StateError).stackTrace;
+      log.stacktraceString = stack.toString();
+    } else {
+      var current = StackTrace.current.toString();
+      log.stacktraceString = current.substring(current.indexOf("#1"));
+      stack = StackTrace.fromString(log.stacktraceString!);
+    }
+
     if (kDebugMode) {
       log.logTypeGroup = EnumLogTypeGroup.DEBUG;
     } else {
       log.logTypeGroup = EnumLogTypeGroup.PRODUCTION;
-
-      var current = StackTrace.current.toString();
-      var currentNew = current.substring(current.indexOf("#1"));
-      log.stacktraceString = currentNew;
       if (!kIsWeb) {
-        var previusStack = StackTrace.fromString(currentNew);
         var isCrashlyticsCollectionEnabled = FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled;
         FirebaseCrashlytics.instance.recordFlutterError(
-          FlutterErrorDetails(exception: error, stack: previusStack),
+          FlutterErrorDetails(exception: error, stack: stack),
           fatal: true,
         );
       }
