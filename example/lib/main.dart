@@ -6,6 +6,7 @@ import 'package:log_tracking/log_tracking.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Log.init(
+    saveToLocal: true,
     onInfo: (log) {
       FirebaseCrashlytics.instance.log(log.text ?? "");
     },

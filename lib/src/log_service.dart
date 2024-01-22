@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:flutter/foundation.dart';
+import 'package:log_tracking/src/utils/string_util.dart';
 
 import '../log_tracking.dart';
 import 'enum/enum_log_type.dart';
@@ -29,20 +30,22 @@ class LogService {
   }
 
   late Dio dio;
-  late String url;
+  String? url;
 
   LogService._() {
     HttpOverrides.global = LogHttpOverrides();
     dio = dioInstance;
   }
 
-  Future<BaseResponse> sendErrorLog(NgcLog log) async {
-    var response = await dio.post(url, data: log.toJson());
+  Future<BaseResponse?> sendErrorLog(NgcLog log) async {
+    assert(StringUtil.isNotEmpty(url), "Url can not be empty!");
+    var response = await dio.post(url!, data: log.toJson());
 
     return LogInfoResponse.fromJson(response.data);
   }
 
   Future<bool> sendLogList(List<NgcLog> logList, {List<NgcLogStatus>? logStatuses}) async {
+    assert(StringUtil.isNotEmpty(url), "Url can not be empty!");
     bool? isOnline = isOnlineNotifier.value;
     if (!isOnline) return false;
 
@@ -55,7 +58,7 @@ class LogService {
     _updateNgcLogStatuses(logStatuses, EnumStatus.SENDING);
 
     try {
-      var response = await dio.post(url, data: request.toJson());
+      var response = await dio.post(url!, data: request.toJson());
       var result = LogInfoResponse.fromJson(response.data);
       if (result.result == true) {
         Log.i("log sending successful");
@@ -118,10 +121,11 @@ class LogService {
   String _getIndexKey(String keyId) => keyId.split("_")[0];
 
   Dio get dioInstance {
+    assert(StringUtil.isNotEmpty(url), "Url can not be empty!");
     var deviceInfo = DeviceInfo.instance;
     final Dio _dio = Dio(
       BaseOptions(
-        baseUrl: url,
+        baseUrl: url!,
         headers: {
           "content-type": "application/json",
           "device-type": deviceInfo.deviceType,

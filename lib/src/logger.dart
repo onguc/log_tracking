@@ -20,7 +20,8 @@ class Log {
     Function(NgcLog val)? onWarning,
     Function(NgcLog val)? onInfo,
   }) async {
-    assert(url != null && url.isNotEmpty && saveToLocal, "The url cannot be full when the saveToLocal is false");
+    assert(!(url != null && url.isNotEmpty && !saveToLocal), 'The url cannot be full when the saveToLocal is false');
+
     _instanse = Log._();
     _instanse._onInfo = onInfo ?? (log) {};
     _instanse._onError = onError;
@@ -37,7 +38,7 @@ class Log {
       await IndexRepo.initHive();
       Future.delayed(Duration(seconds: 1)).then((value) async {
         IndexRepo.instance.increaseAppStartupIndex();
-        if (LogService.instance.url.isEmpty) return;
+        if (StringUtil.isEmpty(LogService.instance.url)) return;
         isOnlineNotifier.addListener(() async {
           try {
             var isOnline = isOnlineNotifier.value;

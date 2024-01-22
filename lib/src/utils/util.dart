@@ -9,8 +9,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 class Util {
   static String? _version = "";
-  static String deviceId = "";
-  final bool isCanPrintLog = !kIsWeb || kDebugMode;
 
   static Future<String?>? get version async {
     if ((_version == null || _version!.isEmpty) && !kIsWeb) {
