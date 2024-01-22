@@ -47,8 +47,7 @@ class DeviceInfo {
   //
   // Map<String, dynamic> toJson() => _$DeviceInfoToJson(this);
 
-  static Future<void> init() async {
-    String appVersion = Log.packageInfo!.version;
+  static Future<void> init(String appVersion) async {
     var deviceInfoPlugin = DeviceInfoPlugin();
     if (kIsWeb) {
       var data = await deviceInfoPlugin.webBrowserInfo; // deviceId: 0696220404946b51

@@ -48,6 +48,8 @@ class NgcLog extends BaseHiveModel {
   @HiveField(10)
   EnumLogTypeGroup? logTypeGroup;
 
+  StackTrace? stackTrace;
+
   // String? logTypeString;
   dynamic _error;
 
@@ -74,22 +76,28 @@ class NgcLog extends BaseHiveModel {
 
   @override
   String toString() {
-    String errorStr = StringUtil.isNotEmpty(errorString) ? "\n-->ERROR-DETAIL: $errorString" : "";
-    String stactraceStr = StringUtil.isNotEmpty(stacktraceString) ? "\n-->STACK-TRACE: $stacktraceString" : "";
+    bool isErrorFull = StringUtil.isNotEmpty(errorString);
+    bool isStackTraceFull = StringUtil.isNotEmpty(stacktraceString);
+    String errorStr = isErrorFull ? "\n-->ERROR-DETAIL: $errorString" : "";
+    String stactraceStr = isStackTraceFull ? "\n-->STACK-TRACE: $stacktraceString" : "";
 
     return "[${logType?.name}] [$version] [$dateTime][$timeZone]  [$className]  [$methodName]  $text  $errorStr  $stactraceStr";
   }
 
   String toStringForIos() {
-    String errorStr = StringUtil.isNotEmpty(errorString) ? "\n-->ERROR-DETAIL: $_error" : "";
-    String stactraceStr = StringUtil.isNotEmpty(stacktraceString) ? "\n-->STACK-TRACE: $stacktraceString" : "";
+    bool isErrorFull = StringUtil.isNotEmpty(errorString);
+    bool isStackTraceFull = StringUtil.isNotEmpty(stacktraceString);
+    String errorStr = isErrorFull ? "\n-->ERROR-DETAIL: $_error" : "";
+    String stactraceStr = isStackTraceFull ? "\n-->STACK-TRACE: $stacktraceString" : "";
 
     return "[${logType?.name}] [$version] [$dateTime][$timeZone]  [$className]  [$methodName]  $text  $errorStr  $stactraceStr";
   }
 
   String toStringWithColorCode() {
-    String errorStr = StringUtil.isNotEmpty(errorString) ? "\n${_getColorRed("-->ERROR-DETAIL")}: $errorString" : "";
-    String stactraceStr = StringUtil.isNotEmpty(stacktraceString) ? "\n${_getColorRed("-->STACK-TRACE")}: $stacktraceString" : "";
+    bool isErrorFull = StringUtil.isNotEmpty(errorString);
+    bool isStackTraceFull = StringUtil.isNotEmpty(stacktraceString);
+    String errorStr = isErrorFull ? "\n${_getColorRed("-->ERROR-DETAIL")}: $errorString" : "";
+    String stactraceStr = isStackTraceFull ? "\n${_getColorRed("-->STACK-TRACE")}: $stacktraceString" : "";
 
     return "[${_getColorLogType}]  [${_getColorCyan(dateTime!)}] [$className]  [$methodName]  ${_getColorBlue(text)}  $errorStr  $stactraceStr";
   }

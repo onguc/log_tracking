@@ -29,11 +29,10 @@ class LogService {
   }
 
   late Dio dio;
-  static late String url;
-
-  // SessionManager get sessionManager => sl<SessionManager>();
+  late String url;
 
   LogService._() {
+    HttpOverrides.global = LogHttpOverrides();
     dio = dioInstance;
   }
 
@@ -44,8 +43,8 @@ class LogService {
   }
 
   Future<bool> sendLogList(List<NgcLog> logList, {List<NgcLogStatus>? logStatuses}) async {
-    bool? hasDataConnection = isOnlineNotifier.value;
-    if (hasDataConnection != true) return false;
+    bool? isOnline = isOnlineNotifier.value;
+    if (!isOnline) return false;
 
     if (logStatuses == null) {
       Iterable<String> keys = logList.where((element) => element.logType == EnumLogType.ERROR).map((e) => e.keyId!);
@@ -54,14 +53,12 @@ class LogService {
 
     LogInfoRequest request = _getLogInfoRequest(logList);
     _updateNgcLogStatuses(logStatuses, EnumStatus.SENDING);
-    // dio.options.headers["content-type"]="application/octet-stream; charset=utf-8";
 
     try {
       var response = await dio.post(url, data: request.toJson());
       var result = LogInfoResponse.fromJson(response.data);
       if (result.result == true) {
         Log.i("log sending successful");
-        // _updateNgcLogStatuses(logStatuses, EnumStatus.SENT);
         await _deleteLogs(logStatuses, logList);
         return true;
       } else {
@@ -97,12 +94,6 @@ class LogService {
     return request;
   }
 
-  // Future<BaseResponse> gonderilmeyenleriGonder() async {
-  //   NgcLogRepo logRepo = sl<NgcLogRepo>();
-  //   List<NgcLog> list = await logRepo.getNotSendedList();
-  //   return sendLogList(list);
-  // }
-
   Future<bool> sendAllLogs() async {
     List<NgcLogStatus> logStatuses = NgcLogStatusRepo.instance.getLogStatusesUnsent().toList();
     if (logStatuses.isEmpty) return false;
@@ -127,10 +118,16 @@ class LogService {
   String _getIndexKey(String keyId) => keyId.split("_")[0];
 
   Dio get dioInstance {
+    var deviceInfo = DeviceInfo.instance;
     final Dio _dio = Dio(
       BaseOptions(
         baseUrl: url,
-        headers: {"content-type": "application/json", "device-type": DeviceInfo.instance.deviceType, "device-id": DeviceInfo.instance.deviceId, "app-version": DeviceInfo.instance.appVersion},
+        headers: {
+          "content-type": "application/json",
+          "device-type": deviceInfo.deviceType,
+          "device-id": deviceInfo.deviceId,
+          "app-version": deviceInfo.appVersion,
+        },
       ),
     );
 
@@ -143,14 +140,33 @@ class LogService {
     //   });
     // }
 
-    if (defaultTargetPlatform==TargetPlatform.android) {
-      (_dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate = (client) {
-        client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
-        return client;
-      };
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      dio.httpClientAdapter = IOHttpClientAdapter(
+        createHttpClient: () {
+          final HttpClient client = HttpClient(context: SecurityContext(withTrustedRoots: false));
+          client.badCertificateCallback = ((X509Certificate cert, String host, int port) => true);
+          return client;
+        },
+      );
+
+      // (_dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate = (client) {
+      //   client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+      //   return client;
+      // };
     }
 
     return _dio;
     // return _dio;
+  }
+}
+
+class LogHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback = ((X509Certificate cert, String host, int port) {
+        // final isValidHost = ["192.168.1.67"].contains(host);
+        return true;
+      });
   }
 }

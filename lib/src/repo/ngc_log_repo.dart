@@ -1,5 +1,4 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:log_tracking/src/enum/enum_device_type.dart';
 
 import '../../log_tracking.dart';
 import '../constant/hive_constants.dart';
@@ -15,9 +14,9 @@ import 'ngc_log_status_repo.dart';
 /// Created by İrfan Öngüç
 /// on 15.04.2022
 
-/// Asıl logların kaydedilip yönetildiği erdir
+/// Asıl logların kaydedilip yönetildiği yerdir
 class NgcLogRepo extends BaseLazyRepo<NgcLog> {
-  static String _keyNgcLog = "ngcLogger";
+  String _keyNgcLog = "ngcLogger";
 
   static NgcLogRepo? _instance;
 
@@ -28,7 +27,7 @@ class NgcLogRepo extends BaseLazyRepo<NgcLog> {
 
   NgcLogRepo._();
 
-  static initHive() async {
+  initHive() async {
     bool isRegistered = Hive.isAdapterRegistered(HiveConstants.ngcLogTypeId);
     if (!isRegistered) {
       Hive.registerAdapter(NgcLogAdapter());
@@ -51,10 +50,6 @@ class NgcLogRepo extends BaseLazyRepo<NgcLog> {
   Future<void> save(NgcLog t) {
     t.keyId = "${IndexRepo.instance.indexKey}_${t.dateTime}_${t.logType!.name}";
     return super.save(t);
-  }
-
-  Future<List<NgcLog>> getNotSendedList() {
-    return Future.value([]);
   }
 
   Future<List<NgcLog>> getLogsByIndexKeySet(Set<String> unsentLogKeySet) async {
@@ -84,7 +79,7 @@ class NgcLogRepo extends BaseLazyRepo<NgcLog> {
     return logs;
   }
 
-  static bool _isEnteredInDeleteMethode = false;
+  bool _isEnteredInDeleteMethode = false;
 
   Future<void> deleteLogsFrom7DaysAgo() async {
     if (!_isEnteredInDeleteMethode) {
@@ -119,5 +114,4 @@ class NgcLogRepo extends BaseLazyRepo<NgcLog> {
   }
 
   bool _isBoforeFilterKey(String element, String filterKey) => element.compareTo(filterKey) == -1 || element.compareTo(filterKey) == 0;
-
 }

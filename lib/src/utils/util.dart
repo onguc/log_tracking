@@ -10,19 +10,10 @@ import 'package:package_info_plus/package_info_plus.dart';
 class Util {
   static String? _version = "";
   static String deviceId = "";
-  static final bool isCanPrintLog = _isPlatformNotWeb || kDebugMode;
-
-  static bool get _isPlatformNotWeb {
-    try {
-      bool isNotWeb = (Platform.isAndroid || Platform.isIOS || Platform.isWindows || Platform.isMacOS || Platform.isLinux || Platform.isFuchsia);
-      return isNotWeb;
-    } catch (e) {
-      return false;
-    }
-  }
+  final bool isCanPrintLog = !kIsWeb || kDebugMode;
 
   static Future<String?>? get version async {
-    if ((_version == null || _version!.isEmpty) && _isPlatformNotWeb) {
+    if ((_version == null || _version!.isEmpty) && !kIsWeb) {
       try {
         PackageInfo packageInfo = await PackageInfo.fromPlatform();
         _version = packageInfo.version;

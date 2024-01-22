@@ -7,36 +7,36 @@ import 'package:flutter/material.dart';
 /// Created by İrfan Öngüç
 /// on 26.05.2022
 
-var connectivity = Connectivity();
+var _connectivity = Connectivity();
 ValueNotifier<bool> isOnlineNotifier = ValueNotifier(true);
 
-check() {
-  connectivity.checkConnectivity().then((value) {
+checkConnectivity() {
+  _connectivity.checkConnectivity().then((value) {
     _setHasActiveDataConnection(value);
   });
-  connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
+  _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
     _setHasActiveDataConnection(result);
   });
 }
 
 void _setHasActiveDataConnection(ConnectivityResult result) {
   final bool isOnline = result != ConnectivityResult.none;
-  hasActiveDataConnectionJob(isOnline);
+  _hasActiveDataConnectionJob(isOnline);
 }
 
-hasActiveDataConnectionJob(isOnline) {
-  if (isOnline == false) {
+_hasActiveDataConnectionJob(isOnline) {
+  if (!isOnline) {
     isOnlineNotifier.value = false;
     return isOnline;
   }
-  return hasActiveDataConnection();
+  return _hasActiveDataConnection();
 }
 
-Future<bool> hasActiveDataConnection() async {
+Future<bool> _hasActiveDataConnection() async {
   bool previousConnection = true;
 
   try {
-    final result = await InternetAddress.lookup('google.com');
+    final result = await InternetAddress.lookup('https://vuhuv.com/');
     if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
       previousConnection = true;
     } else {

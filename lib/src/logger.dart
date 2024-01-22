@@ -4,51 +4,66 @@ part of log_tracking;
 /// on 14 October 2020
 
 class Log {
-  String className = "";
-  static PackageInfo? packageInfo;
+  Log._();
 
-  Log(Type? type) {
-    if (type != null) className = type.toString();
-  }
+  PackageInfo? _packageInfo;
+  Function(NgcLog val)? _onInfo;
+  Function(NgcLog val)? _onError;
+  Function(NgcLog val)? _onWarning;
 
-  static Future<void> init({String? url, FirebaseOptions? options}) async {
-    packageInfo = await PackageInfo.fromPlatform();
-    await Firebase.initializeApp(options: options);
-    await DeviceInfo.init();
-    LogService.url = url ?? "";
-    await Hive.initFlutter();
-    await NgcLogRepo.initHive();
-    await NgcLogStatusRepo.initHive();
-    await IndexRepo.initHive();
-    // await xx.initializeDateFormatting('tr_TR',null);
-    Future.delayed(Duration(seconds: 1)).then((value) async {
-      IndexRepo.instance.increaseAppStartupIndex();
-      if (LogService.url.isEmpty) return;
-      isOnlineNotifier.addListener(() async {
-        try {
-          if (isOnlineNotifier.value == true) {
-            var isSentSuccess = await LogService.instance.sendAllLogs();
-            if (isSentSuccess) await NgcLogRepo.instance.deleteLogsFrom7DaysAgo();
+  static late Log _instanse;
+
+  static Future<void> init({
+    String? url,
+    bool saveToLocal = false,
+    required Function(NgcLog val) onError,
+    Function(NgcLog val)? onWarning,
+    Function(NgcLog val)? onInfo,
+  }) async {
+    assert(url != null && url.isNotEmpty && saveToLocal, "The url cannot be full when the saveToLocal is false");
+    _instanse = Log._();
+    _instanse._onInfo = onInfo ?? (log) {};
+    _instanse._onError = onError;
+    _instanse._onWarning = onWarning ?? (log) {};
+    checkConnectivity();
+
+    _instanse._packageInfo = await PackageInfo.fromPlatform();
+    await DeviceInfo.init(_instanse._packageInfo!.version);
+    LogService.instance.url = url ?? "";
+    if (saveToLocal) {
+      await Hive.initFlutter();
+      await NgcLogRepo.instance.initHive();
+      await NgcLogStatusRepo.initHive();
+      await IndexRepo.initHive();
+      Future.delayed(Duration(seconds: 1)).then((value) async {
+        IndexRepo.instance.increaseAppStartupIndex();
+        if (LogService.instance.url.isEmpty) return;
+        isOnlineNotifier.addListener(() async {
+          try {
+            var isOnline = isOnlineNotifier.value;
+            if (isOnline) {
+              var isSentSuccess = await LogService.instance.sendAllLogs();
+              if (isSentSuccess) await NgcLogRepo.instance.deleteLogsFrom7DaysAgo();
+            }
+          } catch (e) {
+            Log.e(e);
           }
-        } catch (e) {
-          Log.e(e);
-        }
+        });
       });
-      print("logger.init içindeki işlem tamamlandı");
-    });
+    }
   }
 
   static Future<void> i(String text) async {
     try {
-      NgcLog log = _newLog(text);
-      log.logType = EnumLogType.INFO;
-      _printLog(log);
+      NgcLog log = _instanse._newLog(EnumLogType.INFO, text);
+      _instanse._printLog(log);
       if (kDebugMode) {
         log.logTypeGroup = EnumLogTypeGroup.DEBUG;
       } else {
         if (!kIsWeb) {
           log.logTypeGroup = EnumLogTypeGroup.PRODUCTION;
-          FirebaseCrashlytics.instance.log(text);
+          _instanse._onInfo!(log);
+          // FirebaseCrashlytics.instance.log(text);
         }
       }
       // await _save(log);
@@ -58,7 +73,7 @@ class Log {
   }
 
   static Future<void> e(dynamic error, {StackTrace? stack, EnumLogLevel? logLevel = EnumLogLevel.MEDIUM, String? message}) async {
-    NgcLog log = _newLog(message);
+    NgcLog log = _instanse._newLog(EnumLogType.ERROR, message);
     log.logType = EnumLogType.ERROR;
     log.logLevel = logLevel;
     if (stack != null) {
@@ -71,28 +86,28 @@ class Log {
       log.stacktraceString = current.substring(current.indexOf("#1"));
       stack = StackTrace.fromString(log.stacktraceString!);
     }
-
+    log.stackTrace = stack;
     if (kDebugMode) {
       log.logTypeGroup = EnumLogTypeGroup.DEBUG;
     } else {
       log.logTypeGroup = EnumLogTypeGroup.PRODUCTION;
       if (!kIsWeb) {
-        var isCrashlyticsCollectionEnabled = FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled;
-        FirebaseCrashlytics.instance.recordFlutterError(
-          FlutterErrorDetails(exception: error, stack: stack),
-          fatal: true,
-        );
+        _instanse._onError!(log);
+        // var isCrashlyticsCollectionEnabled = FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled;
+        // FirebaseCrashlytics.instance.recordFlutterError(
+        //   FlutterErrorDetails(exception: error, stack: stack),
+        //   fatal: true,
+        // );
       }
     }
 
     log.error = error;
-    _printLog(log);
+    _instanse._printLog(log);
   }
 
   static Future<void> w(String text) async {
-    NgcLog log = _newLog(text);
-    log.logType = EnumLogType.WARNING;
-    _printLog(log);
+    NgcLog log = _instanse._newLog(EnumLogType.WARNING, text);
+    _instanse._printLog(log);
     if (kDebugMode) {
       log.logTypeGroup = EnumLogTypeGroup.DEBUG;
     } else {
@@ -100,68 +115,69 @@ class Log {
       var current = StackTrace.current.toString();
       var currentNew = current.substring(current.indexOf("#1"));
       var previusStack = StackTrace.fromString(currentNew);
+      log.stackTrace = previusStack;
       if (!kIsWeb) {
-        FirebaseCrashlytics.instance.recordFlutterError(
-          FlutterErrorDetails(
-            exception: "WARNING:  $text}",
-            stack: previusStack,
-          ),
-          fatal: true,
-        );
+        _instanse._onWarning!(log);
+        // FirebaseCrashlytics.instance.recordFlutterError(
+        //   FlutterErrorDetails(
+        //     exception: "WARNING:  $text}",
+        //     stack: previusStack,
+        //   ),
+        //   fatal: true,
+        // );
       }
     }
     // await _save(log);
   }
 
-  static Future<void> test(String text) async {
-    NgcLog log = _newLog(text);
+  static Future<void> d(String text) async {
+    NgcLog log = _instanse._newLog(EnumLogType.DEBUG, text);
     log.logType = EnumLogType.WARNING;
-    // _printLog(log);
     log.logTypeGroup = EnumLogTypeGroup.PRODUCTION;
     var current = StackTrace.current.toString();
     var currentNew = current.substring(current.indexOf("#1"));
     var previusStack = StackTrace.fromString(currentNew);
+    log.stackTrace = previusStack;
+    _instanse._printLog(log);
     if (!kIsWeb) {
-      FirebaseCrashlytics.instance.recordFlutterError(
-        FlutterErrorDetails(
-          exception: "WARNING:  $text}",
-          stack: previusStack,
-        ),
-        fatal: true,
-      );
+      // FirebaseCrashlytics.instance.recordFlutterError(
+      //   FlutterErrorDetails(
+      //     exception: "WARNING:  $text}",
+      //     stack: previusStack,
+      //   ),
+      //   fatal: true,
+      // );
     }
     // await _save(log);
   }
 
-  static NgcLog _newLog(String? text) {
+  NgcLog _newLog(EnumLogType logType, String? text) {
     var log = NgcLog();
+    log.logType = logType;
     log.text = text;
     log.version = DeviceInfo.instance.appVersion;
     _setClassAndMethodName(log);
     return log;
   }
 
-  static void _printLog(NgcLog log1) {
-    if (Util.isCanPrintLog) {
-      if (defaultTargetPlatform == TargetPlatform.iOS)
-        print(log1.toStringForIos());
-      else
-        print(log1.toStringWithColorCode());
+  void _printLog(NgcLog log1) {
+    if (Platform.isIOS || Platform.isMacOS)
+      print(log1.toStringForIos());
+    else if (kIsWeb) {
+      print(log1.toString());
+    } else {
+      print(log1.toStringWithColorCode());
     }
   }
 
-  static Future<void> _save(NgcLog log) async {
-    if (Util.isCanPrintLog)
-      // if(kReleaseMode) {
-      await NgcLogRepo.instance.save(log);
-    // }
+  Future<void> _save(NgcLog log) async {
+    if (!kIsWeb) await NgcLogRepo.instance.save(log);
   }
 
-  static void _setClassAndMethodName(NgcLog log) {
+  void _setClassAndMethodName(NgcLog log) {
     String stackTrace = StackTrace.current.toString();
-    // print("\nstackTrace22 = ${stackTrace}");
     if (kIsWeb) {
-      var appName = Log.packageInfo!.appName;
+      var appName = _instanse._packageInfo!.appName;
       var index = stackTrace.indexOf(appName);
       var substring1 = stackTrace.toString().substring(index);
       int index2 = substring1.indexOf('\n');
@@ -185,7 +201,7 @@ class Log {
     }
   }
 
-  static close() async {
+  close() async {
     await NgcLogRepo.instance.close();
     await NgcLogStatusRepo.instance.close();
   }
