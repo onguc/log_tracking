@@ -24,28 +24,29 @@ import 'utils/connectivity.dart';
 class LogService {
   static LogService? _instance;
 
-  static LogService get instance {
-    if (_instance == null) _instance = LogService._();
+  static LogService createInstance(String url) {
+    if (_instance == null) _instance = LogService._(url);
     return _instance!;
   }
 
-  late Dio dio;
-  String? url;
+  late Dio _dio;
 
-  LogService._() {
+  // String? _url;
+
+  LogService._(String url) {
     HttpOverrides.global = LogHttpOverrides();
-    dio = dioInstance;
+    _dio = createDioInstance(url);
   }
 
   Future<BaseResponse?> sendErrorLog(NgcLog log) async {
-    assert(StringUtil.isNotEmpty(url), "Url can not be empty!");
-    var response = await dio.post(url!, data: log.toJson());
+    // assert(StringUtil.isNotEmpty(_url), "Url can not be empty!");
+    var response = await _dio.post('', data: log.toJson());
 
     return LogInfoResponse.fromJson(response.data);
   }
 
   Future<bool> sendLogList(List<NgcLog> logList, {List<NgcLogStatus>? logStatuses}) async {
-    assert(StringUtil.isNotEmpty(url), "Url can not be empty!");
+    // assert(StringUtil.isNotEmpty(url), "Url can not be empty!");
     bool? isOnline = isOnlineNotifier.value;
     if (!isOnline) return false;
 
@@ -58,7 +59,7 @@ class LogService {
     _updateNgcLogStatuses(logStatuses, EnumStatus.SENDING);
 
     try {
-      var response = await dio.post(url!, data: request.toJson());
+      var response = await _dio.post('', data: request.toJson());
       var result = LogInfoResponse.fromJson(response.data);
       if (result.result == true) {
         Log.i("log sending successful");
@@ -120,12 +121,12 @@ class LogService {
 
   String _getIndexKey(String keyId) => keyId.split("_")[0];
 
-  Dio get dioInstance {
+  Dio createDioInstance(url) {
     assert(StringUtil.isNotEmpty(url), "Url can not be empty!");
     var deviceInfo = DeviceInfo.instance;
     final Dio _dio = Dio(
       BaseOptions(
-        baseUrl: url!,
+        baseUrl: url ?? '',
         headers: {
           "content-type": "application/json",
           "device-type": deviceInfo.deviceType,
@@ -135,17 +136,8 @@ class LogService {
       ),
     );
 
-    // final AuthenticateResult authenticate = sessionManager.sessionInfo?.authenticateResult;
-    // if (authenticate != null) {
-    //   final String token = authenticate.accessToken;
-
-    //   _dio.options.headers.addAll({
-    //     "Authorization": "bearer $token",
-    //   });
-    // }
-
     if (defaultTargetPlatform == TargetPlatform.android) {
-      dio.httpClientAdapter = IOHttpClientAdapter(
+      _dio.httpClientAdapter = IOHttpClientAdapter(
         createHttpClient: () {
           final HttpClient client = HttpClient(context: SecurityContext(withTrustedRoots: false));
           client.badCertificateCallback = ((X509Certificate cert, String host, int port) => true);

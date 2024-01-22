@@ -26,11 +26,14 @@ class Log {
     _instanse._onInfo = onInfo ?? (log) {};
     _instanse._onError = onError;
     _instanse._onWarning = onWarning ?? (log) {};
-    checkConnectivity();
-
+    LogService? logService;
+    if (StringUtil.isNotEmpty(url)) {
+      logService = LogService.createInstance(url!);
+      checkConnectivity();
+    }
     _instanse._packageInfo = await PackageInfo.fromPlatform();
     await DeviceInfo.init(_instanse._packageInfo!.version);
-    LogService.instance.url = url ?? "";
+
     if (saveToLocal) {
       await Hive.initFlutter();
       await NgcLogRepo.instance.initHive();
@@ -38,18 +41,19 @@ class Log {
       await IndexRepo.initHive();
       Future.delayed(Duration(seconds: 1)).then((value) async {
         IndexRepo.instance.increaseAppStartupIndex();
-        if (StringUtil.isEmpty(LogService.instance.url)) return;
-        isOnlineNotifier.addListener(() async {
-          try {
-            var isOnline = isOnlineNotifier.value;
-            if (isOnline) {
-              var isSentSuccess = await LogService.instance.sendAllLogs();
-              if (isSentSuccess) await NgcLogRepo.instance.deleteLogsFrom7DaysAgo();
+        if (StringUtil.isNotEmpty(url)) {
+          isOnlineNotifier.addListener(() async {
+            try {
+              var isOnline = isOnlineNotifier.value;
+              if (isOnline) {
+                var isSentSuccess = await logService!.sendAllLogs();
+                if (isSentSuccess) await NgcLogRepo.instance.deleteLogsFrom7DaysAgo();
+              }
+            } catch (e) {
+              Log.e(e);
             }
-          } catch (e) {
-            Log.e(e);
-          }
-        });
+          });
+        }
       });
     }
   }

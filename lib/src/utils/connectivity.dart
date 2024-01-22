@@ -36,7 +36,7 @@ Future<bool> _hasActiveDataConnection() async {
   bool previousConnection = true;
 
   try {
-    final result = await InternetAddress.lookup('https://vuhuv.com/');
+    final result = await InternetAddress.lookup('vuhuv.com');
     if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
       previousConnection = true;
     } else {
