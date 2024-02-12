@@ -4,31 +4,39 @@ part of log_tracking;
 /// on 14 October 2020
 
 class Log {
-  Log._();
+  Log._() {
+    if (kDebugMode)
+      logTypeGroup = EnumLogTypeGroup.DEBUG;
+    else
+      logTypeGroup = EnumLogTypeGroup.PRODUCTION;
+  }
 
   PackageInfo? _packageInfo;
   Function(NgcLog val)? _onInfo;
   Function(NgcLog val)? _onError;
   Function(NgcLog val)? _onWarning;
+  bool Function(Map<String, dynamic> request)? _onSendToServer;
+  late EnumLogTypeGroup logTypeGroup;
 
   static late Log _instanse;
 
   static Future<void> init({
-    String? url,
     bool saveToLocal = false,
     required Function(NgcLog val) onError,
     Function(NgcLog val)? onWarning,
     Function(NgcLog val)? onInfo,
+    bool Function(Map<String, dynamic> request)? onSendToServer,
   }) async {
-    assert(!(url != null && url.isNotEmpty && !saveToLocal), 'The url cannot be full when the saveToLocal is false');
+    bool sendToServer = onSendToServer != null;
+    assert(!(sendToServer && !saveToLocal), 'The url cannot be full when the saveToLocal is false');
 
     _instanse = Log._();
     _instanse._onInfo = onInfo ?? (log) {};
     _instanse._onError = onError;
     _instanse._onWarning = onWarning ?? (log) {};
-    LogService? logService;
-    if (StringUtil.isNotEmpty(url)) {
-      logService = LogService.createInstance(url!);
+    _instanse._onSendToServer = onSendToServer ?? (request) => false;
+
+    if (sendToServer) {
       checkConnectivity();
     }
     _instanse._packageInfo = await PackageInfo.fromPlatform();
@@ -41,13 +49,23 @@ class Log {
       await IndexRepo.initHive();
       Future.delayed(Duration(seconds: 1)).then((value) async {
         IndexRepo.instance.increaseAppStartupIndex();
-        if (StringUtil.isNotEmpty(url)) {
+        if (sendToServer) {
           isOnlineNotifier.addListener(() async {
             try {
+              print("deneme");
               var isOnline = isOnlineNotifier.value;
               if (isOnline) {
-                var isSentSuccess = await logService!.sendAllLogs();
-                if (isSentSuccess) await NgcLogRepo.instance.deleteLogsFrom7DaysAgo();
+                var (unsentLogStatusses, unsentLogs) = await LogRepo().getUnsentLogs();
+                LogInfoRequest request = _instanse._getLogInfoRequest(unsentLogs);
+                _instanse._updateNgcLogStatuses(unsentLogStatusses, EnumStatus.SENDING);
+                bool isSentSuccess = await _instanse._onSendToServer!(request.toJson());
+                if (isSentSuccess) {
+                  await _instanse._deleteLogs(unsentLogStatusses, unsentLogs);
+                  await NgcLogRepo.instance.deleteLogsFrom7DaysAgo();
+                } else {
+                  Log.w("log sending is not successful");
+                  _instanse._updateNgcLogStatuses(unsentLogStatusses, EnumStatus.UNSENT);
+                }
               }
             } catch (e) {
               Log.e(e);
@@ -58,19 +76,41 @@ class Log {
     }
   }
 
+  Future<void> _deleteLogs(List<NgcLogStatus> logStatuses, List<NgcLog> logList) async {
+    var logStatusKeys = logStatuses.map((e) => e.keyId);
+    var logKeys = logList.map((e) => e.keyId);
+    await NgcLogStatusRepo.instance.deleteAllByKeys(logStatusKeys);
+    await NgcLogRepo.instance.deleteAllByKeys(logKeys);
+  }
+
+  Future<void> _updateNgcLogStatuses(List<NgcLogStatus> logStatuses, EnumStatus enumStatus) async {
+    for (NgcLogStatus logStatus in logStatuses) {
+      logStatus.enumStatus = enumStatus;
+      // NgcLogStatusRepo.instance.save(logStatus);
+      logStatus.save();
+    }
+  }
+
+  LogInfoRequest _getLogInfoRequest(List<NgcLog> logList) {
+    DeviceInfo deviceInfo = DeviceInfo.instance;
+    LogInfoRequest request = LogInfoRequest(
+      isPhysicalDevice: deviceInfo.isPhysicalDevice,
+      type: deviceInfo.deviceType,
+      versionSdkInt: deviceInfo.versionSdkInt,
+      model: deviceInfo.model,
+      brand: deviceInfo.brand,
+      deviceId: deviceInfo.deviceId,
+      appVersion: deviceInfo.appVersion,
+      logList: logList,
+    );
+    return request;
+  }
+
   static Future<void> i(String text) async {
     try {
       NgcLog log = _instanse._newLog(EnumLogType.INFO, text);
       _instanse._printLog(log);
-      if (kDebugMode) {
-        log.logTypeGroup = EnumLogTypeGroup.DEBUG;
-      } else {
-        if (!kIsWeb) {
-          log.logTypeGroup = EnumLogTypeGroup.PRODUCTION;
-          _instanse._onInfo!(log);
-          // FirebaseCrashlytics.instance.log(text);
-        }
-      }
+      _instanse._onInfo!(log);
       // await _save(log);
     } catch (e, s) {
       print("$e \n$s");
@@ -91,69 +131,38 @@ class Log {
       log.stacktraceString = current.substring(current.indexOf("#1"));
       stack = StackTrace.fromString(log.stacktraceString!);
     }
-    log.stackTrace = stack;
-    if (kDebugMode) {
-      log.logTypeGroup = EnumLogTypeGroup.DEBUG;
-    } else {
-      log.logTypeGroup = EnumLogTypeGroup.PRODUCTION;
-      if (!kIsWeb) {
-        _instanse._onError!(log);
-        // var isCrashlyticsCollectionEnabled = FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled;
-        // FirebaseCrashlytics.instance.recordFlutterError(
-        //   FlutterErrorDetails(exception: error, stack: stack),
-        //   fatal: true,
-        // );
-      }
-    }
-
     log.error = error;
+    log.stackTrace = stack;
+    if (!kIsWeb) {
+      await _instanse._save(log);
+      _instanse._onError!(log);
+      List<NgcLog> unsentLogs = await NgcLogRepo.instance.getLastLogsByErrorLogKeyId(log.keyId!);
+
+      // _instanse._onSendToServer!();
+    }
     _instanse._printLog(log);
   }
 
   static Future<void> w(String text) async {
     NgcLog log = _instanse._newLog(EnumLogType.WARNING, text);
     _instanse._printLog(log);
-    if (kDebugMode) {
-      log.logTypeGroup = EnumLogTypeGroup.DEBUG;
-    } else {
-      log.logTypeGroup = EnumLogTypeGroup.PRODUCTION;
-      var current = StackTrace.current.toString();
-      var currentNew = current.substring(current.indexOf("#1"));
-      var previusStack = StackTrace.fromString(currentNew);
-      log.stackTrace = previusStack;
-      if (!kIsWeb) {
-        _instanse._onWarning!(log);
-        // FirebaseCrashlytics.instance.recordFlutterError(
-        //   FlutterErrorDetails(
-        //     exception: "WARNING:  $text}",
-        //     stack: previusStack,
-        //   ),
-        //   fatal: true,
-        // );
-      }
-    }
+
+    var current = StackTrace.current.toString();
+    var currentNew = current.substring(current.indexOf("#1"));
+    var previusStack = StackTrace.fromString(currentNew);
+    log.stackTrace = previusStack;
+    _instanse._onWarning!(log);
     // await _save(log);
   }
 
   static Future<void> d(String text) async {
     NgcLog log = _instanse._newLog(EnumLogType.DEBUG, text);
     log.logType = EnumLogType.WARNING;
-    log.logTypeGroup = EnumLogTypeGroup.PRODUCTION;
     var current = StackTrace.current.toString();
     var currentNew = current.substring(current.indexOf("#1"));
     var previusStack = StackTrace.fromString(currentNew);
     log.stackTrace = previusStack;
     _instanse._printLog(log);
-    if (!kIsWeb) {
-      // FirebaseCrashlytics.instance.recordFlutterError(
-      //   FlutterErrorDetails(
-      //     exception: "WARNING:  $text}",
-      //     stack: previusStack,
-      //   ),
-      //   fatal: true,
-      // );
-    }
-    // await _save(log);
   }
 
   NgcLog _newLog(EnumLogType logType, String? text) {
@@ -161,6 +170,7 @@ class Log {
     log.logType = logType;
     log.text = text;
     log.version = DeviceInfo.instance.appVersion;
+    log.logTypeGroup = logTypeGroup;
     _setClassAndMethodName(log);
     return log;
   }

@@ -1,5 +1,4 @@
 import 'package:intl/intl.dart';
-import 'package:log_tracking/src/utils/string_util.dart';
 
 /// Created by İrfan Öngüç
 /// on 10 October 2020

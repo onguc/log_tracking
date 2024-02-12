@@ -1,4 +1,3 @@
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:log_tracking/log_tracking.dart';
 
@@ -6,25 +5,29 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Log.init(
-    saveToLocal: true,
-    onInfo: (log) {
-      FirebaseCrashlytics.instance.log(log.text ?? "");
-    },
-    onError: (log) {
-      var isCrashlyticsCollectionEnabled = FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled;
-      FirebaseCrashlytics.instance.recordFlutterError(
-        FlutterErrorDetails(exception: log.error, stack: log.stackTrace),
-        fatal: true,
-      );
-    },
-    onWarning: (log) {
-      var text = "WARNING:  ${log.text}";
-      FirebaseCrashlytics.instance.recordFlutterError(
-        FlutterErrorDetails(exception: text, stack: log.stackTrace),
-        fatal: true,
-      );
-    },
-  );
+      saveToLocal: true,
+      onInfo: (log) {
+        int x = 0;
+        // FirebaseCrashlytics.instance.log(log.text ?? "");
+      },
+      onError: (log) {
+        int x = 0;
+        // var isCrashlyticsCollectionEnabled = FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled;
+        // FirebaseCrashlytics.instance.recordFlutterError(
+        //   FlutterErrorDetails(exception: log.error, stack: log.stackTrace),
+        //   fatal: true,
+        // );
+      },
+      onWarning: (log) {
+        var text = "WARNING:  ${log.text}";
+        // FirebaseCrashlytics.instance.recordFlutterError(
+        //   FlutterErrorDetails(exception: text, stack: log.stackTrace),
+        //   fatal: true,
+        // );
+      },
+      onSendToServer: (map) {
+        return true;
+      });
   runApp(const MyApp());
 }
 

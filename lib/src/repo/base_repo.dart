@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+
 import '../model/base_hive_model.dart';
 
 /// Created by İrfan Öngüç

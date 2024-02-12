@@ -4,7 +4,6 @@ import 'package:android_id/android_id.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:log_tracking/log_tracking.dart';
 
 import '../enum/enum_device_type.dart';
 

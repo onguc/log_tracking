@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:log_tracking/src/enum/enum_device_type.dart';
+
 import 'device_info.dart';
 import 'ngc_log.dart';
 

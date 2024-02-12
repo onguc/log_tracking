@@ -1,5 +1,4 @@
-import 'package:hive_flutter/adapters.dart';
-import '../constant/hive_constants.dart';
+
 
 // part 'enum_device_type.g.dart';
 

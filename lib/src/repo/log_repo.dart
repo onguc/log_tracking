@@ -13,6 +13,26 @@
 //
 // /// Created by İrfan Öngüç
 // /// on 14 October 2020
+
+import 'package:log_tracking/src/model/ngc_log.dart';
+import 'package:log_tracking/src/model/ngc_log_status.dart';
+import 'package:log_tracking/src/repo/ngc_log_repo.dart';
+import 'package:log_tracking/src/repo/ngc_log_status_repo.dart';
+
+class LogRepo {
+  Future<(List<NgcLogStatus>, List<NgcLog>)> getUnsentLogs() async {
+    List<NgcLogStatus> unSentLogStatusList = NgcLogStatusRepo.instance.getLogStatusesUnsent().toList();
+    if (unSentLogStatusList.isEmpty) return (<NgcLogStatus>[], <NgcLog>[]);
+    Set<String> unsentLogIndexKeySet = unSentLogStatusList.map((element) => _getIndexKey(element.keyId!)).toSet();
+    if (unsentLogIndexKeySet.isNotEmpty) {
+      List<NgcLog> unsentLogs = await NgcLogRepo.instance.getLogsByIndexKeySet(unsentLogIndexKeySet);
+      return (unSentLogStatusList, unsentLogs);
+    }
+    return (<NgcLogStatus>[], <NgcLog>[]);
+  }
+
+  String _getIndexKey(String keyId) => keyId.split("_")[0];
+}
 //
 // class LogRepo {
 //   Database? _db;

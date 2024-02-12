@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+
 import '../constant/hive_constants.dart';
 
 part 'enum_log_type.g.dart';
