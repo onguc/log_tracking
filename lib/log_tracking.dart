@@ -15,6 +15,7 @@ import 'package:log_tracking/src/repo/log_repo.dart';
 import 'package:log_tracking/src/repo/ngc_log_repo.dart';
 import 'package:log_tracking/src/repo/ngc_log_status_repo.dart';
 import 'package:log_tracking/src/utils/connectivity.dart';
+import 'package:log_tracking/src/utils/string_util.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'src/enum/enum_log_level.dart';

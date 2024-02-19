@@ -166,7 +166,7 @@ class Log {
     NgcLog log = _instanse._newLog(EnumLogType.DEBUG, text);
     log.logType = EnumLogType.WARNING;
     var current = StackTrace.current.toString();
-    var previusStack =_getStack(current);
+    var previusStack = _getStack(current);
     log.stackTrace = previusStack;
     _instanse._printLog(log);
   }
@@ -211,28 +211,40 @@ class Log {
 
   void _setClassAndMethodName(NgcLog log) {
     String stackTrace = StackTrace.current.toString();
-    if (kIsWeb) {
-      var appName = _instanse._packageInfo!.appName;
-      var index = stackTrace.indexOf(appName);
-      var substring1 = stackTrace.toString().substring(index);
-      int index2 = substring1.indexOf('\n');
-      var substring2 = substring1.substring(0, index2);
-      var list = substring2.split("/");
-      var val = list.last;
-      var split = val.split(RegExp(r'\d+:\d+'));
-      if (split.length == 2) {
-        log.className = split[0];
-        log.methodName = split[1];
+    try {
+      if (kIsWeb) {
+        var appName = _instanse._packageInfo?.appName;
+        if (StringUtil.isEmpty(appName)) {
+          var row = stackTrace.split("\n")[7];
+          var methodName = row.split(" ").last;
+          var className = row.split("/").last.split(" ").first;
+          log.className = className;
+          log.methodName = methodName;
+        } else {
+          var index = stackTrace.indexOf(appName!);
+          var substring1 = stackTrace.toString().substring(index);
+          int index2 = substring1.indexOf('\n');
+          var substring2 = substring1.substring(0, index2);
+          var list = substring2.split("/");
+          var val = list.last;
+          var split = val.split(RegExp(r'\d+:\d+'));
+          if (split.length == 2) {
+            log.className = split[0];
+            log.methodName = split[1];
+          }
+        }
+      } else {
+        int index = stackTrace.indexOf("#3") + 8;
+        var substring1 = stackTrace.toString().substring(index);
+        int index2 = substring1.indexOf(" (");
+        var substring2 = substring1.substring(0, index2);
+        var list = substring2.split(".");
+        var val = list[0];
+        log.className = val.substring(val.indexOf(" ") + 1, val.length);
+        log.methodName = list.length == 1 ? list[0] : list[1];
       }
-    } else {
-      int index = stackTrace.indexOf("#3") + 8;
-      var substring1 = stackTrace.toString().substring(index);
-      int index2 = substring1.indexOf(" (");
-      var substring2 = substring1.substring(0, index2);
-      var list = substring2.split(".");
-      var val = list[0];
-      log.className = val.substring(val.indexOf(" ") + 1, val.length);
-      log.methodName = list.length == 1 ? list[0] : list[1];
+    } catch (e) {
+      int x = 0;
     }
   }
 
