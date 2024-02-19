@@ -29,7 +29,12 @@ class Log {
   }) async {
     bool sendToServer = onSendToServer != null;
     assert(!(sendToServer && !saveToLocal), 'The url cannot be full when the saveToLocal is false');
-
+    await Isar.open(
+      name: "taltal_db",
+      [],
+      inspector: true,
+      directory: "directory.path",
+    );
     _instanse = Log._();
     _instanse._onInfo = onInfo ?? (log) {};
     _instanse._onError = onError;
@@ -127,9 +132,12 @@ class Log {
       stack = error.stackTrace;
       log.stacktraceString = stack.toString();
     } else {
-      var current = StackTrace.current.toString();
-      log.stacktraceString = current.substring(current.indexOf("#1"));
-      stack = StackTrace.fromString(log.stacktraceString!);
+      try {
+        var current = StackTrace.current.toString();
+        stack = _getStack(current);
+      } catch (e) {
+        stack = null;
+      }
     }
     log.error = error;
     log.stackTrace = stack;
@@ -148,8 +156,7 @@ class Log {
     _instanse._printLog(log);
 
     var current = StackTrace.current.toString();
-    var currentNew = current.substring(current.indexOf("#1"));
-    var previusStack = StackTrace.fromString(currentNew);
+    var previusStack = _getStack(current);
     log.stackTrace = previusStack;
     _instanse._onWarning!(log);
     // await _save(log);
@@ -159,10 +166,19 @@ class Log {
     NgcLog log = _instanse._newLog(EnumLogType.DEBUG, text);
     log.logType = EnumLogType.WARNING;
     var current = StackTrace.current.toString();
-    var currentNew = current.substring(current.indexOf("#1"));
-    var previusStack = StackTrace.fromString(currentNew);
+    var previusStack =_getStack(current);
     log.stackTrace = previusStack;
     _instanse._printLog(log);
+  }
+
+  static StackTrace? _getStack(String current) {
+    var currentNew;
+    if (kIsWeb) {
+      currentNew = current.split("\n").skip(5).join("\n");
+    } else {
+      currentNew = current.substring(current.indexOf("#1"));
+    }
+    return StackTrace.fromString(currentNew);
   }
 
   NgcLog _newLog(EnumLogType logType, String? text) {
@@ -176,12 +192,16 @@ class Log {
   }
 
   void _printLog(NgcLog log1) {
-    if (Platform.isIOS || Platform.isMacOS)
-      print(log1.toStringForIos());
-    else if (kIsWeb) {
+    try {
+      if (kIsWeb) {
+        print(log1.toString());
+      } else if (Platform.isIOS || Platform.isMacOS)
+        print(log1.toStringForIos());
+      else {
+        print(log1.toStringWithColorCode());
+      }
+    } catch (e) {
       print(log1.toString());
-    } else {
-      print(log1.toStringWithColorCode());
     }
   }
 

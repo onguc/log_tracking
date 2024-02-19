@@ -1,6 +1,6 @@
 name: log_tracking
 description: It is a log package that saves your logs, allows them to be synchronized to your own server, and allows you to use them more simply together with other logging libraries
-version: 0.2.3
+version: 0.2.4
 homepage:
 
 environment:
@@ -16,6 +16,8 @@ dependencies:
   device_info_plus: ^9.1.1
   package_info_plus: ^5.0.1
   connectivity_plus: ^5.0.2
+  isar: ^3.1.0+1
+  isar_flutter_libs: ^3.1.0+1
   json_annotation: ^4.8.1
   android_id: ^0.3.6
 #  ext_storage: ^1.0.3
