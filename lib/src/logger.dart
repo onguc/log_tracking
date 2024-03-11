@@ -18,7 +18,7 @@ class Log {
   bool Function(Map<String, dynamic> request)? _onSendToServer;
   late EnumLogTypeGroup logTypeGroup;
 
-  static late Log _instanse;
+  static Log? _instanse;
 
   static Future<void> init({
     bool saveToLocal = false,
@@ -27,6 +27,7 @@ class Log {
     Function(NgcLog val)? onInfo,
     bool Function(Map<String, dynamic> request)? onSendToServer,
   }) async {
+    if (_instanse != null) return;
     bool sendToServer = onSendToServer != null;
     assert(!(sendToServer && !saveToLocal), 'The url cannot be full when the saveToLocal is false');
     await Isar.open(
@@ -36,16 +37,16 @@ class Log {
       directory: "directory.path",
     );
     _instanse = Log._();
-    _instanse._onInfo = onInfo ?? (log) {};
-    _instanse._onError = onError;
-    _instanse._onWarning = onWarning ?? (log) {};
-    _instanse._onSendToServer = onSendToServer ?? (request) => false;
+    _instanse!._onInfo = onInfo ?? (log) {};
+    _instanse!._onError = onError;
+    _instanse!._onWarning = onWarning ?? (log) {};
+    _instanse!._onSendToServer = onSendToServer ?? (request) => false;
 
     if (sendToServer) {
       checkConnectivity();
     }
-    _instanse._packageInfo = await PackageInfo.fromPlatform();
-    await DeviceInfo.init(_instanse._packageInfo!.version);
+    _instanse!._packageInfo = await PackageInfo.fromPlatform();
+    await DeviceInfo.init(_instanse!._packageInfo!.version);
 
     if (saveToLocal) {
       await Hive.initFlutter();
@@ -61,15 +62,15 @@ class Log {
               var isOnline = isOnlineNotifier.value;
               if (isOnline) {
                 var (unsentLogStatusses, unsentLogs) = await LogRepo().getUnsentLogs();
-                LogInfoRequest request = _instanse._getLogInfoRequest(unsentLogs);
-                _instanse._updateNgcLogStatuses(unsentLogStatusses, EnumStatus.SENDING);
-                bool isSentSuccess = await _instanse._onSendToServer!(request.toJson());
+                LogInfoRequest request = _instanse!._getLogInfoRequest(unsentLogs);
+                _instanse!._updateNgcLogStatuses(unsentLogStatusses, EnumStatus.SENDING);
+                bool isSentSuccess = await _instanse!._onSendToServer!(request.toJson());
                 if (isSentSuccess) {
-                  await _instanse._deleteLogs(unsentLogStatusses, unsentLogs);
+                  await _instanse!._deleteLogs(unsentLogStatusses, unsentLogs);
                   await NgcLogRepo.instance.deleteLogsFrom7DaysAgo();
                 } else {
                   Log.w("log sending is not successful");
-                  _instanse._updateNgcLogStatuses(unsentLogStatusses, EnumStatus.UNSENT);
+                  _instanse!._updateNgcLogStatuses(unsentLogStatusses, EnumStatus.UNSENT);
                 }
               }
             } catch (e) {
@@ -113,9 +114,10 @@ class Log {
 
   static Future<void> i(String text) async {
     try {
-      NgcLog log = _instanse._newLog(EnumLogType.INFO, text);
-      _instanse._printLog(log);
-      _instanse._onInfo!(log);
+      assert(_instanse != null, "_instanse can not be null!");
+      NgcLog log = _instanse!._newLog(EnumLogType.INFO, text);
+      _instanse!._printLog(log);
+      _instanse!._onInfo!(log);
       // await _save(log);
     } catch (e, s) {
       print("$e \n$s");
@@ -123,7 +125,8 @@ class Log {
   }
 
   static Future<void> e(dynamic error, {StackTrace? stack, EnumLogLevel? logLevel = EnumLogLevel.MEDIUM, String? message}) async {
-    NgcLog log = _instanse._newLog(EnumLogType.ERROR, message);
+    assert(_instanse != null, "_instanse can not be null!");
+    NgcLog log = _instanse!._newLog(EnumLogType.ERROR, message);
     log.logType = EnumLogType.ERROR;
     log.logLevel = logLevel;
     if (stack != null) {
@@ -142,33 +145,35 @@ class Log {
     log.error = error;
     log.stackTrace = stack;
     if (!kIsWeb) {
-      await _instanse._save(log);
-      _instanse._onError!(log);
+      await _instanse!._save(log);
+      _instanse!._onError!(log);
       List<NgcLog> unsentLogs = await NgcLogRepo.instance.getLastLogsByErrorLogKeyId(log.keyId!);
 
-      // _instanse._onSendToServer!();
+      // _instanse!._onSendToServer!();
     }
-    _instanse._printLog(log);
+    _instanse!._printLog(log);
   }
 
   static Future<void> w(String text) async {
-    NgcLog log = _instanse._newLog(EnumLogType.WARNING, text);
-    _instanse._printLog(log);
+    assert(_instanse != null, "_instanse can not be null!");
+    NgcLog log = _instanse!._newLog(EnumLogType.WARNING, text);
+    _instanse!._printLog(log);
 
     var current = StackTrace.current.toString();
     var previusStack = _getStack(current);
     log.stackTrace = previusStack;
-    _instanse._onWarning!(log);
+    _instanse!._onWarning!(log);
     // await _save(log);
   }
 
   static Future<void> d(String text) async {
-    NgcLog log = _instanse._newLog(EnumLogType.DEBUG, text);
+    assert(_instanse != null, "_instanse can not be null!");
+    NgcLog log = _instanse!._newLog(EnumLogType.DEBUG, text);
     log.logType = EnumLogType.WARNING;
     var current = StackTrace.current.toString();
     var previusStack = _getStack(current);
     log.stackTrace = previusStack;
-    _instanse._printLog(log);
+    _instanse!._printLog(log);
   }
 
   static StackTrace? _getStack(String current) {
@@ -213,7 +218,7 @@ class Log {
     String stackTrace = StackTrace.current.toString();
     try {
       if (kIsWeb) {
-        var appName = _instanse._packageInfo?.appName;
+        var appName = _instanse!._packageInfo?.appName;
         if (StringUtil.isEmpty(appName)) {
           var row = stackTrace.split("\n")[7];
           var methodName = row.split(" ").last;

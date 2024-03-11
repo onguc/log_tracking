@@ -1,6 +1,6 @@
 name: log_tracking
 description: It is a log package that saves your logs, allows them to be synchronized to your own server, and allows you to use them more simply together with other logging libraries
-version: 0.2.4
+version: 0.2.5
 homepage:
 
 environment:
