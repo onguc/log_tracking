@@ -30,12 +30,6 @@ class Log {
     if (_instanse != null) return;
     bool sendToServer = onSendToServer != null;
     assert(!(sendToServer && !saveToLocal), 'The url cannot be full when the saveToLocal is false');
-    await Isar.open(
-      name: "taltal_db",
-      [],
-      inspector: true,
-      directory: "directory.path",
-    );
     _instanse = Log._();
     _instanse!._onInfo = onInfo ?? (log) {};
     _instanse!._onError = onError;
