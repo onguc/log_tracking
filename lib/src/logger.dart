@@ -4,7 +4,18 @@ part of log_tracking;
 /// on 14 October 2020
 
 class Log {
-  Log._() {
+  Log._({
+    bool saveToLocal = true,
+    Function(NgcLog val)? onInfo,
+    Function(NgcLog val)? onWarning,
+    Function(NgcLog val)? onError,
+    bool Function(Map<String, dynamic> request)? onSendToServer,
+  }) {
+    this._saveToLocal = saveToLocal;
+    this._onInfo = onInfo;
+    this._onWarning = onWarning;
+    this._onError = onError;
+    this._onSendToServer = onSendToServer;
     if (kDebugMode)
       logTypeGroup = EnumLogTypeGroup.DEBUG;
     else
@@ -17,6 +28,7 @@ class Log {
   Function(NgcLog val)? _onWarning;
   bool Function(Map<String, dynamic> request)? _onSendToServer;
   late EnumLogTypeGroup logTypeGroup;
+  late bool _saveToLocal;
 
   static Log? _instanse;
 
@@ -30,12 +42,13 @@ class Log {
     if (_instanse != null) return;
     bool sendToServer = onSendToServer != null;
     assert(!(sendToServer && !saveToLocal), 'The url cannot be full when the saveToLocal is false');
-    _instanse = Log._();
-    _instanse!._onInfo = onInfo ?? (log) {};
-    _instanse!._onError = onError;
-    _instanse!._onWarning = onWarning ?? (log) {};
-    _instanse!._onSendToServer = onSendToServer ?? (request) => false;
-
+    _instanse = Log._(
+      saveToLocal: saveToLocal,
+      onInfo: onInfo ?? (log) {},
+      onError: onError,
+      onWarning: onWarning ?? (log) {},
+      onSendToServer: onSendToServer ?? (request) => false,
+    );
     if (sendToServer) {
       checkConnectivity();
     }
@@ -84,10 +97,12 @@ class Log {
   }
 
   Future<void> _updateNgcLogStatuses(List<NgcLogStatus> logStatuses, EnumStatus enumStatus) async {
-    for (NgcLogStatus logStatus in logStatuses) {
-      logStatus.enumStatus = enumStatus;
-      // NgcLogStatusRepo.instance.save(logStatus);
-      logStatus.save();
+    if (_saveToLocal) {
+      for (NgcLogStatus logStatus in logStatuses) {
+        logStatus.enumStatus = enumStatus;
+        // NgcLogStatusRepo.instance.save(logStatus);
+        logStatus.save();
+      }
     }
   }
 
@@ -112,7 +127,7 @@ class Log {
       NgcLog log = _instanse!._newLog(EnumLogType.INFO, text);
       _instanse!._printLog(log);
       _instanse!._onInfo!(log);
-      // await _save(log);
+      await _instanse!._save(log);
     } catch (e, s) {
       print("$e \n$s");
     }
@@ -157,7 +172,7 @@ class Log {
     var previusStack = _getStack(current);
     log.stackTrace = previusStack;
     _instanse!._onWarning!(log);
-    // await _save(log);
+    await _instanse!._save(log);
   }
 
   static Future<void> d(String text) async {
@@ -205,7 +220,7 @@ class Log {
   }
 
   Future<void> _save(NgcLog log) async {
-    if (!kIsWeb) await NgcLogRepo.instance.save(log);
+    if (!kIsWeb && _saveToLocal) await NgcLogRepo.instance.save(log);
   }
 
   void _setClassAndMethodName(NgcLog log) {
