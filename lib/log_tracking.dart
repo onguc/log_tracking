@@ -4,8 +4,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:isar/isar.dart';
-import 'package:json_annotation/json_annotation.dart';
 import 'package:log_tracking/src/enum/enum_status.dart';
 import 'package:log_tracking/src/model/device_info.dart';
 import 'package:log_tracking/src/model/log_info_request.dart';
