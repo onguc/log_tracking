@@ -14,13 +14,13 @@ checkConnectivity() {
   _connectivity.checkConnectivity().then((value) {
     _setHasActiveDataConnection(value);
   });
-  _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
+  _connectivity.onConnectivityChanged.listen((List<ConnectivityResult> result) {
     _setHasActiveDataConnection(result);
   });
 }
 
-void _setHasActiveDataConnection(ConnectivityResult result) {
-  final bool isOnline = result != ConnectivityResult.none;
+void _setHasActiveDataConnection(List<ConnectivityResult> result) {
+  final bool isOnline = !result.contains(ConnectivityResult.none);
   _hasActiveDataConnectionJob(isOnline);
 }
 
