@@ -12,20 +12,10 @@ class DateTimeUtil {
     return dateString;
   }
 
-  static dateStringForFileName(DateTime dateTime) {
-    var customFormat = getCustomDateFormat("yyyy_MM_dd__HHmmss");
-    String dateString = customFormat.format(dateTime);
-    return dateString;
-  }
-
   static DateTime parseDateTime(String dateTimeString) {
     // var customFormat = getCustomDateFormat("yyyy-MM-ddTHH:mm:ss.SSS");
     var customFormat = CustomDateFormat("yyyy-MM-ddTHH:mm:ss.SSS");
     DateTime parse = customFormat.parse(dateTimeString);
     return parse;
   }
-
-  static CustomDateFormat getCustomDateFormat(newPatter) => customDateFormat..newPattern = newPatter;
-
-  static CustomDateFormat customDateFormat = CustomDateFormat();
 }

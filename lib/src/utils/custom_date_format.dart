@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 
 class CustomDateFormat extends DateFormat {
   String? newPattern;
-  static String _timeZoneFormat = "yyyy-MM-ddTHH:mm:ss.sssTZD";
 
   CustomDateFormat([this.newPattern]):super(newPattern);
 
@@ -61,15 +60,4 @@ class CustomDateFormat extends DateFormat {
   DateTime parse(String inputString, [bool utc = false]) {
     return super.parse(inputString, utc);
   }
-
-  void test() {
-    String d2String = "2020-10-01T13:52:13.372+02:00";
-    RegExpMatch? match = _parseFormat.firstMatch(d2String);
-    int k = 0;
-  }
-
-  static final RegExp _parseFormat =
-      RegExp(r'^([+-]?\d{4,6})-?(\d\d)-?(\d\d)' // Day part.
-          r'(?:[ T](\d\d)(?::?(\d\d)(?::?(\d\d)(?:[.,](\d+))?)?)?' // Time part.
-          r'( ?[zZ]| ?([-+])(\d\d)(?::?(\d\d))?)?)?$'); // Timezone part.
 }
