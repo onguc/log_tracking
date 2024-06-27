@@ -9,7 +9,7 @@ part of 'log_info_response.dart';
 LogInfoResponse _$LogInfoResponseFromJson(Map<String, dynamic> json) =>
     LogInfoResponse()
       ..result = json['result'] as bool?
-      ..resultCode = json['resultCode'] as int?
+      ..resultCode = (json['resultCode'] as num?)?.toInt()
       ..resultMessage = json['resultMessage'] as String?;
 
 Map<String, dynamic> _$LogInfoResponseToJson(LogInfoResponse instance) =>

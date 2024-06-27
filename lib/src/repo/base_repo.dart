@@ -1,71 +1,87 @@
-import 'package:hive/hive.dart';
-
-import '../model/base_hive_model.dart';
+import 'package:isar/isar.dart';
+import 'package:log_tracking/src/model/base_entity.dart';
+import 'package:path_provider/path_provider.dart';
 
 /// Created by İrfan Öngüç
-/// on 16.03.2022
+/// on 18.10.2022
 
-abstract class BaseRepo<T extends BaseHiveModel> {
-  Box<T> get box {
-    if (_box == null) _box = Hive.box<T>(keyTableName);
-    return _box!;
+abstract class BaseRepo<T extends BaseEntity> {
+  static late final Isar _isar;
+
+  static Future<void> init() async {
+    final dir = await getApplicationDocumentsDirectory();
+    _isar = await Isar.open(
+      [],
+      inspector: true,
+      directory: dir.path,
+    );
   }
 
-  Box<T>? _box;
-
-  String get keyTableName;
-
-  T? getByKeyId(String keyId) {
-    return box.get(keyId);
+  Isar get isar {
+    return _isar;
   }
 
-  int get length => box.length;
+  IsarCollection<T> get baseCollection => _isar.collection<T>();
 
-  List<T> getAlls() {
-    return box.values.toList();
+  Future<T?> getById(int keyId) {
+    return baseCollection.get(keyId);
   }
 
-  Iterable<dynamic> get keys => box.keys;
+// int get length => box.length;
 
-  List<T> getAllByKeys(Iterable<String> keys) {
-    List<T> list = [];
-    for (String key in keys) {
-      var t = getByKeyId(key);
-      if (t != null) list.add(t);
-    }
-    return list;
+  Future<List<T>> getAlls() {
+    return baseCollection.where().findAll();
   }
 
-  Future<void> save(T t) {
-    return box.put(t.keyId, t);
+// Iterable<dynamic> get keys => box.keys;
+//
+  Future<List<T?>> getAllByIds(List<int> ids) {
+    return baseCollection.getAll(ids);
   }
 
-  Future<void> saveAll(List<T> tList) {
-    var maps = {for (var t in tList) t.keyId: t};
-    return box.putAll(maps);
+  Future<int> save(T t) {
+    return _isar.writeTxn(() async {
+      int id = await baseCollection.put(t);
+      t.id = id;
+      return id;
+    });
   }
 
-  Future<void> deleteByKeyId(String keyId) {
-    var x = box.delete(keyId);
-    return x;
+  Future<int> add(T t) {
+    return save(t);
   }
 
-  Future<void> deleteAllByKeys(Iterable<dynamic> keys) {
-    return box.deleteAll(keys);
+  Future<void> update(T t) {
+    return save(t);
+  }
+
+  Future<List<int>> saveAll(List<T> tList) {
+    return _isar.writeTxn(() => baseCollection.putAll(tList));
+  }
+
+  Future<bool> deleteById(int id) {
+    return _isar.writeTxn(() => baseCollection.delete(id));
+  }
+
+  Future<int> deleteAllByIds(List<int> ids) {
+    return _isar.writeTxn(() => baseCollection.deleteAll(ids));
   }
 
   Future<int> clearAll() {
-    return box.clear();
-    // getAlls().forEach((element) {
-    //   deleteByKeyId(element.keyId!);
-    // });
-  }
-
-  void open() {
-    if (!box.isOpen) _box = Hive.box<T>(keyTableName);
+    return _isar.writeTxn(() => baseCollection.where().deleteAll());
   }
 
   Future<void> close() {
-    return box.close();
+    return _isar.close();
   }
+
+// final cheapest = await isar.products.filter()
+//     .sortByPrice()
+//     .limit(4)
+//     .findAll();
+
+// final cheapestFast = await isar.products.where()
+//     .anyPrice()
+//     .limit(4)
+//     .findAll();
 }

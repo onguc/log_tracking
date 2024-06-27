@@ -25,7 +25,7 @@ void main() async {
         //   fatal: true,
         // );
       },
-      onSendToServer: (map) {
+      onSendToServer: (LogInfoRequest request) {
         return true;
       });
   runApp(const MyApp());

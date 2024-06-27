@@ -15,7 +15,7 @@ DeviceInfo _$DeviceInfoFromJson(Map<String, dynamic> json) => DeviceInfo(
       deviceId: json['deviceId'] as String?,
       appVersion: json['appVersion'] as String?,
       isPhysicalDevice: json['isPhysicalDevice'] as bool,
-    );
+    )..appName = json['appName'] as String?;
 
 Map<String, dynamic> _$DeviceInfoToJson(DeviceInfo instance) =>
     <String, dynamic>{
@@ -26,6 +26,7 @@ Map<String, dynamic> _$DeviceInfoToJson(DeviceInfo instance) =>
       'deviceId': instance.deviceId,
       'appVersion': instance.appVersion,
       'isPhysicalDevice': instance.isPhysicalDevice,
+      'appName': instance.appName,
     };
 
 const _$EnumDeviceTypeEnumMap = {
