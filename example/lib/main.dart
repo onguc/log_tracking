@@ -1,34 +1,62 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:log_tracking/log_tracking.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
 
-  await Log.init(
+  await initializeLog();
+
+  runApp(const MyApp());
+}
+
+Future<void> initializeLog() {
+  return Log.init(
       saveToLocal: true,
       onInfo: (log) {
-        int x = 0;
-        // FirebaseCrashlytics.instance.log(log.text ?? "");
-      },
-      onError: (log) {
-        int x = 0;
-        // var isCrashlyticsCollectionEnabled = FirebaseCrashlytics.instance.isCrashlyticsCollectionEnabled;
-        // FirebaseCrashlytics.instance.recordFlutterError(
-        //   FlutterErrorDetails(exception: log.error, stack: log.stackTrace),
-        //   fatal: true,
-        // );
+        FirebaseCrashlytics.instance.log("INFO:  ${log.text ?? ""}");
       },
       onWarning: (log) {
-        var text = "WARNING:  ${log.text}";
-        // FirebaseCrashlytics.instance.recordFlutterError(
-        //   FlutterErrorDetails(exception: text, stack: log.stackTrace),
-        //   fatal: true,
-        // );
+        FirebaseCrashlytics.instance.recordFlutterError(
+          FlutterErrorDetails(
+            exception: "WARNING:  ${log.text}",
+            stack: log.stackTrace,
+          ),
+          fatal: false,
+        );
       },
-      onSendToServer: (LogInfoRequest request) {
-        return true;
+      onError: (log) {
+        FirebaseCrashlytics.instance.recordFlutterError(
+          FlutterErrorDetails(exception: log.error, stack: log.stackTrace),
+          fatal: true,
+        );
+      },
+      onSendToServer: (LogInfoRequest request) async {
+        bool isSuccess = await postLogs(request);
+        return isSuccess;
       });
-  runApp(const MyApp());
+}
+
+Future<bool> postLogs(LogInfoRequest request) async {
+  var dio = Dio();
+  var url = 'https://your.log.url';
+  var data = request.toJson();
+
+  try {
+    Response response = await dio.post(url, data: data);
+    if (response.statusCode == HttpStatus.ok) {
+      return true;
+    }
+  } catch (e) {
+    Log.e(e);
+  }
+  return false;
 }
 
 class MyApp extends StatelessWidget {
@@ -37,7 +65,17 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    Log.e("test error");
+    try {
+      Log.i("test info");
+      if (1 == 1) {
+        throw "Test Error";
+      } else {
+        Log.w("test warning");
+      }
+    } catch (e) {
+      Log.e(e);
+      Log.e(e, message: "catch in build method (test)");
+    }
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -94,14 +132,6 @@ class _MyHomePageState extends State<MyHomePage> {
       // called again, and so nothing would appear to happen.
       _counter++;
     });
-    Log.i("increased counter (info)");
-    Log.w("increased counter (warning)");
-    Log.e("increased counter (error)");
-    try {
-      if (1 == 1) throw Exception("throw exception");
-    } catch (e) {
-      Log.e(e, message: "in catch Test");
-    }
   }
 
   @override

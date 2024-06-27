@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -6,15 +7,14 @@ import 'package:log_tracking/src/enum/enum_log_type.dart';
 import 'package:log_tracking/src/enum/enum_log_type_group.dart';
 import 'package:log_tracking/src/enum/enum_status.dart';
 import 'package:log_tracking/src/model/device_info.dart';
-import 'package:log_tracking/src/model/log_info_request.dart';
 import 'package:log_tracking/src/model/log_info.dart';
+import 'package:log_tracking/src/model/log_info_request.dart';
 import 'package:log_tracking/src/repo/base_repo.dart';
 import 'package:log_tracking/src/repo/log_info_repo.dart';
 import 'package:log_tracking/src/repo/singular_repo.dart';
 import 'package:log_tracking/src/utils/connectivity.dart';
 import 'package:log_tracking/src/utils/string_util.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-
 
 /// Created by İrfan Öngüç
 /// on 14 October 2020
@@ -25,7 +25,7 @@ class Log {
     Function(LogInfo val)? onInfo,
     Function(LogInfo val)? onWarning,
     Function(LogInfo val)? onError,
-    bool Function(LogInfoRequest request)? onSendToServer,
+    Future<bool> Function(LogInfoRequest request)? onSendToServer,
   }) {
     this._saveToLocal = saveToLocal;
     this._onInfo = onInfo;
@@ -42,7 +42,7 @@ class Log {
   Function(LogInfo val)? _onInfo;
   Function(LogInfo val)? _onError;
   Function(LogInfo val)? _onWarning;
-  bool Function(LogInfoRequest request)? _onSendToServer;
+  Future<bool> Function(LogInfoRequest request)? _onSendToServer;
   late EnumLogTypeGroup logTypeGroup;
   late bool _saveToLocal;
 
@@ -50,22 +50,22 @@ class Log {
 
   static Future<void> init({
     bool saveToLocal = false,
-    required Function(LogInfo val) onError,
     Function(LogInfo val)? onWarning,
     Function(LogInfo val)? onInfo,
-    bool Function(LogInfoRequest request)? onSendToServer,
+    required Function(LogInfo val) onError,
+    Future<bool> Function(LogInfoRequest request)? onSendToServer,
   }) async {
     if (_instanse != null) return;
-    bool sendToServer = onSendToServer != null;
-    assert(!(sendToServer && !saveToLocal), 'The url cannot be full when the saveToLocal is false');
+    bool isCanSentToServer = onSendToServer != null;
+    assert(!(isCanSentToServer && !saveToLocal), 'The url cannot be full when the saveToLocal is false');
     _instanse = Log._(
       saveToLocal: saveToLocal,
       onInfo: onInfo ?? (log) {},
       onError: onError,
       onWarning: onWarning ?? (log) {},
-      onSendToServer: onSendToServer ?? (LogInfoRequest request) => false,
+      onSendToServer: onSendToServer ?? (LogInfoRequest request) => Future.value(false),
     );
-    if (sendToServer) {
+    if (isCanSentToServer) {
       checkConnectivity();
     }
     _instanse!._packageInfo = await PackageInfo.fromPlatform();
@@ -76,7 +76,7 @@ class Log {
       SingularRepo.instance.increaseAppLaunchIndex();
       Future.delayed(Duration(seconds: 1)).then((value) async {
         // IndexRepo.instance.increaseAppStartupIndex();
-        if (sendToServer) {
+        if (isCanSentToServer) {
           isOnlineNotifier.addListener(() async {
             var isOnline = isOnlineNotifier.value;
             if (isOnline) {
@@ -103,8 +103,6 @@ class Log {
       });
     }
   }
-
-
 
   static Future<void> i(String text) async {
     try {
@@ -170,7 +168,6 @@ class Log {
     log.stackTrace = previusStack;
     _instanse!._printLog(log);
   }
-
 
   Future<void> _updateStatus(List<LogInfo> logStatuses, EnumStatus enumStatus) async {
     if (_saveToLocal) {

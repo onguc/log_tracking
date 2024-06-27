@@ -33,7 +33,9 @@ dependencies:
   log_tracking:
     path: ../
 
-  firebase_crashlytics: ^3.4.3
+  dio: any
+  firebase_crashlytics: any
+  firebase_core: any
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
