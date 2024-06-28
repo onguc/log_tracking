@@ -2,7 +2,7 @@ import 'package:isar/isar.dart';
 import 'package:log_tracking/src/repo/base_repo.dart';
 import 'package:log_tracking/src/repo/singular_repo.dart';
 
-import '../../log_tracking.dart';
+import '../../log.dart';
 import '../enum/enum_status.dart';
 import '../model/log_info.dart';
 

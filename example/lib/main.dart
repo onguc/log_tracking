@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
-import 'package:log_tracking/log_tracking.dart';
+import 'package:log_tracking/log.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,9 +20,11 @@ Future<void> initializeLog() {
   return Log.init(
       saveToLocal: true,
       onInfo: (log) {
+        /// if you want to integrate with FirebaseCrashlytics you can do like this
         FirebaseCrashlytics.instance.log("INFO:  ${log.text ?? ""}");
       },
       onWarning: (log) {
+        /// if you want to integrate with FirebaseCrashlytics you can do like this
         FirebaseCrashlytics.instance.recordFlutterError(
           FlutterErrorDetails(
             exception: "WARNING:  ${log.text}",
@@ -32,12 +34,16 @@ Future<void> initializeLog() {
         );
       },
       onError: (log) {
+        /// if you want to integrate with FirebaseCrashlytics you can do like this
         FirebaseCrashlytics.instance.recordFlutterError(
           FlutterErrorDetails(exception: log.error, stack: log.stackTrace),
           fatal: true,
         );
       },
       onSendToServer: (LogInfoRequest request) async {
+        /// if you want to send logs to your own server, you can use this method.
+        /// This method is called when it cathes an error log.
+        /// The info and warning logs before the error log also appear as a list.
         bool isSuccess = await postLogs(request);
         return isSuccess;
       });
