@@ -50,7 +50,7 @@ class LogInfoRepo extends BaseRepo<LogInfo> {
         DateTime date7DaysAgo = DateTime.now().subtract(Duration(days: 7));
         List<LogInfo> logs7DaysAgo = await baseCollection.filter().dateTimeLessThan(date7DaysAgo).statusEqualTo(EnumStatus.SENT).findAll();
         if (logs7DaysAgo.isNotEmpty) {
-          var idList = logs7DaysAgo.map((e) => e.id).toList();
+          var idList = logs7DaysAgo.map((e) => e.id!).toList();
           int count = await deleteAllByIds(idList);
           return count;
         }

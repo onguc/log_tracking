@@ -1,15 +1,13 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:log_tracking/log.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+  // await Firebase.initializeApp();
+  // FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
 
   await initializeLog();
 
@@ -21,24 +19,24 @@ Future<void> initializeLog() {
       saveToLocal: true,
       onInfo: (log) {
         /// if you want to integrate with FirebaseCrashlytics you can do like this
-        FirebaseCrashlytics.instance.log("INFO:  ${log.text ?? ""}");
+        // FirebaseCrashlytics.instance.log("INFO:  ${log.text ?? ""}");
       },
       onWarning: (log) {
         /// if you want to integrate with FirebaseCrashlytics you can do like this
-        FirebaseCrashlytics.instance.recordFlutterError(
-          FlutterErrorDetails(
-            exception: "WARNING:  ${log.text}",
-            stack: log.stackTrace,
-          ),
-          fatal: false,
-        );
+        // FirebaseCrashlytics.instance.recordFlutterError(
+        //   FlutterErrorDetails(
+        //     exception: "WARNING:  ${log.text}",
+        //     stack: log.stackTrace,
+        //   ),
+        //   fatal: false,
+        // );
       },
       onError: (log) {
         /// if you want to integrate with FirebaseCrashlytics you can do like this
-        FirebaseCrashlytics.instance.recordFlutterError(
-          FlutterErrorDetails(exception: log.error, stack: log.stackTrace),
-          fatal: true,
-        );
+        // FirebaseCrashlytics.instance.recordFlutterError(
+        //   FlutterErrorDetails(exception: log.error, stack: log.stackTrace),
+        //   fatal: true,
+        // );
       },
       onSendToServer: (LogInfoRequest request) async {
         /// if you want to send logs to your own server, you can use this method.
@@ -49,18 +47,15 @@ Future<void> initializeLog() {
       });
 }
 
+/// When an error accurs, you can send the logs along with the info and warnings before error to your own server in this way.
 Future<bool> postLogs(LogInfoRequest request) async {
   var dio = Dio();
   var url = 'https://your.log.url';
   var data = request.toJson();
 
-  try {
-    Response response = await dio.post(url, data: data);
-    if (response.statusCode == HttpStatus.ok) {
-      return true;
-    }
-  } catch (e) {
-    Log.e(e);
+  Response response = await dio.post(url, data: data);
+  if (response.statusCode == HttpStatus.ok) {
+    return true;
   }
   return false;
 }

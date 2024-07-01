@@ -4,7 +4,7 @@ import 'package:isar/isar.dart';
 /// on 11.11.2022
 
 abstract class BaseEntity {
-  Id id;
+  Id? id;
 
-  BaseEntity({this.id = Isar.autoIncrement});
+  BaseEntity({this.id});
 }

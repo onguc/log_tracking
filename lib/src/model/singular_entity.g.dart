@@ -68,9 +68,9 @@ SingularEntity _singularEntityDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = SingularEntity(
-    id: id,
     value: reader.readStringOrNull(offsets[0]),
   );
+  object.id = id;
   return object;
 }
 
@@ -89,7 +89,7 @@ P _singularEntityDeserializeProp<P>(
 }
 
 Id _singularEntityGetId(SingularEntity object) {
-  return object.id;
+  return object.id ?? Isar.autoIncrement;
 }
 
 List<IsarLinkBase<dynamic>> _singularEntityGetLinks(SingularEntity object) {
@@ -184,8 +184,26 @@ extension SingularEntityQueryWhere
 
 extension SingularEntityQueryFilter
     on QueryBuilder<SingularEntity, SingularEntity, QFilterCondition> {
+  QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition>
+      idIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'id',
+      ));
+    });
+  }
+
+  QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition>
+      idIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'id',
+      ));
+    });
+  }
+
   QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition> idEqualTo(
-      Id value) {
+      Id? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
@@ -196,7 +214,7 @@ extension SingularEntityQueryFilter
 
   QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition>
       idGreaterThan(
-    Id value, {
+    Id? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -210,7 +228,7 @@ extension SingularEntityQueryFilter
 
   QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition>
       idLessThan(
-    Id value, {
+    Id? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -223,8 +241,8 @@ extension SingularEntityQueryFilter
   }
 
   QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition> idBetween(
-    Id lower,
-    Id upper, {
+    Id? lower,
+    Id? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {

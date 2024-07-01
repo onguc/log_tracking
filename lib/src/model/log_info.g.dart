@@ -102,7 +102,47 @@ const LogInfoSchema = CollectionSchema(
   deserialize: _logInfoDeserialize,
   deserializeProp: _logInfoDeserializeProp,
   idName: r'id',
-  indexes: {},
+  indexes: {
+    r'errorIndex': IndexSchema(
+      id: -8231998700777537357,
+      name: r'errorIndex',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'errorIndex',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
+    ),
+    r'dateTime': IndexSchema(
+      id: -138851979697481250,
+      name: r'dateTime',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'dateTime',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
+    ),
+    r'status': IndexSchema(
+      id: -107785170620420283,
+      name: r'status',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'status',
+          type: IndexType.hash,
+          caseSensitive: true,
+        )
+      ],
+    )
+  },
   links: {},
   embeddedSchemas: {},
   getId: _logInfoGetId,
@@ -337,7 +377,7 @@ const _LogInfostatusValueEnumMap = {
 };
 
 Id _logInfoGetId(LogInfo object) {
-  return object.id;
+  return object.id ?? Isar.autoIncrement;
 }
 
 List<IsarLinkBase<dynamic>> _logInfoGetLinks(LogInfo object) {
@@ -352,6 +392,22 @@ extension LogInfoQueryWhereSort on QueryBuilder<LogInfo, LogInfo, QWhere> {
   QueryBuilder<LogInfo, LogInfo, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+
+  QueryBuilder<LogInfo, LogInfo, QAfterWhere> anyErrorIndex() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'errorIndex'),
+      );
+    });
+  }
+
+  QueryBuilder<LogInfo, LogInfo, QAfterWhere> anyDateTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'dateTime'),
+      );
     });
   }
 }
@@ -419,6 +475,291 @@ extension LogInfoQueryWhere on QueryBuilder<LogInfo, LogInfo, QWhereClause> {
         upper: upperId,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> errorIndexIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'errorIndex',
+        value: [null],
+      ));
+    });
+  }
+
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> errorIndexIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'errorIndex',
+        lower: [null],
+        includeLower: false,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> errorIndexEqualTo(
+      int? errorIndex) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'errorIndex',
+        value: [errorIndex],
+      ));
+    });
+  }
+
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> errorIndexNotEqualTo(
+      int? errorIndex) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'errorIndex',
+              lower: [],
+              upper: [errorIndex],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'errorIndex',
+              lower: [errorIndex],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'errorIndex',
+              lower: [errorIndex],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'errorIndex',
+              lower: [],
+              upper: [errorIndex],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> errorIndexGreaterThan(
+    int? errorIndex, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'errorIndex',
+        lower: [errorIndex],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> errorIndexLessThan(
+    int? errorIndex, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'errorIndex',
+        lower: [],
+        upper: [errorIndex],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> errorIndexBetween(
+    int? lowerErrorIndex,
+    int? upperErrorIndex, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'errorIndex',
+        lower: [lowerErrorIndex],
+        includeLower: includeLower,
+        upper: [upperErrorIndex],
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> dateTimeIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'dateTime',
+        value: [null],
+      ));
+    });
+  }
+
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> dateTimeIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'dateTime',
+        lower: [null],
+        includeLower: false,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> dateTimeEqualTo(
+      DateTime? dateTime) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'dateTime',
+        value: [dateTime],
+      ));
+    });
+  }
+
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> dateTimeNotEqualTo(
+      DateTime? dateTime) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'dateTime',
+              lower: [],
+              upper: [dateTime],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'dateTime',
+              lower: [dateTime],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'dateTime',
+              lower: [dateTime],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'dateTime',
+              lower: [],
+              upper: [dateTime],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> dateTimeGreaterThan(
+    DateTime? dateTime, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'dateTime',
+        lower: [dateTime],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> dateTimeLessThan(
+    DateTime? dateTime, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'dateTime',
+        lower: [],
+        upper: [dateTime],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> dateTimeBetween(
+    DateTime? lowerDateTime,
+    DateTime? upperDateTime, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'dateTime',
+        lower: [lowerDateTime],
+        includeLower: includeLower,
+        upper: [upperDateTime],
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> statusIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'status',
+        value: [null],
+      ));
+    });
+  }
+
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> statusIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'status',
+        lower: [null],
+        includeLower: false,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> statusEqualTo(
+      EnumStatus? status) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'status',
+        value: [status],
+      ));
+    });
+  }
+
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> statusNotEqualTo(
+      EnumStatus? status) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'status',
+              lower: [],
+              upper: [status],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'status',
+              lower: [status],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'status',
+              lower: [status],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'status',
+              lower: [],
+              upper: [status],
+              includeUpper: false,
+            ));
+      }
     });
   }
 }
@@ -925,7 +1266,23 @@ extension LogInfoQueryFilter
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> idEqualTo(Id value) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> idIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'id',
+      ));
+    });
+  }
+
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> idIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'id',
+      ));
+    });
+  }
+
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> idEqualTo(Id? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
@@ -935,7 +1292,7 @@ extension LogInfoQueryFilter
   }
 
   QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> idGreaterThan(
-    Id value, {
+    Id? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -948,7 +1305,7 @@ extension LogInfoQueryFilter
   }
 
   QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> idLessThan(
-    Id value, {
+    Id? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -961,8 +1318,8 @@ extension LogInfoQueryFilter
   }
 
   QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> idBetween(
-    Id lower,
-    Id upper, {
+    Id? lower,
+    Id? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
@@ -2965,7 +3322,7 @@ extension LogInfoQueryProperty
 LogInfo _$LogInfoFromJson(Map<String, dynamic> json) => LogInfo(
       className: json['className'] as String?,
     )
-      ..id = (json['id'] as num).toInt()
+      ..id = (json['id'] as num?)?.toInt()
       ..launchIndex = (json['launchIndex'] as num?)?.toInt()
       ..errorIndex = (json['errorIndex'] as num?)?.toInt()
       ..methodName = json['methodName'] as String?

@@ -39,9 +39,13 @@ class Log {
   }
 
   PackageInfo? _packageInfo;
+  /// Triggered when Log.i(...) method is called
   Function(LogInfo val)? _onInfo;
+  /// Triggered when Log.e(...) method is called
   Function(LogInfo val)? _onError;
+  /// Triggered when Log.w(...) method is called
   Function(LogInfo val)? _onWarning;
+  /// This method is triggered with the logs that have not been sent to the server after each error occurs.
   Future<bool> Function(LogInfoRequest request)? _onSendToServer;
   late EnumLogTypeGroup logTypeGroup;
   late bool _saveToLocal;

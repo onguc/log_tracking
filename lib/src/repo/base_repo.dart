@@ -1,5 +1,7 @@
 import 'package:isar/isar.dart';
 import 'package:log_tracking/src/model/base_entity.dart';
+import 'package:log_tracking/src/model/log_info.dart';
+import 'package:log_tracking/src/model/singular_entity.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// Created by İrfan Öngüç
@@ -11,7 +13,10 @@ abstract class BaseRepo<T extends BaseEntity> {
   static Future<void> init() async {
     final dir = await getApplicationDocumentsDirectory();
     _isar = await Isar.open(
-      [],
+      [
+        LogInfoSchema,
+        SingularEntitySchema,
+      ],
       inspector: true,
       directory: dir.path,
     );
