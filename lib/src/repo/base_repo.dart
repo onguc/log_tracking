@@ -18,7 +18,7 @@ abstract class BaseRepo<T extends BaseEntity> {
         SingularEntitySchema,
       ],
       inspector: true,
-      directory: dir.path,
+      directory: dir.path+"/logs",
     );
   }
 
