@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:isar/isar.dart';
 import 'package:log_tracking/src/model/base_entity.dart';
 import 'package:log_tracking/src/model/log_info.dart';
@@ -11,14 +13,15 @@ abstract class BaseRepo<T extends BaseEntity> {
   static late final Isar _isar;
 
   static Future<void> init() async {
-    final dir = await getApplicationDocumentsDirectory();
+    var path = await _createFolderIfNotExists();
+
     _isar = await Isar.open(
       [
         LogInfoSchema,
         SingularEntitySchema,
       ],
       inspector: true,
-      directory: dir.path+"/logs",
+      directory: path,
     );
   }
 
@@ -89,4 +92,15 @@ abstract class BaseRepo<T extends BaseEntity> {
 //     .anyPrice()
 //     .limit(4)
 //     .findAll();
+
+  static Future<String> _createFolderIfNotExists() async {
+    final directory = await getApplicationDocumentsDirectory();
+    final path = Directory('${directory.path}/logs');
+
+    if (!(await path.exists())) {
+      var directory = await path.create();
+      return directory.path;
+    }
+    return directory.path;
+  }
 }
