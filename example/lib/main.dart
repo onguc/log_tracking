@@ -76,7 +76,6 @@ class MyApp extends StatelessWidget {
       Log.e(e, message: "catch in build method (test)");
     }
 
-
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(

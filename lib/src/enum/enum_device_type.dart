@@ -1,5 +1,3 @@
-
-
 // part 'enum_device_type.g.dart';
 
 /// Created by İrfan Öngüç

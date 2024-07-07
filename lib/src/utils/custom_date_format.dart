@@ -6,15 +6,14 @@ import 'package:intl/intl.dart';
 class CustomDateFormat extends DateFormat {
   String? newPattern;
 
-  CustomDateFormat([this.newPattern]):super(newPattern);
-
+  CustomDateFormat([this.newPattern]) : super(newPattern);
 
   @override
   String format(DateTime date) {
-      if (newPattern!=null && newPattern!.endsWith("TZD")) {
-        return _formatWithTimeZone(date);
-      }
-      return super.format(date);
+    if (newPattern != null && newPattern!.endsWith("TZD")) {
+      return _formatWithTimeZone(date);
+    }
+    return super.format(date);
   }
 
   String _formatWithTimeZone(DateTime date) {
@@ -51,7 +50,6 @@ class CustomDateFormat extends DateFormat {
     }
     return "";
   }
-
 
   @override
   DateTime parse(String inputString, [bool utc = false]) {

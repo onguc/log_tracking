@@ -13,8 +13,10 @@ dependencies:
 
 ### 2. Initialize log_tracking
 
-We initialize our log library as follows. 
-If we want to integrate our logs with log structures such as firebase crashlytics, we can use a structure like the following.
+We initialize our log library as follows.
+If we want to integrate our logs with log structures such as firebase crashlytics, we can use a
+structure like the following.
+
 ```dart
 import 'package:log_tracking/log_tracking.dart';
 ///...
@@ -68,7 +70,9 @@ Future<bool> postLogs(LogInfoRequest request) async {
   return false;
 }
 ```
+
 Call initializeLog() method in main method.
+
 ```dart
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -81,7 +85,9 @@ void main() async {
   runApp(const MyApp());
 }
 ```
+
 You can print the logs as follows:
+
 ```dart
     try {
       Log.i("test info");
@@ -93,8 +99,10 @@ You can print the logs as follows:
       Log.e(e, message: "catch in build method (test)");
     }
 ```
+
 As a result, the logs look like this:
 ![`Image not found`](assets/log.png)
 
-Each log consists of Log Type (INFO, WARNING, ERROR), Date, Class Name, Method Name, adn Description respectively.
+Each log consists of Log Type (INFO, WARNING, ERROR), Date, Class Name, Method Name, adn Description
+respectively.
 In the Error log, error details and stackTrace of the error are given in the bottom line.

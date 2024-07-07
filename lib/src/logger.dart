@@ -39,12 +39,16 @@ class Log {
   }
 
   PackageInfo? _packageInfo;
+
   /// Triggered when Log.i(...) method is called
   Function(LogInfo val)? _onInfo;
+
   /// Triggered when Log.e(...) method is called
   Function(LogInfo val)? _onError;
+
   /// Triggered when Log.w(...) method is called
   Function(LogInfo val)? _onWarning;
+
   /// This method is triggered with the logs that have not been sent to the server after each error occurs.
   Future<bool> Function(LogInfoRequest request)? _onSendToServer;
   late EnumLogTypeGroup logTypeGroup;
@@ -125,10 +129,10 @@ class Log {
     LogInfo log = _instanse!._newLog(EnumLogType.ERROR, message);
     log.logType = EnumLogType.ERROR;
     log.logLevel = logLevel;
-    if(stack==null){
-      if(error is Error){
+    if (stack == null) {
+      if (error is Error) {
         stack = error.stackTrace;
-      }else{
+      } else {
         try {
           var current = StackTrace.current.toString();
           stack = _getStack(current);
@@ -267,8 +271,7 @@ class Log {
         log.className = val.substring(val.indexOf(" ") + 1, val.length);
         log.methodName = list.length == 1 ? list[0] : list[1];
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   close() async {

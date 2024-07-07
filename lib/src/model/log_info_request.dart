@@ -3,6 +3,7 @@ import 'package:log_tracking/src/enum/enum_device_type.dart';
 
 import 'device_info.dart';
 import 'log_info.dart';
+
 part 'log_info_request.g.dart';
 
 /// Created by İrfan Öngüç
