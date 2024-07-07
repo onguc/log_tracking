@@ -82,18 +82,19 @@ void main() async {
 }
 ```
 You can print the logs as follows:
-```dart 
-  try {
-    Log.i("test info");
-    if (1 == 1) {
-      throw "Test Error";
-    } else {
-      Log.w("test warning");
+```dart
+    try {
+      Log.i("test info");
+      Log.w("warning info");
+      if (1 == 1) {
+        throw Exception("Test Error");
+      }
+    } catch (e) {
+      Log.e(e, message: "catch in build method (test)");
     }
-  } catch (e) {
-    Log.e(e);
-    Log.e(e, message: "catch in build method (test)");
-  }
 ```
 As a result, the logs look like this:
+![`Image not found`](assets/log.png)
 
+Each log consists of Log Type (INFO, WARNING, ERROR), Date, Class Name, Method Name, adn Description respectively.
+In the Error log, error details and stackTrace of the error are given in the bottom line.

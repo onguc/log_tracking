@@ -68,15 +68,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     try {
       Log.i("test info");
+      Log.w("warning info");
       if (1 == 1) {
-        throw "Test Error";
-      } else {
-        Log.w("test warning");
+        throw Exception("Test Error");
       }
     } catch (e) {
-      Log.e(e);
       Log.e(e, message: "catch in build method (test)");
     }
+
+
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(

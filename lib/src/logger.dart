@@ -125,21 +125,21 @@ class Log {
     LogInfo log = _instanse!._newLog(EnumLogType.ERROR, message);
     log.logType = EnumLogType.ERROR;
     log.logLevel = logLevel;
-    if (stack != null) {
-      log.stacktraceString = stack.toString();
-    } else if (error is Error) {
-      stack = error.stackTrace;
-      log.stacktraceString = stack.toString();
-    } else {
-      try {
-        var current = StackTrace.current.toString();
-        stack = _getStack(current);
-      } catch (e) {
-        stack = null;
+    if(stack==null){
+      if(error is Error){
+        stack = error.stackTrace;
+      }else{
+        try {
+          var current = StackTrace.current.toString();
+          stack = _getStack(current);
+        } catch (e) {
+          stack = null;
+        }
       }
     }
     log.error = error;
     log.stackTrace = stack;
+    log.stacktraceString = stack?.toString();
     if (!kIsWeb) {
       await _instanse!._save(log);
       await SingularRepo.instance.increaseErrorIndex();
@@ -215,17 +215,17 @@ class Log {
     return log;
   }
 
-  void _printLog(LogInfo log1) {
+  void _printLog(LogInfo log) {
     try {
       if (kIsWeb) {
-        print(log1.toString());
+        print(log.toString());
       } else if (Platform.isIOS || Platform.isMacOS)
-        print(log1.toStringForIos());
+        print(log.toStringForIos());
       else {
-        print(log1.toStringWithColorCode());
+        print(log.toStringWithColorCode());
       }
     } catch (e) {
-      print(log1.toString());
+      print(log.toString());
     }
   }
 
@@ -268,7 +268,6 @@ class Log {
         log.methodName = list.length == 1 ? list[0] : list[1];
       }
     } catch (e) {
-      int x = 0;
     }
   }
 
