@@ -11,17 +11,14 @@ class CustomDateFormat extends DateFormat {
 
   @override
   String format(DateTime date) {
-    if (date != null) {
       if (newPattern!=null && newPattern!.endsWith("TZD")) {
         return _formatWithTimeZone(date);
       }
       return super.format(date);
-    }
-    return "";
   }
 
   String _formatWithTimeZone(DateTime date) {
-    if (newPattern != null && date != null) {
+    if (newPattern != null) {
       newPattern = newPattern!.trim();
       if (newPattern!.endsWith("TZD") || newPattern!.endsWith("Z")) {
         try {

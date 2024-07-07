@@ -8,7 +8,7 @@ A package that stores the logs used in the project
 
 ```yaml
 dependencies:
-  log_tracking: 0.2.11
+  log_tracking: 0.3.2
 ```
 
 ### 2. Initialize log_tracking
@@ -16,7 +16,7 @@ dependencies:
 We initialize our log library as follows. 
 If we want to integrate our logs with log structures such as firebase crashlytics, we can use a structure like the following.
 ```dart
-import 'package:log_tracking/log.dart';
+import 'package:log_tracking/log_tracking.dart';
 ///...
 Future<void> initializeLog() {
   return Log.init(

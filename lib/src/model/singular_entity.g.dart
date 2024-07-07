@@ -68,9 +68,9 @@ SingularEntity _singularEntityDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = SingularEntity(
+    id: id,
     value: reader.readStringOrNull(offsets[0]),
   );
-  object.id = id;
   return object;
 }
 

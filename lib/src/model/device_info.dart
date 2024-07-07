@@ -3,16 +3,12 @@ import 'dart:io';
 import 'package:android_id/android_id.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
-import 'package:json_annotation/json_annotation.dart';
 
 import '../enum/enum_device_type.dart';
-
-part 'device_info.g.dart';
 
 /// Created by İrfan Öngüç
 /// on 15.04.2022
 
-@JsonSerializable()
 class DeviceInfo {
   EnumDeviceType? deviceType;
 

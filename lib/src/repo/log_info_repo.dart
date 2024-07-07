@@ -2,7 +2,7 @@ import 'package:isar/isar.dart';
 import 'package:log_tracking/src/repo/base_repo.dart';
 import 'package:log_tracking/src/repo/singular_repo.dart';
 
-import '../../log.dart';
+import '../../log_tracking.dart';
 import '../enum/enum_status.dart';
 import '../model/log_info.dart';
 
@@ -11,8 +11,6 @@ import '../model/log_info.dart';
 
 /// Asıl logların kaydedilip yönetildiği yerdir
 class LogInfoRepo extends BaseRepo<LogInfo> {
-  String _keyLogger = "Logger";
-
   static LogInfoRepo? _instance;
 
   static LogInfoRepo get instance {
@@ -31,10 +29,6 @@ class LogInfoRepo extends BaseRepo<LogInfo> {
     }
     return super.save(t);
   }
-
-  @override
-  String get keyTableName => _keyLogger;
-
 
   Future<List<LogInfo?>> getLogs(List<int> ids) {
     return getAllByIds(ids);
@@ -60,8 +54,8 @@ class LogInfoRepo extends BaseRepo<LogInfo> {
         Log.e(e);
       }
     }
+    return null;
   }
-
 
   Future<List<LogInfo>> getUnsentLogs() async {
     var list = await baseCollection.filter().statusEqualTo(EnumStatus.UNSENT).findAll();

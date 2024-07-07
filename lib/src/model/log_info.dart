@@ -101,7 +101,7 @@ class LogInfo extends BaseEntity {
     String stactraceStr = isStackTraceFull ? "\n${_getColorRed("-->STACK-TRACE")}: $stacktraceString" : "";
     var timeString = DateTimeUtil.getDateTimeForLog(dateTime!);
 
-    return "[${_getColorLogType}]  [${_getColorCyan(timeString!)}] [$className]  [$methodName]  ${_getColorBlue(text)}  $errorStr  $stactraceStr";
+    return "[${_getColorLogType}]  [${_getColorCyan(timeString)}] [$className]  [$methodName]  ${_getColorBlue(text)}  $errorStr  $stactraceStr";
   }
 
   get _getColorLogType {

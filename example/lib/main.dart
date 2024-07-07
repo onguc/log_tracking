@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:log_tracking/log.dart';
+import 'package:log_tracking/log_tracking.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
