@@ -1,6 +1,5 @@
 import 'package:intl/intl.dart';
 
-
 class CustomDateFormat extends DateFormat {
   String? newPattern;
 

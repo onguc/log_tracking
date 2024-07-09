@@ -1,7 +1,6 @@
 import 'package:log_tracking/src/model/singular_entity.dart';
 import 'package:log_tracking/src/repo/base_repo.dart';
 
-
 /// tek değerli verileri db'de tutmak istediğimizde kullanacağımız repo'dur.
 /// Int, String vs. String olarak kaydedilir
 class SingularRepo extends BaseRepo<SingularEntity> {
