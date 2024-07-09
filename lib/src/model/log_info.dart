@@ -11,9 +11,6 @@ import '../utils/string_util.dart';
 
 part 'log_info.g.dart';
 
-/// Created by İrfan Öngüç
-/// on 15.04.2022
-
 @JsonSerializable()
 @collection
 class LogInfo extends BaseEntity {
@@ -75,30 +72,24 @@ class LogInfo extends BaseEntity {
 
   @override
   String toString() {
-    bool isErrorFull = StringUtil.isNotEmpty(errorString);
-    bool isStackTraceFull = StringUtil.isNotEmpty(stacktraceString);
-    String errorStr = isErrorFull ? "\n-->ERROR-DETAIL: $errorString" : "";
-    String stactraceStr = isStackTraceFull ? "\n-->STACK-TRACE: $stacktraceString" : "";
+    String errorStr = errorString.isNotEmpty ? "\n-->ERROR-DETAIL: $errorString" : "";
+    String stacktraceStr = stacktraceString.isNotEmpty ? "\n-->STACK-TRACE: $stacktraceString" : "";
     var timeString = DateTimeUtil.getDateTimeForLog(dateTime!);
 
-    return "[${logType?.name}] [$version] [$timeString][$timeZone]  [$className]  [$methodName]  $text  $errorStr  $stactraceStr";
+    return "[${logType?.name}] [$version] [$timeString][$timeZone]  [$className]  [$methodName]  $text  $errorStr  $stacktraceStr";
   }
 
   String toStringForIos() {
-    bool isErrorFull = StringUtil.isNotEmpty(errorString);
-    bool isStackTraceFull = StringUtil.isNotEmpty(stacktraceString);
-    String errorStr = isErrorFull ? "\n-->ERROR-DETAIL: $_error" : "";
-    String stactraceStr = isStackTraceFull ? "\n-->STACK-TRACE: $stacktraceString" : "";
+    String errorStr = errorString.isNotEmpty ? "\n-->ERROR-DETAIL: $_error" : "";
+    String stactraceStr = stacktraceString.isNotEmpty ? "\n-->STACK-TRACE: $stacktraceString" : "";
     var timeString = DateTimeUtil.getDateTimeForLog(dateTime!);
 
     return "[${logType?.name}] [$version] [$timeString][$timeZone]  [$className]  [$methodName]  $text  $errorStr  $stactraceStr";
   }
 
   String toStringWithColorCode() {
-    bool isErrorFull = StringUtil.isNotEmpty(errorString);
-    bool isStackTraceFull = StringUtil.isNotEmpty(stacktraceString);
-    String errorStr = isErrorFull ? "\n${_getColorRed("-->ERROR-DETAIL")}: $errorString" : "";
-    String stactraceStr = isStackTraceFull ? "\n${_getColorRed("-->STACK-TRACE")}: $stacktraceString" : "";
+    String errorStr = errorString.isNotEmpty ? "\n${_getColorRed("-->ERROR-DETAIL")}: $errorString" : "";
+    String stactraceStr = stacktraceString.isNotEmpty ? "\n${_getColorRed("-->STACK-TRACE")}: $stacktraceString" : "";
     var timeString = DateTimeUtil.getDateTimeForLog(dateTime!);
 
     return "[${_getColorLogType}]  [${_getColorCyan(timeString)}] [$className]  [$methodName]  ${_getColorBlue(text)}  $errorStr  $stactraceStr";

@@ -6,13 +6,9 @@ import 'package:flutter/foundation.dart';
 
 import '../enum/enum_device_type.dart';
 
-/// Created by İrfan Öngüç
-/// on 15.04.2022
-
 class DeviceInfo {
   EnumDeviceType? deviceType;
 
-  /// 30
   String? versionSdkInt;
   String? model;
   String? brand;

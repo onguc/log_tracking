@@ -2,8 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:log_tracking/log_tracking.dart';
 
 void main() {
-  Log.w("test");
-  int x = 0;
   test('adds one to input values', () {
     Test2().testCalistir();
     // final calculator = Calculator();
@@ -15,7 +13,7 @@ void main() {
 
 class Test2 {
   void testCalistir() {
-    Log.w("test");
-    int x = 0;
+    Log.init(onError: (e){});
+    Log.e("Test");
   }
 }

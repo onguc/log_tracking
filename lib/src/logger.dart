@@ -16,9 +16,6 @@ import 'package:log_tracking/src/utils/connectivity.dart';
 import 'package:log_tracking/src/utils/string_util.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-/// Created by İrfan Öngüç
-/// on 14 October 2020
-
 class Log {
   Log._({
     bool saveToLocal = true,
@@ -242,7 +239,7 @@ class Log {
     try {
       if (kIsWeb) {
         var appName = _instanse!._packageInfo?.appName;
-        if (StringUtil.isEmpty(appName)) {
+        if (appName.isEmpty) {
           var row = stackTrace.split("\n")[7];
           var methodName = row.split(" ").last;
           var className = row.split("/").last.split(" ").first;

@@ -6,9 +6,6 @@ import 'log_info.dart';
 
 part 'log_info_request.g.dart';
 
-/// Created by İrfan Öngüç
-/// on 15.04.2022
-
 @JsonSerializable()
 class LogInfoRequest extends DeviceInfo {
   LogInfoRequest({

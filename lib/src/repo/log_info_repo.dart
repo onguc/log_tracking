@@ -6,9 +6,6 @@ import '../../log_tracking.dart';
 import '../enum/enum_status.dart';
 import '../model/log_info.dart';
 
-/// Created by İrfan Öngüç
-/// on 15.04.2022
-
 /// Asıl logların kaydedilip yönetildiği yerdir
 class LogInfoRepo extends BaseRepo<LogInfo> {
   static LogInfoRepo? _instance;

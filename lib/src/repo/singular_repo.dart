@@ -1,8 +1,6 @@
 import 'package:log_tracking/src/model/singular_entity.dart';
 import 'package:log_tracking/src/repo/base_repo.dart';
 
-/// Created by İrfan Öngüç
-/// on 23.05.2023
 
 /// tek değerli verileri db'de tutmak istediğimizde kullanacağımız repo'dur.
 /// Int, String vs. String olarak kaydedilir

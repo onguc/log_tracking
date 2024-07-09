@@ -4,9 +4,6 @@ import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 
-/// Created by İrfan Öngüç
-/// on 26.05.2022
-
 var _connectivity = Connectivity();
 ValueNotifier<bool> isOnlineNotifier = ValueNotifier(true);
 

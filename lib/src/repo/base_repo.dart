@@ -6,9 +6,6 @@ import 'package:log_tracking/src/model/log_info.dart';
 import 'package:log_tracking/src/model/singular_entity.dart';
 import 'package:path_provider/path_provider.dart';
 
-/// Created by İrfan Öngüç
-/// on 18.10.2022
-
 abstract class BaseRepo<T extends BaseEntity> {
   static late final Isar _isar;
 

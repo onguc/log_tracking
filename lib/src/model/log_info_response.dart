@@ -4,9 +4,6 @@ import 'base_response.dart';
 
 part 'log_info_response.g.dart';
 
-/// Created by İrfan Öngüç
-/// on 22.04.2022
-
 @JsonSerializable()
 class LogInfoResponse extends BaseResponse {
   LogInfoResponse();
