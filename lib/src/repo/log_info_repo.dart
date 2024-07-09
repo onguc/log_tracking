@@ -11,7 +11,7 @@ class LogInfoRepo extends BaseRepo<LogInfo> {
   static LogInfoRepo? _instance;
 
   static LogInfoRepo get instance {
-    if (_instance == null) _instance = LogInfoRepo._();
+    _instance ??= LogInfoRepo._();
     return _instance!;
   }
 
@@ -38,7 +38,7 @@ class LogInfoRepo extends BaseRepo<LogInfo> {
     if (!_isEnteredInDeleteMethode) {
       try {
         _isEnteredInDeleteMethode = true;
-        DateTime date7DaysAgo = DateTime.now().subtract(Duration(days: 7));
+        DateTime date7DaysAgo = DateTime.now().subtract(const Duration(days: 7));
         List<LogInfo> logs7DaysAgo = await baseCollection.filter().dateTimeLessThan(date7DaysAgo).statusEqualTo(EnumStatus.sent).findAll();
         if (logs7DaysAgo.isNotEmpty) {
           var idList = logs7DaysAgo.map((e) => e.id!).toList();

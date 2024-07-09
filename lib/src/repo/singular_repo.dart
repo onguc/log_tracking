@@ -7,7 +7,7 @@ class SingularRepo extends BaseRepo<SingularEntity> {
   static SingularRepo? _instance;
 
   static SingularRepo get instance {
-    if (_instance == null) _instance = SingularRepo._();
+    _instance ??= SingularRepo._();
     return _instance!;
   }
 

@@ -25,15 +25,16 @@ class Log {
     Function(LogInfo val)? onError,
     Future<bool> Function(LogInfoRequest request)? onSendToServer,
   }) {
-    this._saveToLocal = saveToLocal;
-    this._onInfo = onInfo;
-    this._onWarning = onWarning;
-    this._onError = onError;
-    this._onSendToServer = onSendToServer;
-    if (kDebugMode)
+    _saveToLocal = saveToLocal;
+    _onInfo = onInfo;
+    _onWarning = onWarning;
+    _onError = onError;
+    _onSendToServer = onSendToServer;
+    if (kDebugMode) {
       logTypeGroup = EnumLogTypeGroup.debug;
-    else
+    } else {
       logTypeGroup = EnumLogTypeGroup.production;
+    }
   }
 
   PackageInfo? _packageInfo;
@@ -81,7 +82,7 @@ class Log {
     if (saveToLocal) {
       await BaseRepo.init();
       SingularRepo.instance.increaseAppLaunchIndex();
-      Future.delayed(Duration(seconds: 1)).then((value) async {
+      Future.delayed(const Duration(seconds: 1)).then((value) async {
         // IndexRepo.instance.increaseAppStartupIndex();
         if (isCanSentToServer) {
           isOnlineNotifier.addListener(() async {
@@ -110,6 +111,7 @@ class Log {
       });
     }
   }
+
   /// We print the Info logs with this method
   /// It is sent to the remote server together with the Log.e(...) method
   static Future<void> i(String text) async {
@@ -120,7 +122,9 @@ class Log {
       _instanse!._onInfo!(log);
       await _instanse!._save(log);
     } catch (e, s) {
-      print("$e \n$s");
+      if (kDebugMode) {
+        print("$e \n$s");
+      }
     }
   }
 
@@ -184,7 +188,9 @@ class Log {
 
   Future<void> _updateStatus(List<LogInfo> logStatuses, EnumStatus enumStatus) async {
     if (_saveToLocal) {
-      logStatuses.forEach((e) => e.status = enumStatus);
+      for (var e in logStatuses) {
+        e.status = enumStatus;
+      }
       await LogInfoRepo.instance.saveAll(logStatuses);
     }
   }
@@ -205,7 +211,7 @@ class Log {
   }
 
   static StackTrace? _getStack(String current) {
-    var currentNew;
+    String currentNew;
     if (kIsWeb) {
       currentNew = current.split("\n").skip(5).join("\n");
     } else {
@@ -225,16 +231,18 @@ class Log {
   }
 
   void _printLog(LogInfo log) {
-    try {
-      if (kIsWeb) {
+    if (kDebugMode) {
+      try {
+        if (kIsWeb) {
+          print(log.toString());
+        } else if (Platform.isIOS || Platform.isMacOS) {
+          print(log.toStringForIos());
+        } else {
+          print(log.toStringWithColorCode());
+        }
+      } catch (e) {
         print(log.toString());
-      } else if (Platform.isIOS || Platform.isMacOS)
-        print(log.toStringForIos());
-      else {
-        print(log.toStringWithColorCode());
       }
-    } catch (e) {
-      print(log.toString());
     }
   }
 
@@ -276,7 +284,11 @@ class Log {
         log.className = val.substring(val.indexOf(" ") + 1, val.length);
         log.methodName = list.length == 1 ? list[0] : list[1];
       }
-    } catch (e) {}
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
   }
 
   close() async {

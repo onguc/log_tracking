@@ -91,7 +91,7 @@ class LogInfo extends BaseEntity {
     String stactraceStr = stacktraceString.isNotEmpty ? "\n${_getColorRed("-->STACK-TRACE")}: $stacktraceString" : "";
     var timeString = DateTimeUtil.getDateTimeForLog(dateTime!);
 
-    return "[${_getColorLogType}]  [${_getColorCyan(timeString)}] [$className]  [$methodName]  ${_getColorBlue(text)}  $errorStr  $stactraceStr";
+    return "[$_getColorLogType]  [${_getColorCyan(timeString)}] [$className]  [$methodName]  ${_getColorBlue(text)}  $errorStr  $stactraceStr";
   }
 
   get _getColorLogType {
@@ -109,23 +109,23 @@ class LogInfo extends BaseEntity {
   }
 
   _getColorRed(String text) {
-    return "\x1B[38;5;9m" + text + "\x1B[0m";
+    return "\x1B[38;5;9m$text\x1B[0m";
   }
 
   _getColorYellow(String text) {
-    return "\x1B[38;5;11m" + text + "\x1B[0m";
+    return "\x1B[38;5;11m$text\x1B[0m";
   }
 
   _getColorGreen(String text) {
-    return "\x1B[38;5;10m" + text + "\x1B[0m";
+    return "\x1B[38;5;10m$text\x1B[0m";
   }
 
   _getColorCyan(String text) {
-    return "\x1B[38;5;14m" + text + "\x1B[0m";
+    return "\x1B[38;5;14m$text\x1B[0m";
   }
 
   _getColorBlue(String? text) {
     if (text == null) return "";
-    return "\x1B[38;5;12m" + text + "\x1B[0m";
+    return "\x1B[38;5;12m$text\x1B[0m";
   }
 }

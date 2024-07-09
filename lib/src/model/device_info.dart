@@ -30,7 +30,7 @@ class DeviceInfo {
   static DeviceInfo? _instance;
 
   static DeviceInfo get instance {
-    if (_instance == null) _instance = DeviceInfo(isPhysicalDevice: false);
+    _instance ??= DeviceInfo(isPhysicalDevice: false);
     return _instance!;
   }
 
@@ -61,7 +61,7 @@ class DeviceInfo {
       );
     } else if (Platform.isAndroid) {
       var data = await deviceInfoPlugin.androidInfo; // deviceId: 0696220404946b51
-      final String? androidId = await AndroidId().getId();
+      final String? androidId = await const AndroidId().getId();
       _instance = DeviceInfo(
         deviceType: EnumDeviceType.android,
         versionSdkInt: "${data.version.sdkInt}",
