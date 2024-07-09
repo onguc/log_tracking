@@ -1,5 +1,10 @@
+import 'package:json_annotation/json_annotation.dart';
+
 enum EnumLogLevel {
-  HIGH,
-  MEDIUM,
-  LOW,
+  @JsonValue('HIGH')
+  high,
+  @JsonValue('MEDIUM')
+  medium,
+  @JsonValue('LOW')
+  low,
 }

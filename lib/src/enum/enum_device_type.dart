@@ -1,9 +1,18 @@
+import 'package:json_annotation/json_annotation.dart';
+
 enum EnumDeviceType {
-  ANDROID,
-  IOS,
-  MACOS,
-  LINUX,
-  WINDOWS,
-  WEB,
-  UNKNOWN,
+  @JsonValue('ANDROID')
+  android,
+  @JsonValue('IOS')
+  ios,
+  @JsonValue('MACOS')
+  macos,
+  @JsonValue('LINUX')
+  linux,
+  @JsonValue('WINDOWS')
+  windows,
+  @JsonValue('WEB')
+  web,
+  @JsonValue('UNKNOWN')
+  unknown,
 }

@@ -31,9 +31,9 @@ class Log {
     this._onError = onError;
     this._onSendToServer = onSendToServer;
     if (kDebugMode)
-      logTypeGroup = EnumLogTypeGroup.DEBUG;
+      logTypeGroup = EnumLogTypeGroup.debug;
     else
-      logTypeGroup = EnumLogTypeGroup.PRODUCTION;
+      logTypeGroup = EnumLogTypeGroup.production;
   }
 
   PackageInfo? _packageInfo;
@@ -91,18 +91,18 @@ class Log {
               LogInfoRepo.instance;
               LogInfoRequest request = _instanse!._getLogInfoRequest(unsentLogs);
               try {
-                await _instanse!._updateStatus(unsentLogs, EnumStatus.SENDING);
+                await _instanse!._updateStatus(unsentLogs, EnumStatus.sending);
                 bool isSentSuccess = await _instanse!._onSendToServer!(request);
                 if (isSentSuccess) {
-                  _instanse!._updateStatus(unsentLogs, EnumStatus.SENT);
+                  _instanse!._updateStatus(unsentLogs, EnumStatus.sent);
                   await LogInfoRepo.instance.deleteLogsFrom7DaysAgo();
                 } else {
                   Log.w("log sending is not successful");
-                  _instanse!._updateStatus(unsentLogs, EnumStatus.UNSENT);
+                  _instanse!._updateStatus(unsentLogs, EnumStatus.unsent);
                 }
               } catch (e) {
                 Log.e(e);
-                _instanse!._updateStatus(unsentLogs, EnumStatus.UNSENT);
+                _instanse!._updateStatus(unsentLogs, EnumStatus.unsent);
               }
             }
           });
@@ -115,7 +115,7 @@ class Log {
   static Future<void> i(String text) async {
     try {
       assert(_instanse != null, "_instanse can not be null!");
-      LogInfo log = _instanse!._newLog(EnumLogType.INFO, text);
+      LogInfo log = _instanse!._newLog(EnumLogType.info, text);
       _instanse!._printLog(log);
       _instanse!._onInfo!(log);
       await _instanse!._save(log);
@@ -126,10 +126,10 @@ class Log {
 
   /// When Exceptions and Errors appear, we can log them with this method.
   /// If there is an Internet connection, it is instantly sent to the remote server along with the previous info and warning logs. Or it will be sent together with the first internet connection
-  static Future<void> e(dynamic error, {StackTrace? stack, EnumLogLevel? logLevel = EnumLogLevel.MEDIUM, String? message}) async {
+  static Future<void> e(dynamic error, {StackTrace? stack, EnumLogLevel? logLevel = EnumLogLevel.medium, String? message}) async {
     assert(_instanse != null, "_instanse can not be null!");
-    LogInfo log = _instanse!._newLog(EnumLogType.ERROR, message);
-    log.logType = EnumLogType.ERROR;
+    LogInfo log = _instanse!._newLog(EnumLogType.error, message);
+    log.logType = EnumLogType.error;
     log.logLevel = logLevel;
     if (stack == null) {
       if (error is Error) {
@@ -161,7 +161,7 @@ class Log {
   /// It is sent to the remote server together with the Log.e(...) method
   static Future<void> w(String text) async {
     assert(_instanse != null, "_instanse can not be null!");
-    LogInfo log = _instanse!._newLog(EnumLogType.WARNING, text);
+    LogInfo log = _instanse!._newLog(EnumLogType.warning, text);
     _instanse!._printLog(log);
 
     var current = StackTrace.current.toString();
@@ -174,8 +174,8 @@ class Log {
   /// With this method, we print the logs in debug mode. These logs are not sent to the server or to third-party libraries
   static Future<void> d(String text) async {
     assert(_instanse != null, "_instanse can not be null!");
-    LogInfo log = _instanse!._newLog(EnumLogType.DEBUG, text);
-    log.logType = EnumLogType.WARNING;
+    LogInfo log = _instanse!._newLog(EnumLogType.debug, text);
+    log.logType = EnumLogType.warning;
     var current = StackTrace.current.toString();
     var previusStack = _getStack(current);
     log.stackTrace = previusStack;

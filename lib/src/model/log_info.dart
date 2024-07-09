@@ -29,7 +29,6 @@ class LogInfo extends BaseEntity {
   DateTime? dateTime;
   String? timeZone;
 
-  // @JSONField(serialize: false, deserialize: false)
   @Enumerated(EnumType.name)
   EnumLogType? logType;
   String? errorString;
@@ -98,11 +97,11 @@ class LogInfo extends BaseEntity {
   get _getColorLogType {
     var name = logType!.name;
     switch (logType) {
-      case EnumLogType.ERROR:
+      case EnumLogType.error:
         return _getColorRed(name);
-      case EnumLogType.WARNING:
+      case EnumLogType.warning:
         return _getColorYellow(name);
-      case EnumLogType.INFO:
+      case EnumLogType.info:
         return _getColorGreen(name);
       default:
         return name;

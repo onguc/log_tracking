@@ -1,4 +1,8 @@
+import 'package:json_annotation/json_annotation.dart';
+
 enum EnumLogTypeGroup {
-  PRODUCTION,
-  DEBUG,
+  @JsonValue("PRODUCTION")
+  production,
+  @JsonValue("DEBUG")
+  debug,
 }

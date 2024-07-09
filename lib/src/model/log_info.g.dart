@@ -264,12 +264,16 @@ LogInfo _logInfoDeserialize(
   object.groupId = reader.readLongOrNull(offsets[4]);
   object.id = id;
   object.launchIndex = reader.readLongOrNull(offsets[5]);
-  object.logLevel = _LogInfologLevelValueEnumMap[reader.readStringOrNull(offsets[6])];
-  object.logType = _LogInfologTypeValueEnumMap[reader.readStringOrNull(offsets[7])];
-  object.logTypeGroup = _LogInfologTypeGroupValueEnumMap[reader.readStringOrNull(offsets[8])];
+  object.logLevel =
+      _LogInfologLevelValueEnumMap[reader.readStringOrNull(offsets[6])];
+  object.logType =
+      _LogInfologTypeValueEnumMap[reader.readStringOrNull(offsets[7])];
+  object.logTypeGroup =
+      _LogInfologTypeGroupValueEnumMap[reader.readStringOrNull(offsets[8])];
   object.methodName = reader.readStringOrNull(offsets[9]);
   object.stacktraceString = reader.readStringOrNull(offsets[10]);
-  object.status = _LogInfostatusValueEnumMap[reader.readStringOrNull(offsets[11])];
+  object.status =
+      _LogInfostatusValueEnumMap[reader.readStringOrNull(offsets[11])];
   object.text = reader.readStringOrNull(offsets[12]);
   object.timeZone = reader.readStringOrNull(offsets[13]);
   object.version = reader.readStringOrNull(offsets[14]);
@@ -296,11 +300,14 @@ P _logInfoDeserializeProp<P>(
     case 5:
       return (reader.readLongOrNull(offset)) as P;
     case 6:
-      return (_LogInfologLevelValueEnumMap[reader.readStringOrNull(offset)]) as P;
+      return (_LogInfologLevelValueEnumMap[reader.readStringOrNull(offset)])
+          as P;
     case 7:
-      return (_LogInfologTypeValueEnumMap[reader.readStringOrNull(offset)]) as P;
+      return (_LogInfologTypeValueEnumMap[reader.readStringOrNull(offset)])
+          as P;
     case 8:
-      return (_LogInfologTypeGroupValueEnumMap[reader.readStringOrNull(offset)]) as P;
+      return (_LogInfologTypeGroupValueEnumMap[reader.readStringOrNull(offset)])
+          as P;
     case 9:
       return (reader.readStringOrNull(offset)) as P;
     case 10:
@@ -319,54 +326,44 @@ P _logInfoDeserializeProp<P>(
 }
 
 const _LogInfologLevelEnumValueMap = {
-  r'HIGH': r'HIGH',
-  r'MEDIUM': r'MEDIUM',
-  r'LOW': r'LOW',
+  r'high': r'high',
+  r'medium': r'medium',
+  r'low': r'low',
 };
 const _LogInfologLevelValueEnumMap = {
-  r'HIGH': EnumLogLevel.HIGH,
-  r'MEDIUM': EnumLogLevel.MEDIUM,
-  r'LOW': EnumLogLevel.LOW,
+  r'high': EnumLogLevel.high,
+  r'medium': EnumLogLevel.medium,
+  r'low': EnumLogLevel.low,
 };
 const _LogInfologTypeEnumValueMap = {
-  r'ALL': r'ALL',
-  r'TRACE': r'TRACE',
-  r'DEBUG': r'DEBUG',
-  r'INFO': r'INFO',
-  r'WARNING': r'WARNING',
-  r'ERROR': r'ERROR',
-  r'SEVERE': r'SEVERE',
-  r'FATAL': r'FATAL',
-  r'OFF': r'OFF',
+  r'debug': r'debug',
+  r'info': r'info',
+  r'warning': r'warning',
+  r'error': r'error',
 };
 const _LogInfologTypeValueEnumMap = {
-  r'ALL': EnumLogType.ALL,
-  r'TRACE': EnumLogType.TRACE,
-  r'DEBUG': EnumLogType.DEBUG,
-  r'INFO': EnumLogType.INFO,
-  r'WARNING': EnumLogType.WARNING,
-  r'ERROR': EnumLogType.ERROR,
-  r'SEVERE': EnumLogType.SEVERE,
-  r'FATAL': EnumLogType.FATAL,
-  r'OFF': EnumLogType.OFF,
+  r'debug': EnumLogType.debug,
+  r'info': EnumLogType.info,
+  r'warning': EnumLogType.warning,
+  r'error': EnumLogType.error,
 };
 const _LogInfologTypeGroupEnumValueMap = {
-  r'PRODUCTION': r'PRODUCTION',
-  r'DEBUG': r'DEBUG',
+  r'production': r'production',
+  r'debug': r'debug',
 };
 const _LogInfologTypeGroupValueEnumMap = {
-  r'PRODUCTION': EnumLogTypeGroup.PRODUCTION,
-  r'DEBUG': EnumLogTypeGroup.DEBUG,
+  r'production': EnumLogTypeGroup.production,
+  r'debug': EnumLogTypeGroup.debug,
 };
 const _LogInfostatusEnumValueMap = {
-  r'UNSENT': r'UNSENT',
-  r'SENT': r'SENT',
-  r'SENDING': r'SENDING',
+  r'unsent': r'unsent',
+  r'sent': r'sent',
+  r'sending': r'sending',
 };
 const _LogInfostatusValueEnumMap = {
-  r'UNSENT': EnumStatus.UNSENT,
-  r'SENT': EnumStatus.SENT,
-  r'SENDING': EnumStatus.SENDING,
+  r'unsent': EnumStatus.unsent,
+  r'sent': EnumStatus.sent,
+  r'sending': EnumStatus.sending,
 };
 
 Id _logInfoGetId(LogInfo object) {
@@ -437,7 +434,8 @@ extension LogInfoQueryWhere on QueryBuilder<LogInfo, LogInfo, QWhereClause> {
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> idGreaterThan(Id id, {bool include = false}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> idGreaterThan(Id id,
+      {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: id, includeLower: include),
@@ -445,7 +443,8 @@ extension LogInfoQueryWhere on QueryBuilder<LogInfo, LogInfo, QWhereClause> {
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> idLessThan(Id id, {bool include = false}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> idLessThan(Id id,
+      {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -489,7 +488,8 @@ extension LogInfoQueryWhere on QueryBuilder<LogInfo, LogInfo, QWhereClause> {
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> errorIndexEqualTo(int? errorIndex) {
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> errorIndexEqualTo(
+      int? errorIndex) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
         indexName: r'errorIndex',
@@ -498,7 +498,8 @@ extension LogInfoQueryWhere on QueryBuilder<LogInfo, LogInfo, QWhereClause> {
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> errorIndexNotEqualTo(int? errorIndex) {
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> errorIndexNotEqualTo(
+      int? errorIndex) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -597,7 +598,8 @@ extension LogInfoQueryWhere on QueryBuilder<LogInfo, LogInfo, QWhereClause> {
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> dateTimeEqualTo(DateTime? dateTime) {
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> dateTimeEqualTo(
+      DateTime? dateTime) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
         indexName: r'dateTime',
@@ -606,7 +608,8 @@ extension LogInfoQueryWhere on QueryBuilder<LogInfo, LogInfo, QWhereClause> {
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> dateTimeNotEqualTo(DateTime? dateTime) {
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> dateTimeNotEqualTo(
+      DateTime? dateTime) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -705,7 +708,8 @@ extension LogInfoQueryWhere on QueryBuilder<LogInfo, LogInfo, QWhereClause> {
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> statusEqualTo(EnumStatus? status) {
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> statusEqualTo(
+      EnumStatus? status) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
         indexName: r'status',
@@ -714,7 +718,8 @@ extension LogInfoQueryWhere on QueryBuilder<LogInfo, LogInfo, QWhereClause> {
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> statusNotEqualTo(EnumStatus? status) {
+  QueryBuilder<LogInfo, LogInfo, QAfterWhereClause> statusNotEqualTo(
+      EnumStatus? status) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -749,7 +754,8 @@ extension LogInfoQueryWhere on QueryBuilder<LogInfo, LogInfo, QWhereClause> {
   }
 }
 
-extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition> {
+extension LogInfoQueryFilter
+    on QueryBuilder<LogInfo, LogInfo, QFilterCondition> {
   QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> classNameIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -854,7 +860,9 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> classNameContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> classNameContains(
+      String value,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'className',
@@ -864,7 +872,9 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> classNameMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> classNameMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'className',
@@ -908,7 +918,8 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> dateTimeEqualTo(DateTime? value) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> dateTimeEqualTo(
+      DateTime? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'dateTime',
@@ -976,7 +987,8 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> errorIndexEqualTo(int? value) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> errorIndexEqualTo(
+      int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'errorIndex',
@@ -1132,7 +1144,9 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> errorStringContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> errorStringContains(
+      String value,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'errorString',
@@ -1142,7 +1156,9 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> errorStringMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> errorStringMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'errorString',
@@ -1161,7 +1177,8 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> errorStringIsNotEmpty() {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition>
+      errorStringIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'errorString',
@@ -1186,7 +1203,8 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> groupIdEqualTo(int? value) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> groupIdEqualTo(
+      int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'groupId',
@@ -1322,7 +1340,8 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> launchIndexEqualTo(int? value) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> launchIndexEqualTo(
+      int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'launchIndex',
@@ -1478,7 +1497,9 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> logLevelContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> logLevelContains(
+      String value,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'logLevel',
@@ -1488,7 +1509,9 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> logLevelMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> logLevelMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'logLevel',
@@ -1620,7 +1643,9 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> logTypeContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> logTypeContains(
+      String value,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'logType',
@@ -1630,7 +1655,9 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> logTypeMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> logTypeMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'logType',
@@ -1666,7 +1693,8 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> logTypeGroupIsNotNull() {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition>
+      logTypeGroupIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'logTypeGroup',
@@ -1762,7 +1790,9 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> logTypeGroupContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> logTypeGroupContains(
+      String value,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'logTypeGroup',
@@ -1772,7 +1802,9 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> logTypeGroupMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> logTypeGroupMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'logTypeGroup',
@@ -1791,7 +1823,8 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> logTypeGroupIsNotEmpty() {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition>
+      logTypeGroupIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'logTypeGroup',
@@ -1904,7 +1937,9 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> methodNameContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> methodNameContains(
+      String value,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'methodName',
@@ -1914,7 +1949,9 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> methodNameMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> methodNameMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'methodName',
@@ -1942,7 +1979,8 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> stacktraceStringIsNull() {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition>
+      stacktraceStringIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'stacktraceString',
@@ -1950,7 +1988,8 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> stacktraceStringIsNotNull() {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition>
+      stacktraceStringIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'stacktraceString',
@@ -1971,7 +2010,8 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> stacktraceStringGreaterThan(
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition>
+      stacktraceStringGreaterThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -1986,7 +2026,8 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> stacktraceStringLessThan(
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition>
+      stacktraceStringLessThan(
     String? value, {
     bool include = false,
     bool caseSensitive = true,
@@ -2020,7 +2061,8 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> stacktraceStringStartsWith(
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition>
+      stacktraceStringStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -2033,7 +2075,8 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> stacktraceStringEndsWith(
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition>
+      stacktraceStringEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
@@ -2046,7 +2089,8 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> stacktraceStringContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition>
+      stacktraceStringContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'stacktraceString',
@@ -2056,7 +2100,9 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> stacktraceStringMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> stacktraceStringMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'stacktraceString',
@@ -2066,7 +2112,8 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> stacktraceStringIsEmpty() {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition>
+      stacktraceStringIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'stacktraceString',
@@ -2075,7 +2122,8 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> stacktraceStringIsNotEmpty() {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition>
+      stacktraceStringIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'stacktraceString',
@@ -2188,7 +2236,9 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> statusContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> statusContains(
+      String value,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'status',
@@ -2198,7 +2248,9 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> statusMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> statusMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'status',
@@ -2330,7 +2382,9 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> textContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> textContains(
+      String value,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'text',
@@ -2340,7 +2394,9 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> textMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> textMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'text',
@@ -2472,7 +2528,9 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> timeZoneContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> timeZoneContains(
+      String value,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'timeZone',
@@ -2482,7 +2540,9 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> timeZoneMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> timeZoneMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'timeZone',
@@ -2614,7 +2674,9 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> versionContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> versionContains(
+      String value,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'version',
@@ -2624,7 +2686,9 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> versionMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QAfterFilterCondition> versionMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'version',
@@ -2653,9 +2717,11 @@ extension LogInfoQueryFilter on QueryBuilder<LogInfo, LogInfo, QFilterCondition>
   }
 }
 
-extension LogInfoQueryObject on QueryBuilder<LogInfo, LogInfo, QFilterCondition> {}
+extension LogInfoQueryObject
+    on QueryBuilder<LogInfo, LogInfo, QFilterCondition> {}
 
-extension LogInfoQueryLinks on QueryBuilder<LogInfo, LogInfo, QFilterCondition> {}
+extension LogInfoQueryLinks
+    on QueryBuilder<LogInfo, LogInfo, QFilterCondition> {}
 
 extension LogInfoQuerySortBy on QueryBuilder<LogInfo, LogInfo, QSortBy> {
   QueryBuilder<LogInfo, LogInfo, QAfterSortBy> sortByClassName() {
@@ -2839,7 +2905,8 @@ extension LogInfoQuerySortBy on QueryBuilder<LogInfo, LogInfo, QSortBy> {
   }
 }
 
-extension LogInfoQuerySortThenBy on QueryBuilder<LogInfo, LogInfo, QSortThenBy> {
+extension LogInfoQuerySortThenBy
+    on QueryBuilder<LogInfo, LogInfo, QSortThenBy> {
   QueryBuilder<LogInfo, LogInfo, QAfterSortBy> thenByClassName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'className', Sort.asc);
@@ -3033,8 +3100,10 @@ extension LogInfoQuerySortThenBy on QueryBuilder<LogInfo, LogInfo, QSortThenBy> 
   }
 }
 
-extension LogInfoQueryWhereDistinct on QueryBuilder<LogInfo, LogInfo, QDistinct> {
-  QueryBuilder<LogInfo, LogInfo, QDistinct> distinctByClassName({bool caseSensitive = true}) {
+extension LogInfoQueryWhereDistinct
+    on QueryBuilder<LogInfo, LogInfo, QDistinct> {
+  QueryBuilder<LogInfo, LogInfo, QDistinct> distinctByClassName(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'className', caseSensitive: caseSensitive);
     });
@@ -3052,7 +3121,8 @@ extension LogInfoQueryWhereDistinct on QueryBuilder<LogInfo, LogInfo, QDistinct>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QDistinct> distinctByErrorString({bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QDistinct> distinctByErrorString(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'errorString', caseSensitive: caseSensitive);
     });
@@ -3070,62 +3140,73 @@ extension LogInfoQueryWhereDistinct on QueryBuilder<LogInfo, LogInfo, QDistinct>
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QDistinct> distinctByLogLevel({bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QDistinct> distinctByLogLevel(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'logLevel', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QDistinct> distinctByLogType({bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QDistinct> distinctByLogType(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'logType', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QDistinct> distinctByLogTypeGroup({bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QDistinct> distinctByLogTypeGroup(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'logTypeGroup', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QDistinct> distinctByMethodName({bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QDistinct> distinctByMethodName(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'methodName', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QDistinct> distinctByStacktraceString({bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QDistinct> distinctByStacktraceString(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'stacktraceString', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'stacktraceString',
+          caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QDistinct> distinctByStatus({bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QDistinct> distinctByStatus(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'status', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QDistinct> distinctByText({bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QDistinct> distinctByText(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'text', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QDistinct> distinctByTimeZone({bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QDistinct> distinctByTimeZone(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'timeZone', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<LogInfo, LogInfo, QDistinct> distinctByVersion({bool caseSensitive = true}) {
+  QueryBuilder<LogInfo, LogInfo, QDistinct> distinctByVersion(
+      {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'version', caseSensitive: caseSensitive);
     });
   }
 }
 
-extension LogInfoQueryProperty on QueryBuilder<LogInfo, LogInfo, QQueryProperty> {
+extension LogInfoQueryProperty
+    on QueryBuilder<LogInfo, LogInfo, QQueryProperty> {
   QueryBuilder<LogInfo, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
@@ -3180,7 +3261,8 @@ extension LogInfoQueryProperty on QueryBuilder<LogInfo, LogInfo, QQueryProperty>
     });
   }
 
-  QueryBuilder<LogInfo, EnumLogTypeGroup?, QQueryOperations> logTypeGroupProperty() {
+  QueryBuilder<LogInfo, EnumLogTypeGroup?, QQueryOperations>
+      logTypeGroupProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'logTypeGroup');
     });
@@ -3235,14 +3317,17 @@ LogInfo _$LogInfoFromJson(Map<String, dynamic> json) => LogInfo(
       ..errorIndex = (json['errorIndex'] as num?)?.toInt()
       ..methodName = json['methodName'] as String?
       ..text = json['text'] as String?
-      ..dateTime = json['dateTime'] == null ? null : DateTime.parse(json['dateTime'] as String)
+      ..dateTime = json['dateTime'] == null
+          ? null
+          : DateTime.parse(json['dateTime'] as String)
       ..timeZone = json['timeZone'] as String?
       ..logType = $enumDecodeNullable(_$EnumLogTypeEnumMap, json['logType'])
       ..errorString = json['errorString'] as String?
       ..stacktraceString = json['stacktraceString'] as String?
       ..version = json['version'] as String?
       ..logLevel = $enumDecodeNullable(_$EnumLogLevelEnumMap, json['logLevel'])
-      ..logTypeGroup = $enumDecodeNullable(_$EnumLogTypeGroupEnumMap, json['logTypeGroup'])
+      ..logTypeGroup =
+          $enumDecodeNullable(_$EnumLogTypeGroupEnumMap, json['logTypeGroup'])
       ..status = $enumDecodeNullable(_$EnumStatusEnumMap, json['status'])
       ..groupId = (json['groupId'] as num?)?.toInt();
 
@@ -3266,30 +3351,25 @@ Map<String, dynamic> _$LogInfoToJson(LogInfo instance) => <String, dynamic>{
     };
 
 const _$EnumLogTypeEnumMap = {
-  EnumLogType.ALL: 'ALL',
-  EnumLogType.TRACE: 'TRACE',
-  EnumLogType.DEBUG: 'DEBUG',
-  EnumLogType.INFO: 'INFO',
-  EnumLogType.WARNING: 'WARNING',
-  EnumLogType.ERROR: 'ERROR',
-  EnumLogType.SEVERE: 'SEVERE',
-  EnumLogType.FATAL: 'FATAL',
-  EnumLogType.OFF: 'OFF',
+  EnumLogType.debug: 'DEBUG',
+  EnumLogType.info: 'INFO',
+  EnumLogType.warning: 'WARNING',
+  EnumLogType.error: 'ERROR',
 };
 
 const _$EnumLogLevelEnumMap = {
-  EnumLogLevel.HIGH: 'HIGH',
-  EnumLogLevel.MEDIUM: 'MEDIUM',
-  EnumLogLevel.LOW: 'LOW',
+  EnumLogLevel.high: 'HIGH',
+  EnumLogLevel.medium: 'MEDIUM',
+  EnumLogLevel.low: 'LOW',
 };
 
 const _$EnumLogTypeGroupEnumMap = {
-  EnumLogTypeGroup.PRODUCTION: 'PRODUCTION',
-  EnumLogTypeGroup.DEBUG: 'DEBUG',
+  EnumLogTypeGroup.production: 'PRODUCTION',
+  EnumLogTypeGroup.debug: 'DEBUG',
 };
 
 const _$EnumStatusEnumMap = {
-  EnumStatus.UNSENT: 'UNSENT',
-  EnumStatus.SENT: 'SENT',
-  EnumStatus.SENDING: 'SENDING',
+  EnumStatus.unsent: 'UNSENT',
+  EnumStatus.sent: 'SENT',
+  EnumStatus.sending: 'SENDING',
 };

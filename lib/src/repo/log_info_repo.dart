@@ -39,7 +39,7 @@ class LogInfoRepo extends BaseRepo<LogInfo> {
       try {
         _isEnteredInDeleteMethode = true;
         DateTime date7DaysAgo = DateTime.now().subtract(Duration(days: 7));
-        List<LogInfo> logs7DaysAgo = await baseCollection.filter().dateTimeLessThan(date7DaysAgo).statusEqualTo(EnumStatus.SENT).findAll();
+        List<LogInfo> logs7DaysAgo = await baseCollection.filter().dateTimeLessThan(date7DaysAgo).statusEqualTo(EnumStatus.sent).findAll();
         if (logs7DaysAgo.isNotEmpty) {
           var idList = logs7DaysAgo.map((e) => e.id!).toList();
           int count = await deleteAllByIds(idList);
@@ -55,12 +55,12 @@ class LogInfoRepo extends BaseRepo<LogInfo> {
   }
 
   Future<List<LogInfo>> getUnsentLogs() async {
-    var list = await baseCollection.filter().statusEqualTo(EnumStatus.UNSENT).findAll();
+    var list = await baseCollection.filter().statusEqualTo(EnumStatus.unsent).findAll();
     return list;
   }
 
   Future<List<LogInfo>> getUnsentLogByErrorIndex(int errorIndex) async {
-    var list = await baseCollection.filter().errorIndexEqualTo(errorIndex).statusEqualTo(EnumStatus.UNSENT).findAll();
+    var list = await baseCollection.filter().errorIndexEqualTo(errorIndex).statusEqualTo(EnumStatus.unsent).findAll();
     return list;
   }
 }

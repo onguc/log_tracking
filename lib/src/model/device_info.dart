@@ -43,7 +43,7 @@ class DeviceInfo {
     if (kIsWeb) {
       var data = await deviceInfoPlugin.webBrowserInfo; // deviceId: 0696220404946b51
       _instance = DeviceInfo(
-        deviceType: EnumDeviceType.WEB,
+        deviceType: EnumDeviceType.web,
         brand: data.browserName.name,
         appVersion: appVersion,
         isPhysicalDevice: true,
@@ -51,7 +51,7 @@ class DeviceInfo {
     } else if (Platform.isIOS) {
       var data = await deviceInfoPlugin.iosInfo; // deviceId: 48FFBBAC-B260-47C2-9B5F-BDB2EEF1D1A8
       _instance = DeviceInfo(
-        deviceType: EnumDeviceType.IOS,
+        deviceType: EnumDeviceType.ios,
         versionSdkInt: data.systemVersion,
         model: data.model,
         brand: "iphone",
@@ -63,7 +63,7 @@ class DeviceInfo {
       var data = await deviceInfoPlugin.androidInfo; // deviceId: 0696220404946b51
       final String? androidId = await AndroidId().getId();
       _instance = DeviceInfo(
-        deviceType: EnumDeviceType.ANDROID,
+        deviceType: EnumDeviceType.android,
         versionSdkInt: "${data.version.sdkInt}",
         model: data.model,
         brand: data.brand,
@@ -74,7 +74,7 @@ class DeviceInfo {
     } else if (Platform.isMacOS) {
       var data = await deviceInfoPlugin.macOsInfo;
       _instance = DeviceInfo(
-        deviceType: EnumDeviceType.MACOS,
+        deviceType: EnumDeviceType.macos,
         model: data.model,
         brand: "macos",
         deviceId: data.systemGUID,
@@ -83,7 +83,7 @@ class DeviceInfo {
       );
     } else {
       _instance = DeviceInfo(
-        deviceType: EnumDeviceType.UNKNOWN,
+        deviceType: EnumDeviceType.unknown,
         versionSdkInt: "1",
         model: "testModel",
         brand: "testBrand",
