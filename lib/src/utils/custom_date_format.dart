@@ -29,7 +29,7 @@ class CustomDateFormat extends DateFormat {
           var flagAndHours = kk[0];
           var minutes = kk[1];
           String flag = "+";
-          var hours;
+          String hours;
           if (["+", "-"].contains(flagAndHours[0])) {
             flag = flagAndHours[0];
             hours = flagAndHours.substring(1, flagAndHours.length);
