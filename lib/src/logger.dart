@@ -16,6 +16,7 @@ import 'package:log_tracking/src/utils/connectivity.dart';
 import 'package:log_tracking/src/utils/string_util.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+/// This is the class that will be called in the project that contains Error(Log.e), Warning(Log.w), Information(Log.i), and Debug(Log.d) methods
 class Log {
   Log._({
     bool saveToLocal = true,
@@ -53,6 +54,7 @@ class Log {
 
   static Log? _instanse;
 
+  ///  Start log_tracking by calling this method in the main method
   static Future<void> init({
     bool saveToLocal = false,
     Function(LogInfo val)? onWarning,
@@ -108,7 +110,8 @@ class Log {
       });
     }
   }
-
+  /// We print the Info logs with this method
+  /// It is sent to the remote server together with the Log.e(...) method
   static Future<void> i(String text) async {
     try {
       assert(_instanse != null, "_instanse can not be null!");
@@ -121,6 +124,8 @@ class Log {
     }
   }
 
+  /// When Exceptions and Errors appear, we can log them with this method.
+  /// If there is an Internet connection, it is instantly sent to the remote server along with the previous info and warning logs. Or it will be sent together with the first internet connection
   static Future<void> e(dynamic error, {StackTrace? stack, EnumLogLevel? logLevel = EnumLogLevel.MEDIUM, String? message}) async {
     assert(_instanse != null, "_instanse can not be null!");
     LogInfo log = _instanse!._newLog(EnumLogType.ERROR, message);
@@ -152,6 +157,8 @@ class Log {
     _instanse!._printLog(log);
   }
 
+  /// we print logs that are not errors, but have the nature of warnings, using this method.
+  /// It is sent to the remote server together with the Log.e(...) method
   static Future<void> w(String text) async {
     assert(_instanse != null, "_instanse can not be null!");
     LogInfo log = _instanse!._newLog(EnumLogType.WARNING, text);
@@ -164,6 +171,7 @@ class Log {
     await _instanse!._save(log);
   }
 
+  /// With this method, we print the logs in debug mode. These logs are not sent to the server or to third-party libraries
   static Future<void> d(String text) async {
     assert(_instanse != null, "_instanse can not be null!");
     LogInfo log = _instanse!._newLog(EnumLogType.DEBUG, text);
