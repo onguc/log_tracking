@@ -179,7 +179,7 @@ class Log {
   static Future<void> d(String text) async {
     assert(_instanse != null, "_instanse can not be null!");
     LogInfo log = _instanse!._newLog(EnumLogType.debug, text);
-    log.logType = EnumLogType.warning;
+    log.logType = EnumLogType.debug;
     var current = StackTrace.current.toString();
     var previusStack = _getStack(current);
     log.stackTrace = previusStack;

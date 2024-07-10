@@ -12,7 +12,7 @@ If the server submission function is active, Log Tracking stores your logs in th
 
 ```yaml
 dependencies:
-  log_tracking: 0.3.2
+  log_tracking: ^0.3.4
 ```
 
 ### 2. Initialize log_tracking
@@ -94,9 +94,9 @@ You can print the logs as follows:
 
 ```dart
     try {
-      Log.i("test info"); // If sending to the server is active, the first error that arrives is sent to the server.
-      Log.w("warning info"); // If sending to the server is active, the first error that arrives is sent to the server.
-      Log.d("Test Debug"); // just prints the screen
+        Log.i("Test Info"); // If sending to the server is active, the first error that arrives is sent to the server.
+        Log.w("Test Warning"); // If sending to the server is active, the first error that arrives is sent to the server.
+        Log.d("Test Debug"); // just prints the screen
       if (1 == 1) {
         throw Exception("Test Error");
       }

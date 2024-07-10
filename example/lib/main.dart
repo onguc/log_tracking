@@ -67,8 +67,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     try {
-      Log.i("test info"); // If sending to the server is active, the first error that arrives is sent to the server.
-      Log.w("warning info"); // If sending to the server is active, the first error that arrives is sent to the server.
+      Log.i("Test Info"); // If sending to the server is active, the first error that arrives is sent to the server.
+      Log.w("Test Warning"); // If sending to the server is active, the first error that arrives is sent to the server.
       Log.d("Test Debug"); // just prints the screen
       if (1 == 1) {
         throw Exception("Test Error");

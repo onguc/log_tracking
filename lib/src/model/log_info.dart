@@ -75,7 +75,7 @@ class LogInfo extends BaseEntity {
     String stacktraceStr = stacktraceString.isNotEmpty ? "\n-->STACK-TRACE: $stacktraceString" : "";
     var timeString = DateTimeUtil.getDateTimeForLog(dateTime!);
 
-    return "[${logType?.name}] [$version] [$timeString][$timeZone]  [$className]  [$methodName]  $text  $errorStr  $stacktraceStr";
+    return "[${logType?.name.toUpperCase()}] [$version] [$timeString][$timeZone]  [$className]  [$methodName]  $text  $errorStr  $stacktraceStr";
   }
 
   String toStringForIos() {
@@ -83,7 +83,7 @@ class LogInfo extends BaseEntity {
     String stactraceStr = stacktraceString.isNotEmpty ? "\n-->STACK-TRACE: $stacktraceString" : "";
     var timeString = DateTimeUtil.getDateTimeForLog(dateTime!);
 
-    return "[${logType?.name}] [$version] [$timeString][$timeZone]  [$className]  [$methodName]  $text  $errorStr  $stactraceStr";
+    return "[${logType?.name.toUpperCase()}] [$version] [$timeString][$timeZone]  [$className]  [$methodName]  $text  $errorStr  $stactraceStr";
   }
 
   String toStringWithColorCode() {
@@ -91,11 +91,11 @@ class LogInfo extends BaseEntity {
     String stactraceStr = stacktraceString.isNotEmpty ? "\n${_getColorRed("-->STACK-TRACE")}: $stacktraceString" : "";
     var timeString = DateTimeUtil.getDateTimeForLog(dateTime!);
 
-    return "[$_getColorLogType]  [${_getColorCyan(timeString)}] [$className]  [$methodName]  ${_getColorBlue(text)}  $errorStr  $stactraceStr";
+    return "[$_coloredLogType]  [${_getColorCyan(timeString)}] [$className]  [$methodName]  ${_getColorBlue(text)}  $errorStr  $stactraceStr";
   }
 
-  get _getColorLogType {
-    var name = logType!.name;
+  get _coloredLogType {
+    var name = logType!.name.toUpperCase();
     switch (logType) {
       case EnumLogType.error:
         return _getColorRed(name);
