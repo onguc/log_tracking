@@ -12,7 +12,7 @@ If the server submission function is active, Log Tracking stores your logs in th
 
 ```yaml
 dependencies:
-  log_tracking: ^0.3.4
+  log_tracking: ^0.3.5
 ```
 
 ### 2. Initialize log_tracking
