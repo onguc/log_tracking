@@ -1,6 +1,7 @@
 name: log_tracking
-description: It is a log package that saves your logs, allows them to be synchronized to your own server, and allows you to use them more simply together with other logging libraries
-version: 0.3.3
+description: It is a log package that saves your logs, allows them to be synchronized with your own server, and provides easier logging by integrating with other log libraries such as Firebase Crashlytics and Sentry.
+version: 0.3.4
+author: ngcyaz <info@ngcyaz.com>
 homepage: https://github.com/onguc/log_tracking
 
 environment:
@@ -26,7 +27,7 @@ dev_dependencies:
   json_serializable: ^6.8.0
   isar_generator: ^3.1.0+1
   analyzer: ^6.7.0
-  flutter_lints: ^2.0.0
+  flutter_lints: ^4.0.0
 dependency_overrides:
   analyzer: 5.13.0
 
@@ -36,7 +37,7 @@ dependency_overrides:
 # The following section is specific to Flutter.
 flutter:
 
-# To add assets to your package, add an assets section, like this:
+lib: lib/log_tracking.dart
 # assets:
 #   - images/a_dot_burr.jpeg
 #   - images/a_dot_ham.jpeg

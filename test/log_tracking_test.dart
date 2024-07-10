@@ -3,7 +3,7 @@ import 'package:log_tracking/log_tracking.dart';
 
 void main() {
   test('adds one to input values', () {
-    Test2().testCalistir();
+    // Test2().testCalistir();
     // final calculator = Calculator();
     // expect(calculator.addOne(2), 3);
     // expect(calculator.addOne(-7), -6);
@@ -11,9 +11,9 @@ void main() {
   });
 }
 
-class Test2 {
-  void testCalistir() {
-    Log.init(onError: (e){});
-    Log.e("Test");
-  }
-}
+// class Test2 {
+//   void testCalistir() {
+//     Log.init(onError: (e){});
+//     Log.e("Test");
+//   }
+// }

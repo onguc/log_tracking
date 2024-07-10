@@ -2,6 +2,10 @@
 
 A package that stores the logs used in the project
 
+## What is log_tracking
+Log Tracking is a log management library that records your logs and synchronizes them with your own server. This library works in conjunction with popular log libraries like Firebase Crashlytics and Sentry, making your application's logging processes easier and more effective. With Log Tracking, you can monitor errors and events in your application in detail, respond immediately, and collect log data on a central server. Its easy-to-use and flexible structure provides a powerful logging solution for application developers.
+
+If the server submission function is active, Log Tracking stores your logs in the device's local database when there is no internet connection. This feature allows your application to continue logging even when offline and synchronizes the accumulated logs with the server once the internet connection is restored.
 ## Getting Started
 
 ### 1. Add to pubspec.yaml
@@ -90,13 +94,14 @@ You can print the logs as follows:
 
 ```dart
     try {
-      Log.i("test info");
-      Log.w("warning info");
+      Log.i("test info"); // If sending to the server is active, the first error that arrives is sent to the server.
+      Log.w("warning info"); // If sending to the server is active, the first error that arrives is sent to the server.
+      Log.d("Test Debug"); // just prints the screen
       if (1 == 1) {
         throw Exception("Test Error");
       }
     } catch (e) {
-      Log.e(e, message: "catch in build method (test)");
+      Log.e(e, message: "catch in build method (test)"); // It is sent to the server immediately if there is internet connection, or when there is an internet connection, along with the previous info and warning logs.
     }
 ```
 

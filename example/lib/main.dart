@@ -67,13 +67,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     try {
-      Log.i("test info");
-      Log.w("warning info");
+      Log.i("test info"); // If sending to the server is active, the first error that arrives is sent to the server.
+      Log.w("warning info"); // If sending to the server is active, the first error that arrives is sent to the server.
+      Log.d("Test Debug"); // just prints the screen
       if (1 == 1) {
         throw Exception("Test Error");
       }
     } catch (e) {
-      Log.e(e, message: "catch in build method (test)");
+      Log.e(e, message: "catch in build method (test)"); // It is sent to the server immediately if there is internet connection, or when there is an internet connection, along with the previous info and warning logs.
     }
 
     return MaterialApp(

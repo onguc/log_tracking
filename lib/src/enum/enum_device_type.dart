@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
+/// Specifies the device type
 enum EnumDeviceType {
   @JsonValue('ANDROID')
   android,
