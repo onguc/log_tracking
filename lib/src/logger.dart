@@ -150,13 +150,16 @@ class Log {
     log.error = error;
     log.stackTrace = stack;
     log.stacktraceString = stack?.toString();
-    if (!kIsWeb) {
+    if (!kIsWeb && _instanse!._saveToLocal) {
       await _instanse!._save(log);
       await SingularRepo.instance.increaseErrorIndex();
+
       _instanse!._onError!(log);
       List<LogInfo> unsentLogs = await LogInfoRepo.instance.getUnsentLogByErrorIndex(log.errorIndex!);
       LogInfoRequest request = _instanse!._getLogInfoRequest(unsentLogs);
       _instanse!._onSendToServer!(request);
+    } else {
+      _instanse!._onError!(log);
     }
     _instanse!._printLog(log);
   }

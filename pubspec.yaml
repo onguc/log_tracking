@@ -1,6 +1,6 @@
 name: log_tracking
 description:  A log management package; It saves the logs and synchronizes them to your server by integrating with other log libraries such as Firebase Crashlytics and Sentry.
-version: 0.3.6
+version: 0.3.7
 homepage: https://github.com/onguc/log_tracking
 
 environment:
