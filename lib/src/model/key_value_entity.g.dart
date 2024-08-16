@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'singular_entity.dart';
+part of 'key_value_entity.dart';
 
 // **************************************************************************
 // IsarCollectionGenerator
@@ -9,12 +9,12 @@ part of 'singular_entity.dart';
 // coverage:ignore-file
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
-extension GetSingularEntityCollection on Isar {
-  IsarCollection<SingularEntity> get singularEntitys => this.collection();
+extension GetKeyValueEntityCollection on Isar {
+  IsarCollection<KeyValueEntity> get KeyValueEntities => this.collection();
 }
 
-const SingularEntitySchema = CollectionSchema(
-  name: r'SingularEntity',
+const KeyValueEntitySchema = CollectionSchema(
+  name: r'KeyValueEntity',
   id: 8166506067131742391,
   properties: {
     r'value': PropertySchema(
@@ -23,25 +23,25 @@ const SingularEntitySchema = CollectionSchema(
       type: IsarType.string,
     )
   },
-  estimateSize: _singularEntityEstimateSize,
-  serialize: _singularEntitySerialize,
-  deserialize: _singularEntityDeserialize,
-  deserializeProp: _singularEntityDeserializeProp,
+  estimateSize: _KeyValueEntityEstimateSize,
+  serialize: _KeyValueEntitySerialize,
+  deserialize: _KeyValueEntityDeserialize,
+  deserializeProp: _KeyValueEntityDeserializeProp,
   idName: r'id',
   indexes: {},
   links: {},
   embeddedSchemas: {},
-  getId: _singularEntityGetId,
-  getLinks: _singularEntityGetLinks,
-  attach: _singularEntityAttach,
+  getId: _KeyValueEntityGetId,
+  getLinks: _KeyValueEntityGetLinks,
+  attach: _KeyValueEntityAttach,
   version: '3.1.0+1',
 );
 
-int _singularEntityEstimateSize(
-  SingularEntity object,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
+int _KeyValueEntityEstimateSize(
+    KeyValueEntity object,
+    List<int> offsets,
+    Map<Type, List<int>> allOffsets,
+    ) {
   var bytesCount = offsets.last;
   {
     final value = object.value;
@@ -52,34 +52,34 @@ int _singularEntityEstimateSize(
   return bytesCount;
 }
 
-void _singularEntitySerialize(
-  SingularEntity object,
-  IsarWriter writer,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
+void _KeyValueEntitySerialize(
+    KeyValueEntity object,
+    IsarWriter writer,
+    List<int> offsets,
+    Map<Type, List<int>> allOffsets,
+    ) {
   writer.writeString(offsets[0], object.value);
 }
 
-SingularEntity _singularEntityDeserialize(
-  Id id,
-  IsarReader reader,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  final object = SingularEntity(
+KeyValueEntity _KeyValueEntityDeserialize(
+    Id id,
+    IsarReader reader,
+    List<int> offsets,
+    Map<Type, List<int>> allOffsets,
+    ) {
+  final object = KeyValueEntity(
     id: id,
     value: reader.readStringOrNull(offsets[0]),
   );
   return object;
 }
 
-P _singularEntityDeserializeProp<P>(
-  IsarReader reader,
-  int propertyId,
-  int offset,
-  Map<Type, List<int>> allOffsets,
-) {
+P _KeyValueEntityDeserializeProp<P>(
+    IsarReader reader,
+    int propertyId,
+    int offset,
+    Map<Type, List<int>> allOffsets,
+    ) {
   switch (propertyId) {
     case 0:
       return (reader.readStringOrNull(offset)) as P;
@@ -88,31 +88,31 @@ P _singularEntityDeserializeProp<P>(
   }
 }
 
-Id _singularEntityGetId(SingularEntity object) {
+Id _KeyValueEntityGetId(KeyValueEntity object) {
   return object.id ?? Isar.autoIncrement;
 }
 
-List<IsarLinkBase<dynamic>> _singularEntityGetLinks(SingularEntity object) {
+List<IsarLinkBase<dynamic>> _KeyValueEntityGetLinks(KeyValueEntity object) {
   return [];
 }
 
-void _singularEntityAttach(
-    IsarCollection<dynamic> col, Id id, SingularEntity object) {
+void _KeyValueEntityAttach(
+    IsarCollection<dynamic> col, Id id, KeyValueEntity object) {
   object.id = id;
 }
 
-extension SingularEntityQueryWhereSort
-    on QueryBuilder<SingularEntity, SingularEntity, QWhere> {
-  QueryBuilder<SingularEntity, SingularEntity, QAfterWhere> anyId() {
+extension KeyValueEntityQueryWhereSort
+on QueryBuilder<KeyValueEntity, KeyValueEntity, QWhere> {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
     });
   }
 }
 
-extension SingularEntityQueryWhere
-    on QueryBuilder<SingularEntity, SingularEntity, QWhereClause> {
-  QueryBuilder<SingularEntity, SingularEntity, QAfterWhereClause> idEqualTo(
+extension KeyValueEntityQueryWhere
+on QueryBuilder<KeyValueEntity, KeyValueEntity, QWhereClause> {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterWhereClause> idEqualTo(
       Id id) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
@@ -122,30 +122,30 @@ extension SingularEntityQueryWhere
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterWhereClause> idNotEqualTo(
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterWhereClause> idNotEqualTo(
       Id id) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            )
+          IdWhereClause.lessThan(upper: id, includeUpper: false),
+        )
             .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            );
+          IdWhereClause.greaterThan(lower: id, includeLower: false),
+        );
       } else {
         return query
             .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            )
+          IdWhereClause.greaterThan(lower: id, includeLower: false),
+        )
             .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            );
+          IdWhereClause.lessThan(upper: id, includeUpper: false),
+        );
       }
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterWhereClause> idGreaterThan(
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterWhereClause> idGreaterThan(
       Id id,
       {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
@@ -155,7 +155,7 @@ extension SingularEntityQueryWhere
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterWhereClause> idLessThan(
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterWhereClause> idLessThan(
       Id id,
       {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
@@ -165,12 +165,12 @@ extension SingularEntityQueryWhere
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterWhereClause> idBetween(
-    Id lowerId,
-    Id upperId, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterWhereClause> idBetween(
+      Id lowerId,
+      Id upperId, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
         lower: lowerId,
@@ -182,10 +182,10 @@ extension SingularEntityQueryWhere
   }
 }
 
-extension SingularEntityQueryFilter
-    on QueryBuilder<SingularEntity, SingularEntity, QFilterCondition> {
-  QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition>
-      idIsNull() {
+extension KeyValueEntityQueryFilter
+on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
+  idIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'id',
@@ -193,8 +193,8 @@ extension SingularEntityQueryFilter
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition>
-      idIsNotNull() {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
+  idIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'id',
@@ -202,7 +202,7 @@ extension SingularEntityQueryFilter
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition> idEqualTo(
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition> idEqualTo(
       Id? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -212,11 +212,11 @@ extension SingularEntityQueryFilter
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition>
-      idGreaterThan(
-    Id? value, {
-    bool include = false,
-  }) {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
+  idGreaterThan(
+      Id? value, {
+        bool include = false,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -226,11 +226,11 @@ extension SingularEntityQueryFilter
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition>
-      idLessThan(
-    Id? value, {
-    bool include = false,
-  }) {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
+  idLessThan(
+      Id? value, {
+        bool include = false,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -240,12 +240,12 @@ extension SingularEntityQueryFilter
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition> idBetween(
-    Id? lower,
-    Id? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition> idBetween(
+      Id? lower,
+      Id? upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'id',
@@ -257,8 +257,8 @@ extension SingularEntityQueryFilter
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition>
-      valueIsNull() {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
+  valueIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'value',
@@ -266,8 +266,8 @@ extension SingularEntityQueryFilter
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition>
-      valueIsNotNull() {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
+  valueIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'value',
@@ -275,11 +275,11 @@ extension SingularEntityQueryFilter
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition>
-      valueEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
+  valueEqualTo(
+      String? value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'value',
@@ -289,12 +289,12 @@ extension SingularEntityQueryFilter
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition>
-      valueGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
+  valueGreaterThan(
+      String? value, {
+        bool include = false,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -305,12 +305,12 @@ extension SingularEntityQueryFilter
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition>
-      valueLessThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
+  valueLessThan(
+      String? value, {
+        bool include = false,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -321,14 +321,14 @@ extension SingularEntityQueryFilter
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition>
-      valueBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
+  valueBetween(
+      String? lower,
+      String? upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'value',
@@ -341,11 +341,11 @@ extension SingularEntityQueryFilter
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition>
-      valueStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
+  valueStartsWith(
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'value',
@@ -355,11 +355,11 @@ extension SingularEntityQueryFilter
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition>
-      valueEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
+  valueEndsWith(
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'value',
@@ -369,8 +369,8 @@ extension SingularEntityQueryFilter
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition>
-      valueContains(String value, {bool caseSensitive = true}) {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
+  valueContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'value',
@@ -380,8 +380,8 @@ extension SingularEntityQueryFilter
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition>
-      valueMatches(String pattern, {bool caseSensitive = true}) {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
+  valueMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'value',
@@ -391,8 +391,8 @@ extension SingularEntityQueryFilter
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition>
-      valueIsEmpty() {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
+  valueIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'value',
@@ -401,8 +401,8 @@ extension SingularEntityQueryFilter
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterFilterCondition>
-      valueIsNotEmpty() {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
+  valueIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'value',
@@ -412,57 +412,57 @@ extension SingularEntityQueryFilter
   }
 }
 
-extension SingularEntityQueryObject
-    on QueryBuilder<SingularEntity, SingularEntity, QFilterCondition> {}
+extension KeyValueEntityQueryObject
+on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {}
 
-extension SingularEntityQueryLinks
-    on QueryBuilder<SingularEntity, SingularEntity, QFilterCondition> {}
+extension KeyValueEntityQueryLinks
+on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {}
 
-extension SingularEntityQuerySortBy
-    on QueryBuilder<SingularEntity, SingularEntity, QSortBy> {
-  QueryBuilder<SingularEntity, SingularEntity, QAfterSortBy> sortByValue() {
+extension KeyValueEntityQuerySortBy
+on QueryBuilder<KeyValueEntity, KeyValueEntity, QSortBy> {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterSortBy> sortByValue() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'value', Sort.asc);
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterSortBy> sortByValueDesc() {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterSortBy> sortByValueDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'value', Sort.desc);
     });
   }
 }
 
-extension SingularEntityQuerySortThenBy
-    on QueryBuilder<SingularEntity, SingularEntity, QSortThenBy> {
-  QueryBuilder<SingularEntity, SingularEntity, QAfterSortBy> thenById() {
+extension KeyValueEntityQuerySortThenBy
+on QueryBuilder<KeyValueEntity, KeyValueEntity, QSortThenBy> {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterSortBy> thenByIdDesc() {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterSortBy> thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterSortBy> thenByValue() {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterSortBy> thenByValue() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'value', Sort.asc);
     });
   }
 
-  QueryBuilder<SingularEntity, SingularEntity, QAfterSortBy> thenByValueDesc() {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterSortBy> thenByValueDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'value', Sort.desc);
     });
   }
 }
 
-extension SingularEntityQueryWhereDistinct
-    on QueryBuilder<SingularEntity, SingularEntity, QDistinct> {
-  QueryBuilder<SingularEntity, SingularEntity, QDistinct> distinctByValue(
+extension KeyValueEntityQueryWhereDistinct
+on QueryBuilder<KeyValueEntity, KeyValueEntity, QDistinct> {
+  QueryBuilder<KeyValueEntity, KeyValueEntity, QDistinct> distinctByValue(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'value', caseSensitive: caseSensitive);
@@ -470,15 +470,15 @@ extension SingularEntityQueryWhereDistinct
   }
 }
 
-extension SingularEntityQueryProperty
-    on QueryBuilder<SingularEntity, SingularEntity, QQueryProperty> {
-  QueryBuilder<SingularEntity, int, QQueryOperations> idProperty() {
+extension KeyValueEntityQueryProperty
+on QueryBuilder<KeyValueEntity, KeyValueEntity, QQueryProperty> {
+  QueryBuilder<KeyValueEntity, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
     });
   }
 
-  QueryBuilder<SingularEntity, String?, QQueryOperations> valueProperty() {
+  QueryBuilder<KeyValueEntity, String?, QQueryOperations> valueProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'value');
     });

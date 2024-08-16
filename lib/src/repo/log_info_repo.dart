@@ -1,6 +1,6 @@
 import 'package:isar/isar.dart';
 import 'package:log_tracking/src/repo/base_repo.dart';
-import 'package:log_tracking/src/repo/singular_repo.dart';
+import 'package:log_tracking/src/repo/key_value_repo.dart';
 
 import '../../log_tracking.dart';
 import '../enum/enum_status.dart';
@@ -20,9 +20,9 @@ class LogInfoRepo extends BaseRepo<LogInfo> {
   @override
   Future<int> save(LogInfo t) {
     if (t.id == null) {
-      var singularRepo = SingularRepo.instance;
-      t.launchIndex = singularRepo.appLaunchIndex;
-      t.errorIndex = singularRepo.errorIndex;
+      var repo = KeyValueRepo.instance;
+      t.launchIndex = repo.appLaunchIndex;
+      t.errorIndex = repo.errorIndex;
     }
     return super.save(t);
   }

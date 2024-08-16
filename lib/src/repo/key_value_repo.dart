@@ -1,17 +1,17 @@
-import 'package:log_tracking/src/model/singular_entity.dart';
+import 'package:log_tracking/src/model/key_value_entity.dart';
 import 'package:log_tracking/src/repo/base_repo.dart';
 
 /// tek değerli verileri db'de tutmak istediğimizde kullanacağımız repo'dur.
 /// Int, String vs. String olarak kaydedilir
-class SingularRepo extends BaseRepo<SingularEntity> {
-  static SingularRepo? _instance;
+class KeyValueRepo extends BaseRepo<KeyValueEntity> {
+  static KeyValueRepo? _instance;
 
-  static SingularRepo get instance {
-    _instance ??= SingularRepo._();
+  static KeyValueRepo get instance {
+    _instance ??= KeyValueRepo._();
     return _instance!;
   }
 
-  SingularRepo._();
+  KeyValueRepo._();
 
   /// Uygulama her başlatıldığında bu değer bir arttırılır
   final String _keyAppLaunchIndex = "app_launch_index";
@@ -38,7 +38,7 @@ class SingularRepo extends BaseRepo<SingularEntity> {
   }
 
   Future<void> _put(String key, dynamic value) {
-    SingularEntity entity = SingularEntity(
+    KeyValueEntity entity = KeyValueEntity(
       id: _fastHash(key),
       value: value?.toString(),
     );

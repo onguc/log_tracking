@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:isar/isar.dart';
 import 'package:log_tracking/src/model/base_entity.dart';
 import 'package:log_tracking/src/model/log_info.dart';
-import 'package:log_tracking/src/model/singular_entity.dart';
+import 'package:log_tracking/src/model/key_value_entity.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// The standard crud transactions of repos take place within this class
@@ -17,8 +17,9 @@ abstract class BaseRepo<T extends BaseEntity> {
     _isar = await Isar.open(
       [
         LogInfoSchema,
-        SingularEntitySchema,
+        KeyValueEntitySchema,
       ],
+      name: "log_tracking",
       inspector: true,
       directory: path,
     );

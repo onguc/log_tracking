@@ -11,7 +11,7 @@ import 'package:log_tracking/src/model/log_info.dart';
 import 'package:log_tracking/src/model/log_info_request.dart';
 import 'package:log_tracking/src/repo/base_repo.dart';
 import 'package:log_tracking/src/repo/log_info_repo.dart';
-import 'package:log_tracking/src/repo/singular_repo.dart';
+import 'package:log_tracking/src/repo/key_value_repo.dart';
 import 'package:log_tracking/src/utils/connectivity.dart';
 import 'package:log_tracking/src/utils/string_util.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -81,7 +81,7 @@ class Log {
 
     if (saveToLocal) {
       await BaseRepo.init();
-      SingularRepo.instance.increaseAppLaunchIndex();
+      KeyValueRepo.instance.increaseAppLaunchIndex();
       Future.delayed(const Duration(seconds: 1)).then((value) async {
         // IndexRepo.instance.increaseAppStartupIndex();
         if (isCanSentToServer) {
@@ -152,7 +152,7 @@ class Log {
     log.stacktraceString = stack?.toString();
     if (!kIsWeb && _instanse!._saveToLocal) {
       await _instanse!._save(log);
-      await SingularRepo.instance.increaseErrorIndex();
+      await KeyValueRepo.instance.increaseErrorIndex();
 
       _instanse!._onError!(log);
       List<LogInfo> unsentLogs = await LogInfoRepo.instance.getUnsentLogByErrorIndex(log.errorIndex!);

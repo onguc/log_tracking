@@ -1,3 +1,7 @@
+## 0.3.8
+
+* TODO: Improvements have been made to db
+* 
 ## 0.3.7
 
 * TODO: A problem solved
