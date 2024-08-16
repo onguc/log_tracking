@@ -10,12 +10,12 @@ part of 'key_value_entity.dart';
 // ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
 extension GetKeyValueEntityCollection on Isar {
-  IsarCollection<KeyValueEntity> get KeyValueEntities => this.collection();
+  IsarCollection<KeyValueEntity> get keyValueEntitys => this.collection();
 }
 
 const KeyValueEntitySchema = CollectionSchema(
   name: r'KeyValueEntity',
-  id: 8166506067131742391,
+  id: 1053414980048600282,
   properties: {
     r'value': PropertySchema(
       id: 0,
@@ -23,25 +23,25 @@ const KeyValueEntitySchema = CollectionSchema(
       type: IsarType.string,
     )
   },
-  estimateSize: _KeyValueEntityEstimateSize,
-  serialize: _KeyValueEntitySerialize,
-  deserialize: _KeyValueEntityDeserialize,
-  deserializeProp: _KeyValueEntityDeserializeProp,
+  estimateSize: _keyValueEntityEstimateSize,
+  serialize: _keyValueEntitySerialize,
+  deserialize: _keyValueEntityDeserialize,
+  deserializeProp: _keyValueEntityDeserializeProp,
   idName: r'id',
   indexes: {},
   links: {},
   embeddedSchemas: {},
-  getId: _KeyValueEntityGetId,
-  getLinks: _KeyValueEntityGetLinks,
-  attach: _KeyValueEntityAttach,
+  getId: _keyValueEntityGetId,
+  getLinks: _keyValueEntityGetLinks,
+  attach: _keyValueEntityAttach,
   version: '3.1.0+1',
 );
 
-int _KeyValueEntityEstimateSize(
-    KeyValueEntity object,
-    List<int> offsets,
-    Map<Type, List<int>> allOffsets,
-    ) {
+int _keyValueEntityEstimateSize(
+  KeyValueEntity object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
   var bytesCount = offsets.last;
   {
     final value = object.value;
@@ -52,21 +52,21 @@ int _KeyValueEntityEstimateSize(
   return bytesCount;
 }
 
-void _KeyValueEntitySerialize(
-    KeyValueEntity object,
-    IsarWriter writer,
-    List<int> offsets,
-    Map<Type, List<int>> allOffsets,
-    ) {
+void _keyValueEntitySerialize(
+  KeyValueEntity object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
   writer.writeString(offsets[0], object.value);
 }
 
-KeyValueEntity _KeyValueEntityDeserialize(
-    Id id,
-    IsarReader reader,
-    List<int> offsets,
-    Map<Type, List<int>> allOffsets,
-    ) {
+KeyValueEntity _keyValueEntityDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
   final object = KeyValueEntity(
     id: id,
     value: reader.readStringOrNull(offsets[0]),
@@ -74,12 +74,12 @@ KeyValueEntity _KeyValueEntityDeserialize(
   return object;
 }
 
-P _KeyValueEntityDeserializeProp<P>(
-    IsarReader reader,
-    int propertyId,
-    int offset,
-    Map<Type, List<int>> allOffsets,
-    ) {
+P _keyValueEntityDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
   switch (propertyId) {
     case 0:
       return (reader.readStringOrNull(offset)) as P;
@@ -88,21 +88,21 @@ P _KeyValueEntityDeserializeProp<P>(
   }
 }
 
-Id _KeyValueEntityGetId(KeyValueEntity object) {
+Id _keyValueEntityGetId(KeyValueEntity object) {
   return object.id ?? Isar.autoIncrement;
 }
 
-List<IsarLinkBase<dynamic>> _KeyValueEntityGetLinks(KeyValueEntity object) {
+List<IsarLinkBase<dynamic>> _keyValueEntityGetLinks(KeyValueEntity object) {
   return [];
 }
 
-void _KeyValueEntityAttach(
+void _keyValueEntityAttach(
     IsarCollection<dynamic> col, Id id, KeyValueEntity object) {
   object.id = id;
 }
 
 extension KeyValueEntityQueryWhereSort
-on QueryBuilder<KeyValueEntity, KeyValueEntity, QWhere> {
+    on QueryBuilder<KeyValueEntity, KeyValueEntity, QWhere> {
   QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
@@ -111,7 +111,7 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QWhere> {
 }
 
 extension KeyValueEntityQueryWhere
-on QueryBuilder<KeyValueEntity, KeyValueEntity, QWhereClause> {
+    on QueryBuilder<KeyValueEntity, KeyValueEntity, QWhereClause> {
   QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterWhereClause> idEqualTo(
       Id id) {
     return QueryBuilder.apply(this, (query) {
@@ -128,19 +128,19 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QWhereClause> {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(
-          IdWhereClause.lessThan(upper: id, includeUpper: false),
-        )
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            )
             .addWhereClause(
-          IdWhereClause.greaterThan(lower: id, includeLower: false),
-        );
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            );
       } else {
         return query
             .addWhereClause(
-          IdWhereClause.greaterThan(lower: id, includeLower: false),
-        )
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            )
             .addWhereClause(
-          IdWhereClause.lessThan(upper: id, includeUpper: false),
-        );
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            );
       }
     });
   }
@@ -166,11 +166,11 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QWhereClause> {
   }
 
   QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterWhereClause> idBetween(
-      Id lowerId,
-      Id upperId, {
-        bool includeLower = true,
-        bool includeUpper = true,
-      }) {
+    Id lowerId,
+    Id upperId, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IdWhereClause.between(
         lower: lowerId,
@@ -183,9 +183,9 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QWhereClause> {
 }
 
 extension KeyValueEntityQueryFilter
-on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {
+    on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {
   QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
-  idIsNull() {
+      idIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'id',
@@ -194,7 +194,7 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {
   }
 
   QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
-  idIsNotNull() {
+      idIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'id',
@@ -213,10 +213,10 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {
   }
 
   QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
-  idGreaterThan(
-      Id? value, {
-        bool include = false,
-      }) {
+      idGreaterThan(
+    Id? value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -227,10 +227,10 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {
   }
 
   QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
-  idLessThan(
-      Id? value, {
-        bool include = false,
-      }) {
+      idLessThan(
+    Id? value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -241,11 +241,11 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {
   }
 
   QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition> idBetween(
-      Id? lower,
-      Id? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-      }) {
+    Id? lower,
+    Id? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'id',
@@ -258,7 +258,7 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {
   }
 
   QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
-  valueIsNull() {
+      valueIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
         property: r'value',
@@ -267,7 +267,7 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {
   }
 
   QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
-  valueIsNotNull() {
+      valueIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'value',
@@ -276,10 +276,10 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {
   }
 
   QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
-  valueEqualTo(
-      String? value, {
-        bool caseSensitive = true,
-      }) {
+      valueEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'value',
@@ -290,11 +290,11 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {
   }
 
   QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
-  valueGreaterThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+      valueGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
@@ -306,11 +306,11 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {
   }
 
   QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
-  valueLessThan(
-      String? value, {
-        bool include = false,
-        bool caseSensitive = true,
-      }) {
+      valueLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
@@ -322,13 +322,13 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {
   }
 
   QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
-  valueBetween(
-      String? lower,
-      String? upper, {
-        bool includeLower = true,
-        bool includeUpper = true,
-        bool caseSensitive = true,
-      }) {
+      valueBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'value',
@@ -342,10 +342,10 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {
   }
 
   QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
-  valueStartsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+      valueStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
         property: r'value',
@@ -356,10 +356,10 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {
   }
 
   QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
-  valueEndsWith(
-      String value, {
-        bool caseSensitive = true,
-      }) {
+      valueEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
         property: r'value',
@@ -370,7 +370,7 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {
   }
 
   QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
-  valueContains(String value, {bool caseSensitive = true}) {
+      valueContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
         property: r'value',
@@ -381,7 +381,7 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {
   }
 
   QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
-  valueMatches(String pattern, {bool caseSensitive = true}) {
+      valueMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
         property: r'value',
@@ -392,7 +392,7 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {
   }
 
   QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
-  valueIsEmpty() {
+      valueIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'value',
@@ -402,7 +402,7 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {
   }
 
   QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterFilterCondition>
-  valueIsNotEmpty() {
+      valueIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'value',
@@ -413,13 +413,13 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {
 }
 
 extension KeyValueEntityQueryObject
-on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {}
+    on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {}
 
 extension KeyValueEntityQueryLinks
-on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {}
+    on QueryBuilder<KeyValueEntity, KeyValueEntity, QFilterCondition> {}
 
 extension KeyValueEntityQuerySortBy
-on QueryBuilder<KeyValueEntity, KeyValueEntity, QSortBy> {
+    on QueryBuilder<KeyValueEntity, KeyValueEntity, QSortBy> {
   QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterSortBy> sortByValue() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'value', Sort.asc);
@@ -434,7 +434,7 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QSortBy> {
 }
 
 extension KeyValueEntityQuerySortThenBy
-on QueryBuilder<KeyValueEntity, KeyValueEntity, QSortThenBy> {
+    on QueryBuilder<KeyValueEntity, KeyValueEntity, QSortThenBy> {
   QueryBuilder<KeyValueEntity, KeyValueEntity, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -461,7 +461,7 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QSortThenBy> {
 }
 
 extension KeyValueEntityQueryWhereDistinct
-on QueryBuilder<KeyValueEntity, KeyValueEntity, QDistinct> {
+    on QueryBuilder<KeyValueEntity, KeyValueEntity, QDistinct> {
   QueryBuilder<KeyValueEntity, KeyValueEntity, QDistinct> distinctByValue(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -471,7 +471,7 @@ on QueryBuilder<KeyValueEntity, KeyValueEntity, QDistinct> {
 }
 
 extension KeyValueEntityQueryProperty
-on QueryBuilder<KeyValueEntity, KeyValueEntity, QQueryProperty> {
+    on QueryBuilder<KeyValueEntity, KeyValueEntity, QQueryProperty> {
   QueryBuilder<KeyValueEntity, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
