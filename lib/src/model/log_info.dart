@@ -42,7 +42,7 @@ class LogInfo extends BaseEntity {
   /// logun sunucuya gönderilme durumunu gösterir
   @Index()
   @Enumerated(EnumType.name)
-  EnumStatus? status;
+  EnumStatus? status = EnumStatus.unsent;
 
   /// bir hata çıkana kadar olan logların grup id'si en son çıkan hataya kadar aynıdır. Hatadan sonraki logların groupId'si bir arttırılır
   int? groupId;
