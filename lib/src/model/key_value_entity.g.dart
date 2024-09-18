@@ -34,7 +34,7 @@ const KeyValueEntitySchema = CollectionSchema(
   getId: _keyValueEntityGetId,
   getLinks: _keyValueEntityGetLinks,
   attach: _keyValueEntityAttach,
-  version: '3.1.0+1',
+  version: '3.1.8',
 );
 
 int _keyValueEntityEstimateSize(
