@@ -1,3 +1,5 @@
+## 0.3.10
+* TODO: status null problem fixed
 ## 0.3.9
 
 * TODO: A db problem solved
