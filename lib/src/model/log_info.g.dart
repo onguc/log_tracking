@@ -3312,7 +3312,7 @@ extension LogInfoQueryProperty
 LogInfo _$LogInfoFromJson(Map<String, dynamic> json) => LogInfo(
       className: json['className'] as String?,
     )
-      ..id = (json['id'] as num?)?.toInt()
+      ..id = (json['localeId'] as num?)?.toInt()
       ..launchIndex = (json['launchIndex'] as num?)?.toInt()
       ..errorIndex = (json['errorIndex'] as num?)?.toInt()
       ..methodName = json['methodName'] as String?
@@ -3332,7 +3332,7 @@ LogInfo _$LogInfoFromJson(Map<String, dynamic> json) => LogInfo(
       ..groupId = (json['groupId'] as num?)?.toInt();
 
 Map<String, dynamic> _$LogInfoToJson(LogInfo instance) => <String, dynamic>{
-      'id': instance.id,
+      'localeId': instance.id,
       'launchIndex': instance.launchIndex,
       'errorIndex': instance.errorIndex,
       'className': instance.className,

@@ -1,12 +1,12 @@
 import 'package:isar/isar.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:log_tracking/src/enum/enum_status.dart';
+import 'package:log_tracking/src/extensions/extension.dart';
 import 'package:log_tracking/src/model/base_entity.dart';
 
 import '../enum/enum_log_level.dart';
 import '../enum/enum_log_type.dart';
 import '../enum/enum_log_type_group.dart';
-import '../utils/date_time_util.dart';
 import '../utils/string_util.dart';
 
 part 'log_info.g.dart';
@@ -73,59 +73,42 @@ class LogInfo extends BaseEntity {
   String toString() {
     String errorStr = errorString.isNotEmpty ? "\n-->ERROR-DETAIL: $errorString" : "";
     String stacktraceStr = stacktraceString.isNotEmpty ? "\n-->STACK-TRACE: $stacktraceString" : "";
-    var timeString = DateTimeUtil.getDateTimeForLog(dateTime!);
+    var timeString = dateTime!.toIso8601String();
+    var space = _spaces[logType] ?? "";
 
-    return "[${logType?.name.toUpperCase()}] [$version] [$timeString][$timeZone]  [$className]  [$methodName]  $text  $errorStr  $stacktraceStr";
+    return "[${logType?.name.toUpperCase()}]$space [$version] [$timeString][$timeZone]  [$className]  [$methodName]  $text  $errorStr  $stacktraceStr";
   }
 
   String toStringForIos() {
     String errorStr = errorString.isNotEmpty ? "\n-->ERROR-DETAIL: $_error" : "";
     String stactraceStr = stacktraceString.isNotEmpty ? "\n-->STACK-TRACE: $stacktraceString" : "";
-    var timeString = DateTimeUtil.getDateTimeForLog(dateTime!);
+    var timeString = dateTime!.toIso8601String();
+    var space = _spaces[logType] ?? "";
 
-    return "[${logType?.name.toUpperCase()}] [$version] [$timeString][$timeZone]  [$className]  [$methodName]  $text  $errorStr  $stactraceStr";
+    return "[${logType?.name.toUpperCase()}]$space [$version] [$timeString][$timeZone]  [$className]  [$methodName]  $text  $errorStr  $stactraceStr";
   }
 
   String toStringWithColorCode() {
-    String errorStr = errorString.isNotEmpty ? "\n${_getColorRed("-->ERROR-DETAIL")}: $errorString" : "";
-    String stactraceStr = stacktraceString.isNotEmpty ? "\n${_getColorRed("-->STACK-TRACE")}: $stacktraceString" : "";
-    var timeString = DateTimeUtil.getDateTimeForLog(dateTime!);
-
-    return "[$_coloredLogType]  [${_getColorCyan(timeString)}] [$className]  [$methodName]  ${_getColorBlue(text)}  $errorStr  $stactraceStr";
+    String errorStr = errorString.isNotEmpty ? "\n${"-->ERROR-DETAIL".red}: $errorString" : "";
+    String stactraceStr = stacktraceString.isNotEmpty ? "\n${"-->STACK-TRACE".red}: $stacktraceString" : "";
+    var timeString = dateTime!.toIso8601String();
+    var space = _spaces[logType] ?? "";
+    var coloredLogType = _coloredLogTypes[logType] ?? logType!.name.toUpperCase();
+    var coloredText = logType == EnumLogType.warning ? text?.yellow : text?.blue;
+    return "[$coloredLogType]$space [${timeString.cyan}] [$className]  [$methodName]  $coloredText  $errorStr  $stactraceStr";
   }
 
-  get _coloredLogType {
-    var name = logType!.name.toUpperCase();
-    switch (logType) {
-      case EnumLogType.error:
-        return _getColorRed(name);
-      case EnumLogType.warning:
-        return _getColorYellow(name);
-      case EnumLogType.info:
-        return _getColorGreen(name);
-      default:
-        return name;
-    }
-  }
+  final _spaces = {
+    EnumLogType.info: "   ",
+    EnumLogType.warning: "",
+    EnumLogType.error: "  ",
+    EnumLogType.debug: "  ",
+  };
 
-  _getColorRed(String text) {
-    return "\x1B[38;5;9m$text\x1B[0m";
-  }
-
-  _getColorYellow(String text) {
-    return "\x1B[38;5;11m$text\x1B[0m";
-  }
-
-  _getColorGreen(String text) {
-    return "\x1B[38;5;10m$text\x1B[0m";
-  }
-
-  _getColorCyan(String text) {
-    return "\x1B[38;5;14m$text\x1B[0m";
-  }
-
-  _getColorBlue(String? text) {
-    if (text == null) return "";
-    return "\x1B[38;5;12m$text\x1B[0m";
-  }
+  final _coloredLogTypes = {
+    EnumLogType.error: EnumLogType.error.red,
+    EnumLogType.warning: EnumLogType.warning.yellow,
+    EnumLogType.info: EnumLogType.info.blue,
+    EnumLogType.debug: EnumLogType.debug.green
+  };
 }
