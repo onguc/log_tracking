@@ -38,6 +38,9 @@ Future<void> initializeLog() {
         //   fatal: true,
         // );
       },
+      onDebug: (log){
+
+      },
       onSendToServer: (LogInfoRequest request) async {
         /// if you want to send logs to your own server, you can use this method.
         /// This method is called when it cathes an error log.

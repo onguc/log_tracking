@@ -23,12 +23,14 @@ class Log {
     Function(LogInfo val)? onInfo,
     Function(LogInfo val)? onWarning,
     Function(LogInfo val)? onError,
+    Function(LogInfo val)? onDebug,
     Future<bool> Function(LogInfoRequest request)? onSendToServer,
   }) {
     _saveToLocal = saveToLocal;
     _onInfo = onInfo;
     _onWarning = onWarning;
     _onError = onError;
+    _onDebug = onDebug;
     _onSendToServer = onSendToServer;
     if (kDebugMode) {
       logTypeGroup = EnumLogTypeGroup.debug;
@@ -48,6 +50,8 @@ class Log {
   /// Triggered when Log.w(...) method is called
   Function(LogInfo val)? _onWarning;
 
+  Function(LogInfo val)? _onDebug;
+
   /// This method is triggered with the logs that have not been sent to the server after each error occurs.
   Future<bool> Function(LogInfoRequest request)? _onSendToServer;
   late EnumLogTypeGroup logTypeGroup;
@@ -60,6 +64,7 @@ class Log {
     bool saveToLocal = false,
     Function(LogInfo val)? onWarning,
     Function(LogInfo val)? onInfo,
+    Function(LogInfo val)? onDebug,
     required Function(LogInfo val) onError,
     Future<bool> Function(LogInfoRequest request)? onSendToServer,
   }) async {
@@ -71,6 +76,7 @@ class Log {
       onInfo: onInfo ?? (log) {},
       onError: onError,
       onWarning: onWarning ?? (log) {},
+      onDebug: onDebug ?? (log) {},
       onSendToServer: onSendToServer ?? (LogInfoRequest request) => Future.value(false),
     );
     if (isCanSentToServer) {
@@ -130,7 +136,8 @@ class Log {
 
   /// When Exceptions and Errors appear, we can log them with this method.
   /// If there is an Internet connection, it is instantly sent to the remote server along with the previous info and warning logs. Or it will be sent together with the first internet connection
-  static Future<void> e(dynamic error, {StackTrace? stack, EnumLogLevel? logLevel = EnumLogLevel.medium, String? message}) async {
+  static Future<void> e(dynamic error,
+      {StackTrace? stack, EnumLogLevel? logLevel = EnumLogLevel.medium, String? message}) async {
     assert(_instanse != null, "_instanse can not be null!");
     LogInfo log = _instanse!._newLog(EnumLogType.error, message);
     log.logType = EnumLogType.error;
@@ -187,6 +194,7 @@ class Log {
     var previusStack = _getStack(current);
     log.stackTrace = previusStack;
     _instanse!._printLog(log);
+    _instanse!._onDebug!(log);
   }
 
   Future<void> _updateStatus(List<LogInfo> logStatuses, EnumStatus enumStatus) async {
