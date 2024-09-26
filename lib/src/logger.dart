@@ -178,9 +178,9 @@ class Log {
     LogInfo log = _instanse!._newLog(EnumLogType.warning, text);
     _instanse!._printLog(log);
 
-    var current = StackTrace.current.toString();
-    var previusStack = _getStack(current);
-    log.stackTrace = previusStack;
+    // var current = StackTrace.current.toString();
+    // var previusStack = _getStack(current);
+    // log.stackTrace = previusStack;
     _instanse!._onWarning!(log);
     await _instanse!._save(log);
   }
