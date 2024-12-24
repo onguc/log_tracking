@@ -148,7 +148,7 @@ const LogInfoSchema = CollectionSchema(
   getId: _logInfoGetId,
   getLinks: _logInfoGetLinks,
   attach: _logInfoAttach,
-  version: '3.1.0+1',
+  version: '3.1.0+2',
 );
 
 int _logInfoEstimateSize(

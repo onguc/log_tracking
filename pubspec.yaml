@@ -9,26 +9,39 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  intl: ^0.19.0
-  device_info_plus: ^10.1.2
-  package_info_plus: ^8.0.2
-  connectivity_plus: ^6.0.5
+  intl: ^0.20.1
+  device_info_plus: ^11.2.0
+  package_info_plus: ^8.1.2
+  connectivity_plus: ^6.1.1
   json_annotation: ^4.9.0
   android_id: ^0.4.0
-  isar: ^3.1.0+1
-  isar_flutter_libs: ^3.1.0+1
-  path_provider: ^2.1.4
+  path_provider: ^2.1.5
+
+  isar:
+    git:
+      url: https://github.com/onguc/isar.git
+      path: packages/isar
+      ref: isar_3.1.0+2
+  isar_flutter_libs:
+    git:
+      url: https://github.com/onguc/isar.git
+      path: packages/isar_flutter_libs
+      ref: isar_3.1.0+2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^2.4.11
-  json_serializable: ^6.8.0
-  isar_generator: ^3.1.0+1
-  analyzer: ^6.7.0
-  flutter_lints: ^4.0.0
+  build_runner: ^2.4.14
+  json_serializable: ^6.9.2
+  isar_generator:
+    git:
+      url: https://github.com/onguc/isar.git
+      path: packages/isar_generator
+      ref: isar_3.1.0+2
+  analyzer: ^6.11.0
+  flutter_lints: ^5.0.0
 dependency_overrides:
-  analyzer: 5.13.0
+#  analyzer: 5.13.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
