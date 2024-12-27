@@ -86,7 +86,7 @@ class Log {
     await DeviceInfo.init(_instanse!._packageInfo!.version);
 
     if (saveToLocal) {
-      await BaseRepo.init();
+      await LogInfoRepo.init();
       KeyValueRepo.instance.increaseAppLaunchIndex();
       Future.delayed(const Duration(seconds: 1)).then((value) async {
         // IndexRepo.instance.increaseAppStartupIndex();
@@ -202,7 +202,7 @@ class Log {
       for (var e in logStatuses) {
         e.status = enumStatus;
       }
-      await LogInfoRepo.instance.saveAll(logStatuses);
+      await LogInfoRepo.instance.updateAll(logStatuses);
     }
   }
 

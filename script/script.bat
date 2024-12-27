@@ -4,3 +4,7 @@ dart run build_runner build --delete-conflicting-outputs  // yukardaki çalışm
 // paket yayınlama
 dart pub publish --dry-run  // hata kontrol
 dart pub publish  //yayınlama
+
+
+dart create -t package-simple log_db
+

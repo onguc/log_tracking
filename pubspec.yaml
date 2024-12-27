@@ -1,6 +1,6 @@
 name: log_tracking
-description:  A log management package; It saves the logs and synchronizes them to your server by integrating with other log libraries such as Firebase Crashlytics and Sentry.
-version: 0.3.14
+description: A log management package; It saves the logs and synchronizes them to your server by integrating with other log libraries such as Firebase Crashlytics and Sentry.
+version: 0.3.17
 homepage: https://github.com/onguc/log_tracking
 
 environment:
@@ -16,31 +16,34 @@ dependencies:
   json_annotation: ^4.9.0
   android_id: ^0.4.0
   path_provider: ^2.1.5
+#  realm: ^20.0.0
+  log_db:
+    path: log_db
 
-  isar:
-    git:
-      url: https://github.com/onguc/isar.git
-      path: packages/isar
-      ref: isar_3.1.0+2
-  isar_flutter_libs:
-    git:
-      url: https://github.com/onguc/isar.git
-      path: packages/isar_flutter_libs
-      ref: isar_3.1.0+2
+#  isar:
+#    git:
+#      url: https://github.com/onguc/isar.git
+#      path: packages/isar
+#      ref: isar_3.1.0+2
+#  isar_flutter_libs:
+#    git:
+#      url: https://github.com/onguc/isar.git
+#      path: packages/isar_flutter_libs
+#      ref: isar_3.1.0+2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: ^2.4.14
-  json_serializable: ^6.9.2
-  isar_generator:
-    git:
-      url: https://github.com/onguc/isar.git
-      path: packages/isar_generator
-      ref: isar_3.1.0+2
-  analyzer: ^6.11.0
+  json_serializable: ^6.8.0
+#  realm_generator: ^20.0.0
+  #  isar_generator:
+  #    git:
+  #      url: https://github.com/onguc/isar.git
+  #      path: packages/isar_generator
+  #      ref: isar_3.1.0+2
+  analyzer: 6.11.0
   flutter_lints: ^5.0.0
-dependency_overrides:
 #  analyzer: 5.13.0
 
 # For information on the generic Dart part of this file, see the

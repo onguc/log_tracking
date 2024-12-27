@@ -1,4 +1,4 @@
-import 'package:isar/isar.dart';
+import 'package:log_db/log_db.dart';
 import 'package:log_tracking/src/repo/base_repo.dart';
 import 'package:log_tracking/src/repo/key_value_repo.dart';
 
@@ -7,7 +7,7 @@ import '../enum/enum_status.dart';
 import '../model/log_info.dart';
 
 /// Asıl logların kaydedilip yönetildiği yerdir
-class LogInfoRepo extends BaseRepo<LogInfo> {
+class LogInfoRepo {
   static LogInfoRepo? _instance;
 
   static LogInfoRepo get instance {
@@ -15,20 +15,70 @@ class LogInfoRepo extends BaseRepo<LogInfo> {
     return _instance!;
   }
 
+  static late final LogManager db;
+
+  static Future<void> init() async {
+    // var path = await _createFolderIfNotExists();
+
+    db = await LogManager.open();
+  }
+
   LogInfoRepo._();
 
-  @override
-  Future<int> save(LogInfo t) {
+  Future<void> save(LogInfo t) {
     if (t.id == null) {
       var repo = KeyValueRepo.instance;
       t.launchIndex = repo.appLaunchIndex;
       t.errorIndex = repo.errorIndex;
+      return db.insertLog(toMap(t));
+    } else {
+      return Future.value(null);
     }
-    return super.save(t);
   }
 
-  Future<List<LogInfo?>> getLogs(List<int> ids) {
-    return getAllByIds(ids);
+  updateAll(List<LogInfo> loginfos){
+    //todo doldurulmalı
+    db.updateUnsentToSent();
+  }
+
+  toMap(LogInfo log) {
+    return {
+      'id': log.id,
+      'launchIndex': log.launchIndex,
+      'errorIndex': log.errorIndex,
+      'className': log.className,
+      'methodName': log.methodName,
+      'text': log.text,
+      'dateTime': log.dateTime?.toIso8601String(),
+      'timeZone': log.timeZone,
+      'logType': log.logType?.name,
+      'errorString': log.errorString,
+      'stacktraceString': log.stacktraceString,
+      'version': log.version,
+      'logLevel': log.logLevel?.name,
+      'logTypeGroup': log.logTypeGroup?.name,
+      'status': log.status?.name,
+      'groupId': log.groupId,
+    };
+  }
+
+  LogInfo _fromMap(Map<String, dynamic> json) {
+    final log = LogInfo(className: json['className']);
+    log.id = json['id'];
+    log.launchIndex = json['launchIndex'];
+    log.errorIndex = json['errorIndex'];
+    log.methodName = json['methodName'];
+    log.text = json['text'];
+    log.dateTime = json['dateTime'] != null ? DateTime.parse(json['dateTime']) : null;
+    log.timeZone = json['timeZone'];
+    // Enum dönüşümlerini burada yapmanız gerekecek
+    // log.logType = EnumLogType.values.firstWhere((e) => e.toString() == json['logType']);
+    log.errorString = json['errorString'];
+    log.stacktraceString = json['stacktraceString'];
+    log.version = json['version'];
+    // log.status = EnumStatus.values.firstWhere((e) => e.toString() == json['status']);
+    log.groupId = json['groupId'];
+    return log;
   }
 
   bool _isEnteredInDeleteMethode = false;
@@ -38,14 +88,8 @@ class LogInfoRepo extends BaseRepo<LogInfo> {
     if (!_isEnteredInDeleteMethode) {
       try {
         _isEnteredInDeleteMethode = true;
-        DateTime date7DaysAgo = DateTime.now().subtract(const Duration(days: 7));
-        List<LogInfo> logs7DaysAgo = await baseCollection.filter().dateTimeLessThan(date7DaysAgo).statusEqualTo(EnumStatus.sent).findAll();
-        if (logs7DaysAgo.isNotEmpty) {
-          var idList = logs7DaysAgo.map((e) => e.id!).toList();
-          int count = await deleteAllByIds(idList);
-          return count;
-        }
-        return 0;
+        int count = await db.deleteLogsSent7DaysEgo();
+        return count;
       } on Exception catch (e) {
         _isEnteredInDeleteMethode = false;
         Log.e(e);
@@ -55,12 +99,18 @@ class LogInfoRepo extends BaseRepo<LogInfo> {
   }
 
   Future<List<LogInfo>> getUnsentLogs() async {
-    var list = await baseCollection.filter().statusEqualTo(EnumStatus.unsent).findAll();
+    var mapList = await db.getLogsByStatus(EnumStatus.unsent.name);
+    var list = mapList.map((e) => _fromMap(e)).toList();
     return list;
   }
 
   Future<List<LogInfo>> getUnsentLogByErrorIndex(int errorIndex) async {
-    var list = await baseCollection.filter().errorIndexEqualTo(errorIndex).statusEqualTo(EnumStatus.unsent).findAll();
+    var mapList = await db.getUnsentLogByErrorIndex(errorIndex);
+    var list = mapList.map((e) => _fromMap(e)).toList();
     return list;
+  }
+
+  Future<void> close(){
+    return Future.value(null);
   }
 }

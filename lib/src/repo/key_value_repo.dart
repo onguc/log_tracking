@@ -46,10 +46,11 @@ class KeyValueRepo extends BaseRepo<KeyValueEntity> {
   }
 
   String? _get(String key, {dynamic defaultValue}) {
-    int id = _fastHash(key);
-    var entity = baseCollection.getSync(id);
-    var val = entity?.value;
-    return val ?? defaultValue?.toString();
+    return "";
+    // int id = _fastHash(key);
+    // var entity = baseCollection.getSync(id);
+    // var val = entity?.value;
+    // return val ?? defaultValue?.toString();
   }
 
   /// isar key value şeklinde kabul etmediği için key int'a çeviriyoruz

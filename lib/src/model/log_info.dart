@@ -1,4 +1,3 @@
-import 'package:isar/isar.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:log_tracking/src/enum/enum_status.dart';
 import 'package:log_tracking/src/extensions/extension.dart';
@@ -12,7 +11,6 @@ import '../utils/string_util.dart';
 part 'log_info.g.dart';
 
 @JsonSerializable()
-@collection
 class LogInfo extends BaseEntity {
   LogInfo({this.className}) {
     dateTime = DateTime.now();
@@ -20,41 +18,41 @@ class LogInfo extends BaseEntity {
   }
 
   int? launchIndex;
-  @Index()
+  // @Index()
   int? errorIndex;
   String? className;
   String? methodName;
   String? text;
-  @Index()
+  // @Index()
   DateTime? dateTime;
   String? timeZone;
 
-  @Enumerated(EnumType.name)
+  // @Enumerated(EnumType.name)
   EnumLogType? logType;
   String? errorString;
   String? stacktraceString;
   String? version;
-  @Enumerated(EnumType.name)
+  // @Enumerated(EnumType.name)
   EnumLogLevel? logLevel;
-  @Enumerated(EnumType.name)
+  // @Enumerated(EnumType.name)
   EnumLogTypeGroup? logTypeGroup;
 
   /// logun sunucuya gönderilme durumunu gösterir
-  @Index()
-  @Enumerated(EnumType.name)
+  // @Index()
+  // @Enumerated(EnumType.name)
   EnumStatus? status = EnumStatus.unsent;
 
   /// bir hata çıkana kadar olan logların grup id'si en son çıkan hataya kadar aynıdır. Hatadan sonraki logların groupId'si bir arttırılır
   int? groupId;
 
-  @ignore
+  // @ignore
   @JsonKey(includeFromJson: false, includeToJson: false)
   StackTrace? stackTrace;
 
   // String? logTypeString;
   dynamic _error;
 
-  @ignore
+  // @ignore
   @JsonKey(includeFromJson: false, includeToJson: false)
   dynamic get error {
     return _error;

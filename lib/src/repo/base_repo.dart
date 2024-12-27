@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:isar/isar.dart';
+import 'package:log_db/log_db.dart';
 import 'package:log_tracking/src/model/base_entity.dart';
 import 'package:log_tracking/src/model/log_info.dart';
 import 'package:log_tracking/src/model/key_value_entity.dart';
@@ -8,56 +8,20 @@ import 'package:path_provider/path_provider.dart';
 
 /// The standard crud transactions of repos take place within this class
 abstract class BaseRepo<T extends BaseEntity> {
-  static late final Isar _isar;
+  static late final LogManager db;
 
   /// start Db
   static Future<void> init() async {
-    var path = await _createFolderIfNotExists();
+    // var path = await _createFolderIfNotExists();
 
-    _isar = await Isar.open(
-      [
-        LogInfoSchema,
-        KeyValueEntitySchema,
-      ],
-      name: "log_tracking",
-      inspector: true,
-      directory: path,
-    );
+    db = await LogManager.open();
   }
 
-  /// in special cases, it allows repos to reach _isar in the base repo
-  Isar get isar {
-    return _isar;
-  }
-
-  /// get entity collection from generic
-  IsarCollection<T> get baseCollection => _isar.collection<T>();
-
-  /// get by Id
-  Future<T?> getById(int keyId) {
-    return baseCollection.get(keyId);
-  }
-
-
-
-  /// get All entities
-  Future<List<T>> getAlls() {
-    return baseCollection.where().findAll();
-  }
-
-
-  /// get All entities by Id List
-  Future<List<T?>> getAllByIds(List<int> ids) {
-    return baseCollection.getAll(ids);
-  }
 
   /// save entity
   Future<int> save(T t) {
-    return _isar.writeTxn(() async {
-      int id = await baseCollection.put(t);
-      t.id = id;
-      return id;
-    });
+   // db.insertLog(t);
+    return Future.value(1);
   }
 
   /// add entity
@@ -72,27 +36,35 @@ abstract class BaseRepo<T extends BaseEntity> {
 
   /// save multiple entity
   Future<List<int>> saveAll(List<T> tList) {
-    return _isar.writeTxn(() => baseCollection.putAll(tList));
+    // return _isar.writeTxn(() => baseCollection.putAll(tList));
+    return Future.value(<int>[]);
   }
 
   /// delete by Id
   Future<bool> deleteById(int id) {
-    return _isar.writeTxn(() => baseCollection.delete(id));
+    // return _isar.writeTxn(() => baseCollection.delete(id));
+    return Future.value(false);
+
   }
 
   /// delete by Id list
   Future<int> deleteAllByIds(List<int> ids) {
-    return _isar.writeTxn(() => baseCollection.deleteAll(ids));
+    // return _isar.writeTxn(() => baseCollection.deleteAll(ids));
+    return Future.value(0);
+
   }
 
   /// clear all collection
   Future<int> clearAll() {
-    return _isar.writeTxn(() => baseCollection.where().deleteAll());
+    return Future.value(0);
+
+    // return _isar.writeTxn(() => baseCollection.where().deleteAll());
   }
 
   /// closes the db
   Future<void> close() {
-    return _isar.close();
+    return Future.value();
+    // return _isar.close();
   }
 
 // final cheapest = await isar.products.filter()
