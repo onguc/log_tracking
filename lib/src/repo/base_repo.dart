@@ -2,9 +2,6 @@ import 'dart:io';
 
 import 'package:log_db/log_db.dart';
 import 'package:log_tracking/src/model/base_entity.dart';
-import 'package:log_tracking/src/model/log_info.dart';
-import 'package:log_tracking/src/model/key_value_entity.dart';
-import 'package:path_provider/path_provider.dart';
 
 /// The standard crud transactions of repos take place within this class
 abstract class BaseRepo<T extends BaseEntity> {
@@ -17,10 +14,9 @@ abstract class BaseRepo<T extends BaseEntity> {
     db = await LogManager.open(true);
   }
 
-
   /// save entity
   Future<int> save(T t) {
-   // db.insertLog(t);
+    // db.insertLog(t);
     return Future.value(1);
   }
 
@@ -44,14 +40,12 @@ abstract class BaseRepo<T extends BaseEntity> {
   Future<bool> deleteById(int id) {
     // return _isar.writeTxn(() => baseCollection.delete(id));
     return Future.value(false);
-
   }
 
   /// delete by Id list
   Future<int> deleteAllByIds(List<int> ids) {
     // return _isar.writeTxn(() => baseCollection.deleteAll(ids));
     return Future.value(0);
-
   }
 
   /// clear all collection

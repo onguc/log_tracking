@@ -1,5 +1,4 @@
 import 'package:log_db/log_db.dart';
-import 'package:log_tracking/src/repo/base_repo.dart';
 import 'package:log_tracking/src/repo/key_value_repo.dart';
 
 import '../../log_tracking.dart';

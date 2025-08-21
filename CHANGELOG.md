@@ -1,3 +1,6 @@
+## 0.4.0
+* Isar Db removed
+* Compatibility with Dart 3.9.0
 ## 0.3.13
 * Date corrections have been made
 * Design improvements have been made
