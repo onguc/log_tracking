@@ -57,10 +57,10 @@ class Log {
   late EnumLogTypeGroup logTypeGroup;
   late bool _saveToLocal;
 
-  static Log? _instanse;
+  static Log? _instance;
 
   ///  Start log_tracking by calling this method in the main method
-  static Future<void> init({
+  static Future<bool> init({
     bool saveToLocal = false,
     Function(LogInfo val)? onWarning,
     Function(LogInfo val)? onInfo,
@@ -68,53 +68,59 @@ class Log {
     required Function(LogInfo val) onError,
     Future<bool> Function(LogInfoRequest request)? onSendToServer,
   }) async {
-    if (_instanse != null) return;
-    bool isCanSentToServer = onSendToServer != null;
-    assert(!(isCanSentToServer && !saveToLocal), 'The url cannot be full when the saveToLocal is false');
-    _instanse = Log._(
-      saveToLocal: saveToLocal,
-      onInfo: onInfo ?? (log) {},
-      onError: onError,
-      onWarning: onWarning ?? (log) {},
-      onDebug: onDebug ?? (log) {},
-      onSendToServer: onSendToServer ?? (LogInfoRequest request) => Future.value(false),
-    );
-    if (isCanSentToServer) {
-      checkConnectivity();
-    }
-    _instanse!._packageInfo = await PackageInfo.fromPlatform();
-    await DeviceInfo.init(_instanse!._packageInfo!.version);
+    try {
+      if (_instance != null) return true;
+      bool isCanSentToServer = onSendToServer != null;
+      assert(!(isCanSentToServer && !saveToLocal), 'The url cannot be full when the saveToLocal is false');
+      _instance = Log._(
+        saveToLocal: saveToLocal,
+        onInfo: onInfo ?? (log) {},
+        onError: onError,
+        onWarning: onWarning ?? (log) {},
+        onDebug: onDebug ?? (log) {},
+        onSendToServer: onSendToServer ?? (LogInfoRequest request) => Future.value(false),
+      );
+      if (isCanSentToServer) {
+        checkConnectivity();
+      }
+      _instance!._packageInfo = await PackageInfo.fromPlatform();
+      await DeviceInfo.init(_instance!._packageInfo!.version);
 
-    if (saveToLocal) {
-      await LogInfoRepo.init();
-      KeyValueRepo.instance.increaseAppLaunchIndex();
-      Future.delayed(const Duration(seconds: 1)).then((value) async {
-        // IndexRepo.instance.increaseAppStartupIndex();
-        if (isCanSentToServer) {
-          isOnlineNotifier.addListener(() async {
-            var isOnline = isOnlineNotifier.value;
-            if (isOnline) {
-              var unsentLogs = await LogInfoRepo.instance.getUnsentLogs();
-              LogInfoRepo.instance;
-              LogInfoRequest request = _instanse!._getLogInfoRequest(unsentLogs);
-              try {
-                await _instanse!._updateStatus(unsentLogs, EnumStatus.sending);
-                bool isSentSuccess = await _instanse!._onSendToServer!(request);
-                if (isSentSuccess) {
-                  _instanse!._updateStatus(unsentLogs, EnumStatus.sent);
-                  await LogInfoRepo.instance.deleteLogsFrom7DaysAgo();
-                } else {
-                  Log.w("log sending is not successful");
-                  _instanse!._updateStatus(unsentLogs, EnumStatus.unsent);
+      if (saveToLocal) {
+        await LogInfoRepo.init(saveToLocal: saveToLocal);
+        KeyValueRepo.instance.increaseAppLaunchIndex();
+        Future.delayed(const Duration(seconds: 1)).then((value) async {
+          // IndexRepo.instance.increaseAppStartupIndex();
+          if (isCanSentToServer) {
+            isOnlineNotifier.addListener(() async {
+              var isOnline = isOnlineNotifier.value;
+              if (isOnline) {
+                var unsentLogs = await LogInfoRepo.instance.getUnsentLogs();
+                LogInfoRepo.instance;
+                LogInfoRequest request = _instance!._getLogInfoRequest(unsentLogs);
+                try {
+                  await _instance!._updateStatus(unsentLogs, EnumStatus.sending);
+                  bool isSentSuccess = await _instance!._onSendToServer!(request);
+                  if (isSentSuccess) {
+                    _instance!._updateStatus(unsentLogs, EnumStatus.sent);
+                    await LogInfoRepo.instance.deleteLogsFrom7DaysAgo();
+                  } else {
+                    Log.w("log sending is not successful");
+                    _instance!._updateStatus(unsentLogs, EnumStatus.unsent);
+                  }
+                } catch (e) {
+                  Log.e(e);
+                  _instance!._updateStatus(unsentLogs, EnumStatus.unsent);
                 }
-              } catch (e) {
-                Log.e(e);
-                _instanse!._updateStatus(unsentLogs, EnumStatus.unsent);
               }
-            }
-          });
-        }
-      });
+            });
+          }
+        });
+      }
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
     }
   }
 
@@ -122,11 +128,11 @@ class Log {
   /// It is sent to the remote server together with the Log.e(...) method
   static Future<void> i(String text) async {
     try {
-      assert(_instanse != null, "_instanse can not be null!");
-      LogInfo log = _instanse!._newLog(EnumLogType.info, text);
-      _instanse!._printLog(log);
-      _instanse!._onInfo!(log);
-      await _instanse!._save(log);
+      assert(_instance != null, "_instanse can not be null!");
+      LogInfo log = _instance!._newLog(EnumLogType.info, text);
+      _instance!._printLog(log);
+      _instance!._onInfo!(log);
+      await _instance!._save(log);
     } catch (e, s) {
       if (kDebugMode) {
         print("$e \n$s");
@@ -136,10 +142,9 @@ class Log {
 
   /// When Exceptions and Errors appear, we can log them with this method.
   /// If there is an Internet connection, it is instantly sent to the remote server along with the previous info and warning logs. Or it will be sent together with the first internet connection
-  static Future<void> e(dynamic error,
-      {StackTrace? stack, EnumLogLevel? logLevel = EnumLogLevel.medium, String? message}) async {
-    assert(_instanse != null, "_instanse can not be null!");
-    LogInfo log = _instanse!._newLog(EnumLogType.error, message);
+  static Future<void> e(dynamic error, {StackTrace? stack, EnumLogLevel? logLevel = EnumLogLevel.medium, String? message}) async {
+    assert(_instance != null, "_instanse can not be null!");
+    LogInfo log = _instance!._newLog(EnumLogType.error, message);
     log.logType = EnumLogType.error;
     log.logLevel = logLevel;
     if (stack == null) {
@@ -157,44 +162,44 @@ class Log {
     log.error = error;
     log.stackTrace = stack;
     log.stacktraceString = stack?.toString();
-    if (!kIsWeb && _instanse!._saveToLocal) {
-      await _instanse!._save(log);
+    _instance!._printLog(log);
+    if (!kIsWeb && _instance!._saveToLocal) {
+      await _instance!._save(log);
       await KeyValueRepo.instance.increaseErrorIndex();
 
-      _instanse!._onError!(log);
+      _instance!._onError!(log);
       List<LogInfo> unsentLogs = await LogInfoRepo.instance.getUnsentLogByErrorIndex(log.errorIndex!);
-      LogInfoRequest request = _instanse!._getLogInfoRequest(unsentLogs);
-      _instanse!._onSendToServer!(request);
+      LogInfoRequest request = _instance!._getLogInfoRequest(unsentLogs);
+      _instance!._onSendToServer!(request);
     } else {
-      _instanse!._onError!(log);
+      _instance!._onError!(log);
     }
-    _instanse!._printLog(log);
   }
 
   /// we print logs that are not errors, but have the nature of warnings, using this method.
   /// It is sent to the remote server together with the Log.e(...) method
   static Future<void> w(String text) async {
-    assert(_instanse != null, "_instanse can not be null!");
-    LogInfo log = _instanse!._newLog(EnumLogType.warning, text);
-    _instanse!._printLog(log);
+    assert(_instance != null, "_instanse can not be null!");
+    LogInfo log = _instance!._newLog(EnumLogType.warning, text);
+    _instance!._printLog(log);
 
     // var current = StackTrace.current.toString();
     // var previusStack = _getStack(current);
     // log.stackTrace = previusStack;
-    _instanse!._onWarning!(log);
-    await _instanse!._save(log);
+    _instance!._onWarning!(log);
+    await _instance!._save(log);
   }
 
   /// With this method, we print the logs in debug mode. These logs are not sent to the server or to third-party libraries
   static Future<void> d(String text) async {
-    assert(_instanse != null, "_instanse can not be null!");
-    LogInfo log = _instanse!._newLog(EnumLogType.debug, text);
+    assert(_instance != null, "_instanse can not be null!");
+    LogInfo log = _instance!._newLog(EnumLogType.debug, text);
     log.logType = EnumLogType.debug;
     var current = StackTrace.current.toString();
     var previusStack = _getStack(current);
     log.stackTrace = previusStack;
-    _instanse!._printLog(log);
-    _instanse!._onDebug!(log);
+    _instance!._printLog(log);
+    _instance!._onDebug!(log);
   }
 
   Future<void> _updateStatus(List<LogInfo> logStatuses, EnumStatus enumStatus) async {
@@ -265,7 +270,7 @@ class Log {
     String stackTrace = StackTrace.current.toString();
     try {
       if (kIsWeb) {
-        var appName = _instanse!._packageInfo?.appName;
+        var appName = _instance!._packageInfo?.appName;
         if (appName.isEmpty) {
           var row = stackTrace.split("\n")[7];
           var methodName = row.split(" ").last;

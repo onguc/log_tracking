@@ -39,32 +39,31 @@ class KeyValueRepo extends BaseRepo<KeyValueEntity> {
 
   Future<void> _put(String key, dynamic value) {
     KeyValueEntity entity = KeyValueEntity(
-      id: _fastHash(key),
+      id: stringToIntFNV(key),
       value: value?.toString(),
     );
     return save(entity);
   }
 
   String? _get(String key, {dynamic defaultValue}) {
-    return "";
+    return "1";
     // int id = _fastHash(key);
     // var entity = baseCollection.getSync(id);
     // var val = entity?.value;
     // return val ?? defaultValue?.toString();
   }
 
-  /// isar key value şeklinde kabul etmediği için key int'a çeviriyoruz
-  int _fastHash(String string) {
-    var hash = 0xcbf29ce484222325;
+  static int stringToIntFNV(String key) {
+    const int fnvPrime = 16777619;
+    const int fnvOffsetBasis = 2166136261;
 
-    var i = 0;
-    while (i < string.length) {
-      final codeUnit = string.codeUnitAt(i++);
-      hash ^= codeUnit >> 8;
-      hash *= 0x100000001b3;
-      hash ^= codeUnit & 0xFF;
-      hash *= 0x100000001b3;
+    int hash = fnvOffsetBasis;
+    for (int i = 0; i < key.length; i++) {
+      hash ^= key.codeUnitAt(i);
+      hash *= fnvPrime;
+      hash = hash & 0xFFFFFFFF; // 32-bit sınırı
     }
-    return hash;
+
+    return hash.abs();
   }
 }

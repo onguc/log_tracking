@@ -14,7 +14,7 @@ abstract class BaseRepo<T extends BaseEntity> {
   static Future<void> init() async {
     // var path = await _createFolderIfNotExists();
 
-    db = await LogManager.open();
+    db = await LogManager.open(true);
   }
 
 

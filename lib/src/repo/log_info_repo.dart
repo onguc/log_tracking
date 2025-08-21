@@ -17,10 +17,10 @@ class LogInfoRepo {
 
   static late final LogManager db;
 
-  static Future<void> init() async {
+  static Future<void> init({required bool saveToLocal}) async {
     // var path = await _createFolderIfNotExists();
 
-    db = await LogManager.open();
+    db = await LogManager.open(saveToLocal); 
   }
 
   LogInfoRepo._();
@@ -36,7 +36,7 @@ class LogInfoRepo {
     }
   }
 
-  updateAll(List<LogInfo> loginfos){
+  updateAll(List<LogInfo> loginfos) {
     //todo doldurulmalı
     db.updateUnsentToSent();
   }
@@ -110,7 +110,7 @@ class LogInfoRepo {
     return list;
   }
 
-  Future<void> close(){
+  Future<void> close() {
     return Future.value(null);
   }
 }

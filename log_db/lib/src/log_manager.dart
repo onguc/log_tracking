@@ -6,6 +6,10 @@ import 'dart:io';
 import 'package:log_db/src/date_index.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
+import 'package:synchronized/synchronized.dart';
+
+var lockLog = Lock();
+var lockIndex = Lock();
 
 class LogIndex {
   final String field;
@@ -15,30 +19,38 @@ class LogIndex {
   LogIndex(this.field, String baseDir) : indexPath = path.join(baseDir, '${field}_index.json');
 
   Future<void> load() async {
-    final file = File(indexPath);
-    if (await file.exists()) {
-      final content = await file.readAsString();
-      Map<String, dynamic> data = json.decode(content);
+    try {
+      final file = File(indexPath);
+      if (await file.exists()) {
+        var content = await file.readAsString();
+        if (content.isEmpty) content = "{}";
 
-      try {
-        data!.forEach((key, value) {
-          index[key] = List<int>.from(value);
-        });
-      } catch (e) {
-        int x = 0;
+        try {
+          Map<String, dynamic> data = json.decode(content);
+          data!.forEach((key, value) {
+            index[key] = List<int>.from(value);
+          });
+        } catch (e) {
+          int x = 0;
+          print(e);
+        }
+      } else {
+        await file.create();
       }
-    } else {
-      await file.create();
+    } catch (e) {
+      print(e);
     }
   }
 
-  Future<void> save() async {
-    final file = File(indexPath);
-    try {
-      await file.writeAsString(json.encode(index));
-    } catch (e) {
-      int x = 0;
-    }
+  Future<void> save() {
+    return lockIndex.synchronized(() async {
+      final file = File(indexPath);
+      try {
+        await file.writeAsString(json.encode(index));
+      } catch (e) {
+        int x = 0;
+      }
+    });
   }
 
   void addEntry(String key, int position) {
@@ -65,10 +77,14 @@ class LogManager {
 
   static LogManager? _instanse;
 
-  static Future<LogManager> open() async {
+  static Future<LogManager> open(bool saveToLocal) async {
     if (_instanse == null) {
       LogManager logDatabase = LogManager._();
-      await logDatabase.initialize();
+      if (saveToLocal) {
+        lockLog.synchronized(() async {
+          await logDatabase.initialize();
+        });
+      }
       _instanse = logDatabase;
     }
     return _instanse!;
@@ -127,8 +143,12 @@ class LogManager {
         continue;
       }
 
-      final jsonData = json.decode(line);
-      _indexLog(jsonData, _currentPosition);
+      try {
+        final jsonData = json.decode(line);
+        _indexLog(jsonData, _currentPosition);
+      } catch (e) {
+        int x = 0;
+      }
       _currentPosition += line.length + 1;
     }
 
@@ -163,22 +183,24 @@ class LogManager {
     }
   }
 
-  Future<void> insertLog(Map<String, dynamic> map) async {
-    final jsonString = json.encode(map);
-    final position = _currentPosition;
-    await _logFile.writeAsString('$jsonString\n', mode: FileMode.append);
+  Future<void> insertLog(Map<String, dynamic> map) {
+    return lockLog.synchronized(() async {
+      final jsonString = json.encode(map);
+      final position = _currentPosition;
+      await _logFile.writeAsString('$jsonString\n', mode: FileMode.append);
 
-    final Map<String, dynamic> jsonData = json.decode(jsonString);
-    _indexLog(jsonData, position);
-    _currentPosition += jsonString.length + 1;
+      // final Map<String, dynamic> jsonData = json.decode(jsonString);
+      _indexLog(map, position);
+      _currentPosition += jsonString.length + 1;
 
-    // İndeksleri kaydet
-    await Future.wait([
-      statusIndex.save(),
-      logTypeIndex.save(),
-      dateIndex.save(),
-      errorIndex.save(),
-    ]);
+      // İndeksleri kaydet
+      await Future.wait([
+        statusIndex.save(),
+        logTypeIndex.save(),
+        dateIndex.save(),
+        errorIndex.save(),
+      ]);
+    });
   }
 
   Future<void> deleteByPositions() async {
