@@ -78,22 +78,61 @@ class LogInfo extends BaseEntity {
   }
 
   String toStringForIos() {
-    String errorStr = errorString.isNotEmpty ? "\n-->ERROR-DETAIL: $_error" : "";
-    String stactraceStr = stacktraceString.isNotEmpty ? "\n-->STACK-TRACE: $stacktraceString" : "";
-    var timeString = dateTime!.toIso8601String();
-    var space = _spaces[logType] ?? "";
-
-    return "[${logType?.name.toUpperCase()}]$space [$version] [$timeString][$timeZone]  [$className]  [$methodName]  $text  $errorStr  $stactraceStr";
+    return _toStringWithBox(useColors: false);
   }
 
   String toStringWithColorCode() {
-    String errorStr = errorString.isNotEmpty ? "\n${"-->ERROR-DETAIL".red}: $errorString" : "";
-    String stactraceStr = stacktraceString.isNotEmpty ? "\n${"-->STACK-TRACE".red}: $stacktraceString" : "";
-    var timeString = dateTime!.toIso8601String();
-    var space = _spaces[logType] ?? "";
-    var coloredLogType = _coloredLogTypes[logType] ?? logType!.name.toUpperCase();
-    var coloredText = logType == EnumLogType.warning ? text?.yellow : text?.blue;
-    return "[$coloredLogType]$space [${timeString.cyan}] [$className]  [$methodName]  $coloredText  $errorStr  $stactraceStr";
+    return _toStringWithBox(useColors: true);
+  }
+
+  String _toStringWithBox({required bool useColors}) {
+    var color = useColors ? _logColor(logType) : (String s) => s;
+    var typeName = logType?.name.toUpperCase() ?? "LOG";
+    var time = dateTime?.toIso8601String() ?? "";
+    var cls = className ?? "";
+    var mth = methodName ?? "";
+    var msg = text ?? "";
+
+    var header = "┌─ [$typeName] $time | $cls | $mth ────────────────────────────────────────────────────────".substring(0, 100);
+    var footer = "└───────────────────────────────────────────────────────────────────────────────────────────────────".substring(0, 100);
+    var separator = "├───────────────────────────────────────────────────────────────────────────────────────────────────".substring(0, 100);
+
+    StringBuffer buffer = StringBuffer();
+    buffer.writeln(color(header));
+    buffer.writeln(color("│ $msg"));
+
+    if (errorString != null && errorString!.isNotEmpty) {
+      buffer.writeln(color(separator));
+      buffer.writeln(color("│ ERROR: $errorString"));
+    }
+
+    if (stacktraceString != null && stacktraceString!.isNotEmpty) {
+      buffer.writeln(color(separator));
+      var lines = stacktraceString!.split('\n');
+      for (var line in lines) {
+        if (line.trim().isNotEmpty) {
+           buffer.writeln(color("│ $line"));
+        }
+      }
+    }
+    
+    buffer.write(color(footer));
+    return buffer.toString();
+  }
+
+  String Function(String) _logColor(EnumLogType? type) {
+    switch (type) {
+      case EnumLogType.error:
+        return (s) => s.red;
+      case EnumLogType.warning:
+        return (s) => s.yellow;
+      case EnumLogType.info:
+        return (s) => s.blue;
+      case EnumLogType.debug:
+        return (s) => s.green;
+      default:
+        return (s) => s.white;
+    }
   }
 
   final _spaces = {

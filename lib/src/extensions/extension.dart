@@ -21,4 +21,6 @@ extension ColorExtensionString on String {
   String get cyan => "\x1B[38;5;14m$this\x1B[0m";
 
   String get blue => "\x1B[38;5;12m$this\x1B[0m";
+
+  String get white => "\x1B[38;5;15m$this\x1B[0m";
 }
