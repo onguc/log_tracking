@@ -93,17 +93,65 @@ class LogInfo extends BaseEntity {
     var mth = methodName ?? "";
     var msg = text ?? "";
 
-    var header = "┌─ [$typeName] $time | $cls | $mth ────────────────────────────────────────────────────────".substring(0, 100);
-    var footer = "└───────────────────────────────────────────────────────────────────────────────────────────────────".substring(0, 100);
-    var separator = "├───────────────────────────────────────────────────────────────────────────────────────────────────".substring(0, 100);
+    const int boxWidth = 120;
+    
+    // Header setup
+    var headerStart = "┌─ [$typeName] $time | $cls | $mth ";
+    var headerLineLength = boxWidth - headerStart.length - 1; // -1 for corner
+    var headerLine = "";
+    if (headerLineLength > 0) {
+      headerLine = "".padRight(headerLineLength, "─");
+    }
+    var header = "$headerStart$headerLine┐";
+
+    var footerLineLength = boxWidth - 2; // -2 for corners
+    var footer = "└${"".padRight(footerLineLength, "─")}┘";
+    
+    var separatorLineLength = boxWidth - 2; // -2 for corners
+    var separator = "├${"".padRight(separatorLineLength, "─")}┤";
 
     StringBuffer buffer = StringBuffer();
     buffer.writeln(color(header));
-    buffer.writeln(color("│ $msg"));
+    
+    // Content formatter
+    String formatLine(String text) {
+      // Basic wrapping could be added here, but for now we truncate or pad
+      // To strictly close the box, we must ensure length is exactly boxWidth
+      // | text (pad) |
+      
+      var contentWidth = boxWidth - 4; // "| " + " |"
+      if (text.length > contentWidth) {
+         // simple truncate for now or let it overflow?
+         // user asked for a box, overflow breaks the box.
+         // Let's split if too long?
+         // For simplicity and speed in this iteration, let's just print multiple lines if long
+      }
+      
+      // We will handle multi-line text by splitting first
+      return "│ $text".padRight(boxWidth - 1) + "│";
+    }
+
+    // Message
+    var msgLines = msg.split('\n');
+    for(var line in msgLines) {
+       // Handle very long lines by splitting them
+       var contentWidth = boxWidth - 4;
+       if (line.length > contentWidth) {
+         int start = 0;
+         while (start < line.length) {
+            int end = start + contentWidth;
+            if (end > line.length) end = line.length;
+            buffer.writeln(color(formatLine(line.substring(start, end))));
+            start += contentWidth;
+         }
+       } else {
+         buffer.writeln(color(formatLine(line)));
+       }
+    }
 
     if (errorString != null && errorString!.isNotEmpty) {
       buffer.writeln(color(separator));
-      buffer.writeln(color("│ ERROR: $errorString"));
+      buffer.writeln(color(formatLine("ERROR: $errorString")));
     }
 
     if (stacktraceString != null && stacktraceString!.isNotEmpty) {
@@ -111,7 +159,19 @@ class LogInfo extends BaseEntity {
       var lines = stacktraceString!.split('\n');
       for (var line in lines) {
         if (line.trim().isNotEmpty) {
-           buffer.writeln(color("│ $line"));
+           var cleanLine = line.trim();
+           var contentWidth = boxWidth - 4;
+           if (cleanLine.length > contentWidth) {
+             int start = 0;
+             while (start < cleanLine.length) {
+                int end = start + contentWidth;
+                if (end > cleanLine.length) end = cleanLine.length;
+                buffer.writeln(color(formatLine(cleanLine.substring(start, end))));
+                start += contentWidth;
+             }
+           } else {
+             buffer.writeln(color(formatLine(cleanLine)));
+           }
         }
       }
     }
