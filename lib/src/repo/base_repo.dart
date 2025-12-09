@@ -72,14 +72,5 @@ abstract class BaseRepo<T extends BaseEntity> {
 //     .limit(4)
 //     .findAll();
 
-  static Future<String> _createFolderIfNotExists() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final path = Directory('${directory.path}/logs');
 
-    if (!(await path.exists())) {
-      var directory = await path.create();
-      return directory.path;
-    }
-    return directory.path;
-  }
 }

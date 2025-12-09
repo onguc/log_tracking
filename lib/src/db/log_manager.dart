@@ -147,7 +147,7 @@ class LogManager {
         final jsonData = json.decode(line);
         _indexLog(jsonData, _currentPosition);
       } catch (e) {
-        int x = 0;
+        print(e);
       }
       _currentPosition += line.length + 1;
     }
@@ -268,13 +268,6 @@ class LogManager {
         }
         rethrow;
       }
-    } else {
-      int x = 0;
-      // İşlem başarısız olduysa temp dosyayı sil
-      if (await tempFile.exists()) {
-        await tempFile.delete();
-      }
-      throw Exception('Log güncelleme işlemi başarısız oldu');
     }
   }
 
@@ -351,13 +344,6 @@ class LogManager {
         }
         rethrow;
       }
-    } else {
-      int x = 0;
-      // İşlem başarısız olduysa temp dosyayı sil
-      if (await tempFile.exists()) {
-        await tempFile.delete();
-      }
-      throw Exception('Log güncelleme işlemi başarısız oldu');
     }
   }
 
@@ -408,7 +394,7 @@ class LogManager {
         rethrow;
       }
     } catch (e) {
-      int x = 0;
+      // ignore
       // İşlem başarısız olduysa temp dosyayı sil
       if (await tempSink.exists()) {
         await tempSink.delete();
@@ -471,7 +457,7 @@ class LogManager {
             logs.add(jsonData);
           }
         } catch (e) {
-          int x = 0;
+          // ignore
         }
       }
     } finally {
