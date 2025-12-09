@@ -1,6 +1,7 @@
 import 'dart:io';
 
-import 'package:log_db/log_db.dart';
+import 'package:log_tracking/src/db/log_manager.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:log_tracking/src/model/base_entity.dart';
 
 /// The standard crud transactions of repos take place within this class

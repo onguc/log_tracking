@@ -15,10 +15,10 @@ dependencies:
   connectivity_plus: ^7.0.0
   json_annotation: ^4.9.0
   flutter_udid: ^4.1.1
+  path_provider: ^2.1.5
+  synchronized: ^3.4.0
 #  android_id: ^0.4.0
 #  realm: ^20.0.0
-  log_db:
-    path: log_db
 
 #  isar:
 #    git:

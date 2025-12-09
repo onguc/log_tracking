@@ -27,7 +27,7 @@ class DateIndex {
           positionIndex[value] = key;
         });
       } catch (e) {
-        int x = 0;
+        // ignore
       }
     } else {
       await file.create();
@@ -39,7 +39,7 @@ class DateIndex {
     try {
       await file.writeAsString(json.encode(dateIndex));
     } catch (e) {
-      int x = 0;
+      // ignore
     }
   }
 
@@ -57,5 +57,6 @@ class DateIndex {
     if (stringVal != null && stringVal.isNotEmpty) {
       return DateTime.parse(stringVal);
     }
+    return null;
   }
 }

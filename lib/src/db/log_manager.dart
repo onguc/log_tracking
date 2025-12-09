@@ -3,13 +3,14 @@
 
 import 'dart:convert';
 import 'dart:io';
-import 'package:log_db/src/date_index.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:synchronized/synchronized.dart';
 
-var lockLog = Lock();
-var lockIndex = Lock();
+import 'date_index.dart';
+
+final lockLog = Lock();
+final lockIndex = Lock();
 
 class LogIndex {
   final String field;
