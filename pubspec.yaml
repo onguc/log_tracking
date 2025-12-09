@@ -13,6 +13,7 @@ dependencies:
   device_info_plus: ^12.3.0
   package_info_plus: ^9.0.0
   connectivity_plus: ^7.0.0
+  path: ^1.9.0
   json_annotation: ^4.9.0
   flutter_udid: ^4.1.1
   path_provider: ^2.1.5

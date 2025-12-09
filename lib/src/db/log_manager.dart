@@ -28,11 +28,10 @@ class LogIndex {
 
         try {
           Map<String, dynamic> data = json.decode(content);
-          data!.forEach((key, value) {
+          data.forEach((key, value) {
             index[key] = List<int>.from(value);
           });
         } catch (e) {
-          int x = 0;
           print(e);
         }
       } else {
@@ -49,7 +48,7 @@ class LogIndex {
       try {
         await file.writeAsString(json.encode(index));
       } catch (e) {
-        int x = 0;
+        print(e);
       }
     });
   }
