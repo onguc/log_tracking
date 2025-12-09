@@ -6,15 +6,23 @@ import 'package:path/path.dart' as path;
 /// Created by onguc
 /// on 26.12.2024
 
+/// Date index for logs
 class DateIndex {
+  /// Field name
   final String field;
+
+  /// Index map
   final Map<String, int> dateIndex = {};
+
+  /// Position map
   final Map<int, String> positionIndex = {};
 
+  /// Path to index file
   final String indexPath;
 
   DateIndex(this.field, String baseDir) : indexPath = path.join(baseDir, '${field}_index.json');
 
+  /// Loads the index from disk
   Future<void> load() async {
     final file = File(indexPath);
     if (await file.exists()) {
@@ -34,6 +42,7 @@ class DateIndex {
     }
   }
 
+  /// Saves the index to disk
   Future<void> save() async {
     final file = File(indexPath);
     try {
@@ -43,15 +52,18 @@ class DateIndex {
     }
   }
 
+  /// Adds an entry to the index
   void addEntry(String key, int position) {
     dateIndex[key] = position;
     positionIndex[position] = key;
   }
 
+  /// Gets position for a key
   int getPosition(String key) {
     return dateIndex[key] ?? 0;
   }
 
+  /// Gets DateTime by position
   DateTime? getDateTimeByPosition(int key) {
     var stringVal = positionIndex[key];
     if (stringVal != null && stringVal.isNotEmpty) {
