@@ -118,6 +118,7 @@ class Log {
       }
       return true;
     } catch (e) {
+      // ignore: avoid_print
       print(e);
       return false;
     }
@@ -134,6 +135,7 @@ class Log {
       await _instance!._save(log);
     } catch (e, s) {
       if (kDebugMode) {
+        // ignore: avoid_print
         print("$e \n$s");
       }
     }
@@ -249,13 +251,17 @@ class Log {
     if (kDebugMode) {
       try {
         if (kIsWeb) {
+          // ignore: avoid_print
           print(log.toString());
         } else if (Platform.isIOS || Platform.isMacOS) {
+          // ignore: avoid_print
           print(log.toStringForIos());
         } else {
+          // ignore: avoid_print
           print(log.toStringWithColorCode());
         }
       } catch (e) {
+        // ignore: avoid_print
         print(log.toString());
       }
     }
@@ -301,6 +307,7 @@ class Log {
       }
     } catch (e) {
       if (kDebugMode) {
+        // ignore: avoid_print
         print(e);
       }
     }

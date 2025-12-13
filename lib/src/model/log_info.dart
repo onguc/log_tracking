@@ -93,60 +93,66 @@ class LogInfo extends BaseEntity {
     var mth = methodName ?? "";
     var msg = text ?? "";
 
-    const int boxWidth = 120;
-    
-    // Header setup
-    var headerStart = "┌─ [$typeName] $time | $cls | $mth ";
-    var headerLineLength = boxWidth - headerStart.length - 1; // -1 for corner
-    var headerLine = "";
-    if (headerLineLength > 0) {
-      headerLine = "".padRight(headerLineLength, "─");
-    }
-    var header = "$headerStart$headerLine┐";
+    // Charset selection
+    var hChar = useColors ? "─" : "-";
+    var vChar = useColors ? "│" : "|";
+    var tlChar = useColors ? "┌" : "+";
+    var trChar = useColors ? "┐" : "+";
+    var blChar = useColors ? "└" : "+";
+    var brChar = useColors ? "┘" : "+";
+    var mStartChar = useColors ? "├" : "+";
+    var mEndChar = useColors ? "┤" : "+";
 
-    var footerLineLength = boxWidth - 2; // -2 for corners
-    var footer = "└${"".padRight(footerLineLength, "─")}┘";
+    // Header Construction (calculate first to get exact length)
+    var headerStart = "$tlChar$hChar [$typeName] $time | $cls | $mth ";
     
-    var separatorLineLength = boxWidth - 2; // -2 for corners
-    var separator = "├${"".padRight(separatorLineLength, "─")}┤";
+    var lines = msg.split('\n');
+    var maxContentLen = 0;
+    for (var line in lines) {
+      if (line.length > maxContentLen) maxContentLen = line.length;
+    }
+    
+    if (errorString != null) {
+      var errLen = "ERROR: $errorString".length;
+      if (errLen > maxContentLen) maxContentLen = errLen;
+    }
+    
+    if (stacktraceString != null) {
+      var stLines = stacktraceString!.split('\n');
+      for (var line in stLines) {
+        if (line.trim().length > maxContentLen) maxContentLen = line.trim().length;
+      }
+    }
+
+    // Determine target width
+    // Needs to accommodate header (+1 for closing char)
+    // Needs to accommodate content (+4 for borders and padding)
+    var minHeaderWidth = headerStart.length + 1;
+    var minContentWidth = maxContentLen + 4;
+    
+    var targetWidth = minHeaderWidth > minContentWidth ? minHeaderWidth : minContentWidth;
+    if (targetWidth < 50) targetWidth = 50;
+
+    // Header
+    var headerTotalPadding = targetWidth - headerStart.length - 1;
+    if (headerTotalPadding < 0) headerTotalPadding = 0;
+    var header = "$headerStart${"".padRight(headerTotalPadding, hChar)}$trChar";
+
+    var footerPadding = targetWidth - 2;
+    var footer = "$blChar${"".padRight(footerPadding, hChar)}$brChar";
+    var separator = "$mStartChar${"".padRight(footerPadding, hChar)}$mEndChar";
 
     StringBuffer buffer = StringBuffer();
     buffer.writeln(color(header));
-    
-    // Content formatter
+
     String formatLine(String text) {
-      // Basic wrapping could be added here, but for now we truncate or pad
-      // To strictly close the box, we must ensure length is exactly boxWidth
-      // | text (pad) |
-      
-      var contentWidth = boxWidth - 4; // "| " + " |"
-      if (text.length > contentWidth) {
-         // simple truncate for now or let it overflow?
-         // user asked for a box, overflow breaks the box.
-         // Let's split if too long?
-         // For simplicity and speed in this iteration, let's just print multiple lines if long
-      }
-      
-      // We will handle multi-line text by splitting first
-      return "│ $text".padRight(boxWidth - 1) + "│";
+      var padding = targetWidth - text.length - 3; 
+      if (padding < 0) padding = 0;
+      return "$vChar $text".padRight(targetWidth - 1) + vChar;
     }
 
-    // Message
-    var msgLines = msg.split('\n');
-    for(var line in msgLines) {
-       // Handle very long lines by splitting them
-       var contentWidth = boxWidth - 4;
-       if (line.length > contentWidth) {
-         int start = 0;
-         while (start < line.length) {
-            int end = start + contentWidth;
-            if (end > line.length) end = line.length;
-            buffer.writeln(color(formatLine(line.substring(start, end))));
-            start += contentWidth;
-         }
-       } else {
-         buffer.writeln(color(formatLine(line)));
-       }
+    for (var line in lines) {
+       buffer.writeln(color(formatLine(line)));
     }
 
     if (errorString != null && errorString!.isNotEmpty) {
@@ -156,26 +162,14 @@ class LogInfo extends BaseEntity {
 
     if (stacktraceString != null && stacktraceString!.isNotEmpty) {
       buffer.writeln(color(separator));
-      var lines = stacktraceString!.split('\n');
-      for (var line in lines) {
+      var stLines = stacktraceString!.split('\n');
+      for (var line in stLines) {
         if (line.trim().isNotEmpty) {
-           var cleanLine = line.trim();
-           var contentWidth = boxWidth - 4;
-           if (cleanLine.length > contentWidth) {
-             int start = 0;
-             while (start < cleanLine.length) {
-                int end = start + contentWidth;
-                if (end > cleanLine.length) end = cleanLine.length;
-                buffer.writeln(color(formatLine(cleanLine.substring(start, end))));
-                start += contentWidth;
-             }
-           } else {
-             buffer.writeln(color(formatLine(cleanLine)));
-           }
+           buffer.writeln(color(formatLine(line.trim())));
         }
       }
     }
-    
+
     buffer.write(color(footer));
     return buffer.toString();
   }
@@ -202,10 +196,5 @@ class LogInfo extends BaseEntity {
     EnumLogType.debug: "  ",
   };
 
-  final _coloredLogTypes = {
-    EnumLogType.error: EnumLogType.error.red,
-    EnumLogType.warning: EnumLogType.warning.yellow,
-    EnumLogType.info: EnumLogType.info.blue,
-    EnumLogType.debug: EnumLogType.debug.green
-  };
+
 }

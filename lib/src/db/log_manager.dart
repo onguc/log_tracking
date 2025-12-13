@@ -1,5 +1,5 @@
-/// Created by onguc
-/// on 25.12.2024
+// Created by onguc
+// on 25.12.2024
 
 import 'dart:convert';
 import 'dart:io';
@@ -32,12 +32,14 @@ class LogIndex {
             index[key] = List<int>.from(value);
           });
         } catch (e) {
+          // ignore: avoid_print
           print(e);
         }
       } else {
         await file.create();
       }
     } catch (e) {
+      // ignore: avoid_print
       print(e);
     }
   }
@@ -48,6 +50,7 @@ class LogIndex {
       try {
         await file.writeAsString(json.encode(index));
       } catch (e) {
+        // ignore: avoid_print
         print(e);
       }
     });
@@ -147,6 +150,7 @@ class LogManager {
         final jsonData = json.decode(line);
         _indexLog(jsonData, _currentPosition);
       } catch (e) {
+        // ignore: avoid_print
         print(e);
       }
       _currentPosition += line.length + 1;
