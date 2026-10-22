@@ -103,61 +103,97 @@ class LogInfo extends BaseEntity {
     var mStartChar = useColors ? "├" : "+";
     var mEndChar = useColors ? "┤" : "+";
 
-    // Header Construction (calculate first to get exact length)
+    // Header Construction
     var headerStart = "$tlChar$hChar [$typeName] $time | $cls | $mth ";
     
+    // Calculate content width
     var lines = msg.split('\n');
     var maxContentLen = 0;
-    for (var line in lines) {
-      if (line.length > maxContentLen) maxContentLen = line.length;
+    
+    // Helper to calculate max length
+    void updateMaxLen(String s) {
+      if (s.length > maxContentLen) maxContentLen = s.length;
     }
     
+    for (var line in lines) updateMaxLen(line);
+    
     if (errorString != null) {
-      var errLen = "ERROR: $errorString".length;
-      if (errLen > maxContentLen) maxContentLen = errLen;
+      updateMaxLen("ERROR: $errorString");
     }
     
     if (stacktraceString != null) {
       var stLines = stacktraceString!.split('\n');
-      for (var line in stLines) {
-        if (line.trim().length > maxContentLen) maxContentLen = line.trim().length;
-      }
+      for (var line in stLines) updateMaxLen(line.trim());
     }
 
     // Determine target width
-    // Needs to accommodate header (+1 for closing char)
-    // Needs to accommodate content (+4 for borders and padding)
     var minHeaderWidth = headerStart.length + 1;
-    var minContentWidth = maxContentLen + 4;
+    var minContentWidth = maxContentLen + 4; // +4 for "| " and " |"
     
     var targetWidth = minHeaderWidth > minContentWidth ? minHeaderWidth : minContentWidth;
     if (targetWidth < 50) targetWidth = 50;
+    
+    // Cap target width to avoid console truncation
+    const int maxWidth = 120;
+    if (targetWidth > maxWidth) targetWidth = maxWidth;
 
     // Header
     var headerTotalPadding = targetWidth - headerStart.length - 1;
-    if (headerTotalPadding < 0) headerTotalPadding = 0;
+    if (headerTotalPadding < 0) headerTotalPadding = 0; // Should not happen if maxWidth > headerStart
+    
+    // If header is too long for maxWidth, we might need to truncate it too, but let's assume header fits generally or just cut it.
+    // Ideally we won't truncate header start, but the padding logic above handles it safely (0 padding).
+    
     var header = "$headerStart${"".padRight(headerTotalPadding, hChar)}$trChar";
+    // Check if header is actually wider than targetWidth (if headerStart itself was > maxWidth)
+    if (header.length > targetWidth) {
+       // This implies maxWidth is too small for header. Let's allow header to dictate min width if it exceeds maxWidth? 
+       // Or just truncate header? Better to let it be slightly wider or truncate. 
+       // For safety, let's keep targetWidth at least as big as headerStart + 2
+       if (targetWidth < headerStart.length + 1) {
+         targetWidth = headerStart.length + 1;
+         // Recalculate header with 0 padding
+         header = "$headerStart$trChar";
+       }
+    }
 
     var footerPadding = targetWidth - 2;
+    // ensure non-negative
+    if (footerPadding < 0) footerPadding = 0;
+    
     var footer = "$blChar${"".padRight(footerPadding, hChar)}$brChar";
     var separator = "$mStartChar${"".padRight(footerPadding, hChar)}$mEndChar";
 
     StringBuffer buffer = StringBuffer();
     buffer.writeln(color(header));
 
-    String formatLine(String text) {
-      var padding = targetWidth - text.length - 3; 
-      if (padding < 0) padding = 0;
-      return "$vChar $text".padRight(targetWidth - 1) + vChar;
+    // Helper to wrap and format lines
+    void writeWrapped(String text) {
+      // Available content width
+      // "| " + content + " |"
+      // content width = targetWidth - 4
+      var contentWidth = targetWidth - 4;
+      if (contentWidth < 1) contentWidth = 1;
+      
+      var currentText = text;
+      
+      while (currentText.length > contentWidth) {
+         var chunk = currentText.substring(0, contentWidth);
+         currentText = currentText.substring(contentWidth);
+         buffer.writeln(color("$vChar ${chunk.padRight(contentWidth)} $vChar"));
+      }
+      if (currentText.isNotEmpty) {
+        buffer.writeln(color("$vChar ${currentText.padRight(contentWidth)} $vChar"));
+      }
     }
 
     for (var line in lines) {
-       buffer.writeln(color(formatLine(line)));
+       writeWrapped(line);
     }
 
     if (errorString != null && errorString!.isNotEmpty) {
       buffer.writeln(color(separator));
-      buffer.writeln(color(formatLine("ERROR: $errorString")));
+      writeWrapped("ERROR: $errorString");
     }
 
     if (stacktraceString != null && stacktraceString!.isNotEmpty) {
@@ -165,7 +201,7 @@ class LogInfo extends BaseEntity {
       var stLines = stacktraceString!.split('\n');
       for (var line in stLines) {
         if (line.trim().isNotEmpty) {
-           buffer.writeln(color(formatLine(line.trim())));
+           writeWrapped(line.trim());
         }
       }
     }
