@@ -1,113 +1,153 @@
 # log_tracking
 
-A package that stores the logs used in the project
+A small logger for Flutter apps. It prints readable logs to the console, forwards them to tools like Firebase Crashlytics or Sentry, and can store logs on the device and upload them to your own server, even after the app was offline.
 
-## What is log_tracking
-Log Tracking is a log management library that records your logs and synchronizes them with your own server. This library works in conjunction with popular log libraries like Firebase Crashlytics and Sentry, making your application's logging processes easier and more effective. With Log Tracking, you can monitor errors and events in your application in detail, respond immediately, and collect log data on a central server. Its easy-to-use and flexible structure provides a powerful logging solution for application developers.
+![Console output of log_tracking](https://raw.githubusercontent.com/onguc/log_tracking/master/assets/log_output.png)
 
-If the server submission function is active, Log Tracking stores your logs in the device's local database when there is no internet connection. This feature allows your application to continue logging even when offline and synchronizes the accumulated logs with the server once the internet connection is restored.
-## Getting Started
+## Features
 
-### 1. Add to pubspec.yaml
+- **Four log levels:** `Log.i`, `Log.w`, `Log.e` and `Log.d`.
+- **Readable console output:** each log shows its level, time, class and method in a colored box.
+- **Callbacks for each level:** send logs to Crashlytics, Sentry or anything else.
+- **Offline storage:** logs are saved on the device and uploaded when there is a connection.
+- **Safe:** logging never throws and never crashes your app.
+
+## Installation
 
 ```yaml
 dependencies:
-  log_tracking: ^0.3.6
+  log_tracking: ^0.5.0
 ```
 
-### 2. Initialize log_tracking
+## Quick start
 
-We initialize our log library as follows.
-If we want to integrate our logs with log structures such as firebase crashlytics, we can use a
-structure like the following.
+Call `Log.init` once, before `runApp`:
 
 ```dart
 import 'package:log_tracking/log_tracking.dart';
-///...
-Future<void> initializeLog() {
-  return Log.init(
-      saveToLocal: true,
-      onInfo: (log) {
-        /// if you want to integrate with FirebaseCrashlytics you can do like this
-        FirebaseCrashlytics.instance.log("INFO:  ${log.text ?? ""}");
-      },
-      onWarning: (log) {
-        /// if you want to integrate with FirebaseCrashlytics you can do like this
-        FirebaseCrashlytics.instance.recordFlutterError(
-          FlutterErrorDetails(
-            exception: "WARNING:  ${log.text}",
-            stack: log.stackTrace,
-          ),
-          fatal: false,
-        );
-      },
-      onError: (log) {
-        /// if you want to integrate with FirebaseCrashlytics you can do like this
-        FirebaseCrashlytics.instance.recordFlutterError(
-          FlutterErrorDetails(exception: log.error, stack: log.stackTrace),
-          fatal: true,
-        );
-      },
-      onSendToServer: (LogInfoRequest request) async {
-        /// if you want to send logs to your own server, you can use this method.
-        /// This method is called when it cathes an error log.
-        /// The info and warning logs before the error log also appear as a list.
-        bool isSuccess = await postLogs(request);
-        return isSuccess;
-      });
-}
 
-/// When an error accurs, you can send the logs along with the info and warnings before error to your own server in this way.
-Future<bool> postLogs(LogInfoRequest request) async {
-  var dio = Dio();
-  var url = 'https://your.log.url';
-  var data = request.toJson();
-
-  try {
-    Response response = await dio.post(url, data: data);
-    if (response.statusCode == HttpStatus.ok) {
-      return true;
-    }
-  } catch (e) {
-    Log.e(e);
-  }
-  return false;
-}
-```
-
-Call initializeLog() method in main method.
-
-```dart
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  /// if you want to integrate with firebase
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
 
-  await initializeLog();
+  await Log.init(
+    onError: (log) => debugPrint('Error: ${log.error}'),
+  );
 
   runApp(const MyApp());
 }
 ```
 
-You can print the logs as follows:
+Then log from anywhere:
 
 ```dart
-    try {
-        Log.i("Test Info"); // If sending to the server is active, the first error that arrives is sent to the server.
-        Log.w("Test Warning"); // If sending to the server is active, the first error that arrives is sent to the server.
-        Log.d("Test Debug"); // just prints the screen
-      if (1 == 1) {
-        throw Exception("Test Error");
-      }
-    } catch (e) {
-      Log.e(e, message: "catch in build method (test)"); // It is sent to the server immediately if there is internet connection, or when there is an internet connection, along with the previous info and warning logs.
-    }
+Log.i('Booking form opened');
+Log.w('Slot 14:30 is almost full');
+Log.d('Selected service id: 42');
+
+try {
+  await saveBooking();
+} catch (e, stack) {
+  Log.e(e, stack: stack, message: 'Could not save booking');
+}
 ```
 
-As a result, the logs look like this:
-![`Image not found`](assets/log.png)
+## Log levels
 
-Each log consists of Log Type (INFO, WARNING, ERROR), Date, Class Name, Method Name, adn Description
-respectively.
-In the Error log, error details and stackTrace of the error are given in the bottom line.
+| Method | Use for | Console (debug builds) | Saved on device | Uploaded to your server |
+|---|---|:---:|:---:|:---:|
+| `Log.i(text)` | Normal events | ✓ | ✓ | ✓ |
+| `Log.w(text)` | Something unexpected but not an error | ✓ | ✓ | ✓ |
+| `Log.e(error)` | Exceptions and errors | ✓ | ✓ | ✓ (starts the upload) |
+| `Log.d(text)` | Development details | ✓ | – | – |
+
+"Saved" and "uploaded" only apply when you turn them on (see below). In release builds nothing is printed to the console; the callbacks still run.
+
+## Sending logs to Crashlytics or Sentry
+
+Every level has its own callback. Each one receives a `LogInfo` with the text, error, stack trace, class and method name.
+
+```dart
+await Log.init(
+  onInfo: (log) {
+    FirebaseCrashlytics.instance.log('INFO: ${log.text}');
+  },
+  onWarning: (log) {
+    FirebaseCrashlytics.instance.recordError('WARNING: ${log.text}', log.stackTrace);
+  },
+  onError: (log) {
+    FirebaseCrashlytics.instance.recordError(log.error, log.stackTrace, fatal: true);
+  },
+);
+```
+
+## Uploading logs to your own server
+
+Set `saveToLocal: true` and pass `onSendToServer`. Return `true` when your server accepted the logs.
+
+```dart
+await Log.init(
+  saveToLocal: true,
+  onError: (log) {},
+  onSendToServer: (LogInfoRequest request) async {
+    final response = await dio.post('https://example.com/logs', data: request.toJson());
+    return response.statusCode == 200;
+  },
+);
+```
+
+**When are logs sent?**
+
+- Right after `Log.e` is called.
+- When the app starts with an internet connection.
+- When the device comes back online.
+
+**What is sent?** Every log that has not been sent yet, in batches of up to 500. Only one upload runs at a time. If you return `false` or throw, the logs stay on the device and are sent next time.
+
+**What does the request contain?** Device information and the list of logs:
+
+```json
+{
+  "deviceType": "IOS",
+  "model": "iPad",
+  "brand": "ipad",
+  "versionSdkInt": "18.1",
+  "deviceId": "48FFBBAC-B260-47C2-9B5F-BDB2EEF1D1A8",
+  "appVersion": "1.2.10",
+  "isPhysicalDevice": true,
+  "logList": [
+    {
+      "logType": "ERROR",
+      "text": "Could not save booking",
+      "errorString": "SocketException: Connection timed out",
+      "stacktraceString": "#1 BookingRepo.save (...)",
+      "className": "BookingScreen",
+      "methodName": "saveBooking",
+      "dateTime": "2026-10-22T14:32:07.412",
+      "timeZone": "+03",
+      "version": "1.2.10",
+      "launchIndex": 12,
+      "errorIndex": 3
+    }
+  ]
+}
+```
+
+`launchIndex` counts app launches. `errorIndex` groups logs: every log up to and including an error has the same value.
+
+`deviceId` is a persistent device identifier: `identifierForVendor` on iOS and the ID from `flutter_udid` on Android. Mention it in your privacy policy if you upload logs.
+
+## Local storage
+
+With `saveToLocal: true`, logs are written to the app's support directory (`<application support>/log_tracking/`). This directory is not visible to the user.
+
+- Logs older than **7 days** are deleted.
+- Total size is limited to **5 MB**; the oldest logs are deleted first.
+- Storage is not available on the web. There, `saveToLocal` is ignored and only the callbacks run.
+
+## Upgrading from 0.4.x
+
+No code changes are needed. On the first launch, 0.5.0 deletes the old `logs` folder from the documents directory and starts a new store. Logs from the old store are not uploaded.
+
+## License
+
+See [LICENSE](LICENSE).
