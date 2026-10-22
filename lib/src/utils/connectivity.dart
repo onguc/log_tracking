@@ -1,47 +1,25 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/material.dart';
 
-var _connectivity = Connectivity();
-ValueNotifier<bool> isOnlineNotifier = ValueNotifier(true);
+/// Subscription to connectivity changes; replaced on every [listenConnectivity] call
+StreamSubscription<List<ConnectivityResult>>? _subscription;
 
-checkConnectivity() {
-  _connectivity.checkConnectivity().then((value) {
-    _setHasActiveDataConnection(value);
-  });
-  _connectivity.onConnectivityChanged.listen((List<ConnectivityResult> result) {
-    _setHasActiveDataConnection(result);
-  });
-}
+/// Last known connection state; null until the first check
+bool? _wasOnline;
 
-void _setHasActiveDataConnection(List<ConnectivityResult> result) {
-  final bool isOnline = !result.contains(ConnectivityResult.none);
-  _hasActiveDataConnectionJob(isOnline);
-}
+/// Calls [onOnline] once at startup when a connection exists and again on every
+/// transition from offline to online. Errors of the connectivity plugin are ignored.
+void listenConnectivity(void Function() onOnline) {
+  _subscription?.cancel();
+  final connectivity = Connectivity();
 
-_hasActiveDataConnectionJob(isOnline) {
-  if (!isOnline) {
-    isOnlineNotifier.value = false;
-    return isOnline;
+  void handle(List<ConnectivityResult> result) {
+    final isOnline = result.isNotEmpty && !result.contains(ConnectivityResult.none);
+    if (isOnline && _wasOnline != true) onOnline();
+    _wasOnline = isOnline;
   }
-  return _hasActiveDataConnection();
-}
 
-Future<bool> _hasActiveDataConnection() async {
-  bool previousConnection = true;
-
-  try {
-    final result = await InternetAddress.lookup('vuhuv.com');
-    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-      previousConnection = true;
-    } else {
-      previousConnection = false;
-    }
-  } on SocketException catch (_) {
-    previousConnection = false;
-  }
-  isOnlineNotifier.value = previousConnection;
-  return previousConnection;
+  connectivity.checkConnectivity().then(handle).catchError((_) {});
+  _subscription = connectivity.onConnectivityChanged.listen(handle, onError: (_) {});
 }

@@ -5,11 +5,9 @@ import 'package:flutter/foundation.dart';
 import 'package:log_tracking/src/enum/enum_log_level.dart';
 import 'package:log_tracking/src/enum/enum_log_type.dart';
 import 'package:log_tracking/src/enum/enum_log_type_group.dart';
-import 'package:log_tracking/src/enum/enum_status.dart';
 import 'package:log_tracking/src/model/device_info.dart';
 import 'package:log_tracking/src/model/log_info.dart';
 import 'package:log_tracking/src/model/log_info_request.dart';
-import 'package:log_tracking/src/repo/key_value_repo.dart';
 import 'package:log_tracking/src/repo/log_info_repo.dart';
 import 'package:log_tracking/src/utils/connectivity.dart';
 import 'package:log_tracking/src/utils/string_util.dart';
@@ -56,6 +54,9 @@ class Log {
   late EnumLogTypeGroup logTypeGroup;
   late bool _saveToLocal;
 
+  /// True while unsent logs are being sent, so only one send runs at a time
+  bool _isSending = false;
+
   static Log? _instance;
 
   ///  Start log_tracking by calling this method in the main method
@@ -67,61 +68,40 @@ class Log {
     required Function(LogInfo val) onError,
     Future<bool> Function(LogInfoRequest request)? onSendToServer,
   }) async {
-    try {
-      if (_instance != null) return true;
-      bool isCanSentToServer = onSendToServer != null;
-      assert(!(isCanSentToServer && !saveToLocal), 'The url cannot be full when the saveToLocal is false');
-      _instance = Log._(
-        saveToLocal: saveToLocal,
-        onInfo: onInfo ?? (log) {},
-        onError: onError,
-        onWarning: onWarning ?? (log) {},
-        onDebug: onDebug ?? (log) {},
-        onSendToServer: onSendToServer ?? (LogInfoRequest request) => Future.value(false),
-      );
-      if (isCanSentToServer) {
-        checkConnectivity();
-      }
-      _instance!._packageInfo = await PackageInfo.fromPlatform();
-      await DeviceInfo.init(_instance!._packageInfo!.version);
+    if (_instance != null) return true;
+    bool isCanSentToServer = onSendToServer != null;
+    assert(!(isCanSentToServer && !saveToLocal), 'onSendToServer requires saveToLocal to be true');
+    // Local storage is file based and not available on web
+    bool useLocalStorage = saveToLocal && !kIsWeb;
+    var instance = Log._(
+      saveToLocal: useLocalStorage,
+      onInfo: onInfo,
+      onError: onError,
+      onWarning: onWarning,
+      onDebug: onDebug,
+      onSendToServer: onSendToServer,
+    );
+    _instance = instance;
 
-      if (saveToLocal) {
-        await LogInfoRepo.init(saveToLocal: saveToLocal);
-        KeyValueRepo.instance.increaseAppLaunchIndex();
-        Future.delayed(const Duration(seconds: 1)).then((value) async {
-          // IndexRepo.instance.increaseAppStartupIndex();
-          if (isCanSentToServer) {
-            isOnlineNotifier.addListener(() async {
-              var isOnline = isOnlineNotifier.value;
-              if (isOnline) {
-                var unsentLogs = await LogInfoRepo.instance.getUnsentLogs();
-                LogInfoRepo.instance;
-                LogInfoRequest request = _instance!._getLogInfoRequest(unsentLogs);
-                try {
-                  await _instance!._updateStatus(unsentLogs, EnumStatus.sending);
-                  bool isSentSuccess = await _instance!._onSendToServer!(request);
-                  if (isSentSuccess) {
-                    _instance!._updateStatus(unsentLogs, EnumStatus.sent);
-                    await LogInfoRepo.instance.deleteLogsFrom7DaysAgo();
-                  } else {
-                    Log.w("log sending is not successful");
-                    _instance!._updateStatus(unsentLogs, EnumStatus.unsent);
-                  }
-                } catch (e) {
-                  Log.e(e);
-                  _instance!._updateStatus(unsentLogs, EnumStatus.unsent);
-                }
-              }
-            });
-          }
-        });
-      }
-      return true;
+    bool isSuccess = true;
+    try {
+      instance._packageInfo = await PackageInfo.fromPlatform();
+      await DeviceInfo.init(instance._packageInfo!.version);
     } catch (e) {
-      // ignore: avoid_print
-      print(e);
-      return false;
+      isSuccess = false;
+      _debugPrint(e);
     }
+
+    if (useLocalStorage) {
+      // Never throws; logs written in the meantime wait for it
+      await LogInfoRepo.instance.init();
+      if (isCanSentToServer) {
+        listenConnectivity(() => instance._sendUnsentLogs());
+      }
+    } else {
+      LogInfoRepo.instance.disable();
+    }
+    return isSuccess;
   }
 
   /// We print the Info logs with this method
@@ -131,84 +111,116 @@ class Log {
       assert(_instance != null, "_instanse can not be null!");
       LogInfo log = _instance!._newLog(EnumLogType.info, text);
       _instance!._printLog(log);
-      _instance!._onInfo!(log);
+      _notify(_instance!._onInfo, log);
       await _instance!._save(log);
     } catch (e, s) {
-      if (kDebugMode) {
-        // ignore: avoid_print
-        print("$e \n$s");
-      }
+      _debugPrint("$e \n$s");
     }
   }
 
   /// When Exceptions and Errors appear, we can log them with this method.
   /// If there is an Internet connection, it is instantly sent to the remote server along with the previous info and warning logs. Or it will be sent together with the first internet connection
   static Future<void> e(dynamic error, {StackTrace? stack, EnumLogLevel? logLevel = EnumLogLevel.medium, String? message}) async {
-    assert(_instance != null, "_instanse can not be null!");
-    LogInfo log = _instance!._newLog(EnumLogType.error, message);
-    log.logType = EnumLogType.error;
-    log.logLevel = logLevel;
-    if (stack == null) {
-      if (error is Error) {
-        stack = error.stackTrace;
-      } else {
-        try {
-          var current = StackTrace.current.toString();
-          stack = _getStack(current);
-        } catch (e) {
-          stack = null;
+    try {
+      assert(_instance != null, "_instanse can not be null!");
+      LogInfo log = _instance!._newLog(EnumLogType.error, message);
+      log.logType = EnumLogType.error;
+      log.logLevel = logLevel;
+      if (stack == null) {
+        if (error is Error) {
+          stack = error.stackTrace;
+        } else {
+          try {
+            var current = StackTrace.current.toString();
+            stack = _getStack(current);
+          } catch (e) {
+            stack = null;
+          }
         }
       }
-    }
-    log.error = error;
-    log.stackTrace = stack;
-    log.stacktraceString = stack?.toString();
-    _instance!._printLog(log);
-    if (!kIsWeb && _instance!._saveToLocal) {
-      await _instance!._save(log);
-      await KeyValueRepo.instance.increaseErrorIndex();
-
-      _instance!._onError!(log);
-      List<LogInfo> unsentLogs = await LogInfoRepo.instance.getUnsentLogByErrorIndex(log.errorIndex!);
-      LogInfoRequest request = _instance!._getLogInfoRequest(unsentLogs);
-      _instance!._onSendToServer!(request);
-    } else {
-      _instance!._onError!(log);
+      log.error = error;
+      log.stackTrace = stack;
+      log.stacktraceString = stack?.toString();
+      _instance!._printLog(log);
+      // Third-party reporting never waits for local storage
+      _notify(_instance!._onError, log);
+      if (_instance!._saveToLocal) {
+        await _instance!._save(log);
+        await LogInfoRepo.instance.increaseErrorIndex();
+        unawaited(_instance!._sendUnsentLogs());
+      }
+    } catch (e, s) {
+      _debugPrint("$e \n$s");
     }
   }
 
   /// we print logs that are not errors, but have the nature of warnings, using this method.
   /// It is sent to the remote server together with the Log.e(...) method
   static Future<void> w(String text) async {
-    assert(_instance != null, "_instanse can not be null!");
-    LogInfo log = _instance!._newLog(EnumLogType.warning, text);
-    _instance!._printLog(log);
-
-    // var current = StackTrace.current.toString();
-    // var previusStack = _getStack(current);
-    // log.stackTrace = previusStack;
-    _instance!._onWarning!(log);
-    await _instance!._save(log);
+    try {
+      assert(_instance != null, "_instanse can not be null!");
+      LogInfo log = _instance!._newLog(EnumLogType.warning, text);
+      _instance!._printLog(log);
+      _notify(_instance!._onWarning, log);
+      await _instance!._save(log);
+    } catch (e, s) {
+      _debugPrint("$e \n$s");
+    }
   }
 
   /// With this method, we print the logs in debug mode. These logs are not sent to the server or to third-party libraries
   static Future<void> d(String text) async {
-    assert(_instance != null, "_instanse can not be null!");
-    LogInfo log = _instance!._newLog(EnumLogType.debug, text);
-    log.logType = EnumLogType.debug;
-    var current = StackTrace.current.toString();
-    var previusStack = _getStack(current);
-    log.stackTrace = previusStack;
-    _instance!._printLog(log);
-    _instance!._onDebug!(log);
+    try {
+      assert(_instance != null, "_instanse can not be null!");
+      LogInfo log = _instance!._newLog(EnumLogType.debug, text);
+      log.logType = EnumLogType.debug;
+      var current = StackTrace.current.toString();
+      var previusStack = _getStack(current);
+      log.stackTrace = previusStack;
+      _instance!._printLog(log);
+      _notify(_instance!._onDebug, log);
+    } catch (e, s) {
+      _debugPrint("$e \n$s");
+    }
   }
 
-  Future<void> _updateStatus(List<LogInfo> logStatuses, EnumStatus enumStatus) async {
-    if (_saveToLocal) {
-      for (var e in logStatuses) {
-        e.status = enumStatus;
+  /// Sends unsent logs in batches; a failed batch stays unsent and is retried later
+  Future<void> _sendUnsentLogs() async {
+    var onSendToServer = _onSendToServer;
+    if (_isSending || onSendToServer == null || !_saveToLocal) return;
+    _isSending = true;
+    try {
+      while (true) {
+        var batch = await LogInfoRepo.instance.getUnsentLogs();
+        if (batch.end == null) break;
+        // A batch made only of unreadable lines is skipped without a request
+        if (batch.logs.isNotEmpty) {
+          bool isSentSuccess = await onSendToServer(_getLogInfoRequest(batch.logs));
+          if (!isSentSuccess) break;
+        }
+        await LogInfoRepo.instance.markSent(batch);
+        if (!batch.hasMore) break;
       }
-      await LogInfoRepo.instance.updateAll(logStatuses);
+    } catch (e, s) {
+      _debugPrint("$e \n$s");
+    } finally {
+      _isSending = false;
+    }
+  }
+
+  /// Calls a user callback without letting its exception escape
+  static void _notify(Function(LogInfo val)? callback, LogInfo log) {
+    try {
+      callback?.call(log);
+    } catch (e, s) {
+      _debugPrint("$e \n$s");
+    }
+  }
+
+  static void _debugPrint(Object e) {
+    if (kDebugMode) {
+      // ignore: avoid_print
+      print(e);
     }
   }
 
@@ -268,7 +280,7 @@ class Log {
   }
 
   Future<void> _save(LogInfo log) async {
-    if (!kIsWeb && _saveToLocal) await LogInfoRepo.instance.save(log);
+    if (_saveToLocal) await LogInfoRepo.instance.save(log);
   }
 
   void _setClassAndMethodName(LogInfo log) {

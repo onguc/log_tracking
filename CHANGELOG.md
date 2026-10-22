@@ -1,3 +1,13 @@
+## 0.5.0
+* Local storage rewritten as append-only daily segments with a sent cursor; the JSON index files are gone
+* Fixed: index files grew on every launch, byte offsets broke on non-ASCII text, empty index files crashed startup
+* Logs are kept at most 7 days and 5 MB, and are stored under the application support directory instead of documents
+* Files of the old storage are deleted on first launch
+* Log.i/w/e/d never throw; storage errors no longer reach the app
+* Unsent logs are sent in batches of 500, one send at a time, and only marked sent after success
+* Launch and error indexes are persisted
+* Connectivity check no longer makes a DNS lookup to a fixed host
+* iPad is reported as brand "ipad"
 ## 0.4.0
 * Isar Db removed
 * Compatibility with Dart 3.9.0

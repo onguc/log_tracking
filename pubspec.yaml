@@ -1,6 +1,6 @@
 name: log_tracking
 description: A log management package; It saves the logs and synchronizes them to your server by integrating with other log libraries such as Firebase Crashlytics and Sentry.
-version: 0.4.0
+version: 0.5.0
 homepage: https://github.com/onguc/log_tracking
 
 environment:
@@ -10,8 +10,8 @@ dependencies:
   flutter:
     sdk: flutter
   intl: ^0.20.1
-  device_info_plus: ^12.3.0
-  package_info_plus: ^9.0.0
+  device_info_plus: ^13.2.0
+  package_info_plus: ^10.0.0
   connectivity_plus: ^7.0.0
   path: ^1.9.0
   json_annotation: ^4.9.0

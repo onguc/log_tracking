@@ -54,7 +54,7 @@ class DeviceInfo {
         deviceType: EnumDeviceType.ios,
         versionSdkInt: data.systemVersion,
         model: data.model,
-        brand: "iphone",
+        brand: data.model.toLowerCase().contains("ipad") ? "ipad" : "iphone",
         deviceId: data.identifierForVendor,
         appVersion: appVersion,
         isPhysicalDevice: data.isPhysicalDevice,

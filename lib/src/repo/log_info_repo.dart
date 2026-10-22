@@ -1,115 +1,136 @@
-import '../db/log_manager.dart';
-import 'package:log_tracking/src/repo/key_value_repo.dart';
+import 'dart:async';
+import 'dart:io';
 
-import '../../log_tracking.dart';
-import '../enum/enum_status.dart';
+import 'package:flutter/foundation.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
+
+import '../db/log_store.dart';
 import '../model/log_info.dart';
+
+/// Unsent logs prepared for the server, with the store position they reach
+class UnsentLogs {
+  /// Logs, oldest first
+  final List<LogInfo> logs;
+
+  /// Store position right after these logs
+  final LogCursor? end;
+
+  /// Whether more unsent logs are waiting after this batch
+  final bool hasMore;
+
+  /// Creates a batch
+  const UnsentLogs(this.logs, this.end, this.hasMore);
+}
 
 /// Asıl logların kaydedilip yönetildiği yerdir
 class LogInfoRepo {
   static LogInfoRepo? _instance;
 
+  /// Shared repo instance
   static LogInfoRepo get instance {
     _instance ??= LogInfoRepo._();
     return _instance!;
   }
 
-  static late final LogManager db;
-
-  static Future<void> init({required bool saveToLocal}) async {
-    // var path = await _createFolderIfNotExists();
-
-    db = await LogManager.open(saveToLocal); 
-  }
-
   LogInfoRepo._();
 
-  Future<void> save(LogInfo t) {
-    if (t.id == null) {
-      var repo = KeyValueRepo.instance;
-      t.launchIndex = repo.appLaunchIndex;
-      t.errorIndex = repo.errorIndex;
-      return db.insertLog(toMap(t));
-    } else {
-      return Future.value(null);
+  /// Maximum number of logs sent in one request
+  static const int batchSize = 500;
+
+  /// Completes with the opened store, or with null when local storage is unavailable.
+  /// Logs written before [init] finishes wait for it instead of failing.
+  final Completer<LogStore?> _store = Completer();
+
+  /// Opens the store under the application support directory; never throws
+  Future<void> init() async {
+    if (_store.isCompleted) return;
+    LogStore? store;
+    try {
+      final support = await getApplicationSupportDirectory();
+      store = await LogStore.open(Directory(path.join(support.path, 'log_tracking')));
+    } catch (e) {
+      _debugPrint(e);
     }
+    if (!_store.isCompleted) _store.complete(store);
+    unawaited(_deleteLegacyFiles());
   }
 
-  updateAll(List<LogInfo> loginfos) {
-    //todo doldurulmalı
-    db.updateUnsentToSent();
+  /// Turns local storage off; pending and later saves become no-ops
+  void disable() {
+    if (!_store.isCompleted) _store.complete(null);
   }
 
-  toMap(LogInfo log) {
-    return {
-      'id': log.id,
-      'launchIndex': log.launchIndex,
-      'errorIndex': log.errorIndex,
-      'className': log.className,
-      'methodName': log.methodName,
-      'text': log.text,
-      'dateTime': log.dateTime?.toIso8601String(),
-      'timeZone': log.timeZone,
-      'logType': log.logType?.name,
-      'errorString': log.errorString,
-      'stacktraceString': log.stacktraceString,
-      'version': log.version,
-      'logLevel': log.logLevel?.name,
-      'logTypeGroup': log.logTypeGroup?.name,
-      'status': log.status?.name,
-      'groupId': log.groupId,
-    };
+  /// Saves [log] with the current launch and error indexes
+  Future<void> save(LogInfo log) async {
+    final store = await _store.future;
+    if (store == null) return;
+    log.launchIndex = store.launchIndex;
+    log.errorIndex = store.errorIndex;
+    await store.append(log.toJson());
   }
 
-  LogInfo _fromMap(Map<String, dynamic> json) {
-    final log = LogInfo(className: json['className']);
-    log.id = json['id'];
-    log.launchIndex = json['launchIndex'];
-    log.errorIndex = json['errorIndex'];
-    log.methodName = json['methodName'];
-    log.text = json['text'];
-    log.dateTime = json['dateTime'] != null ? DateTime.parse(json['dateTime']) : null;
-    log.timeZone = json['timeZone'];
-    // Enum dönüşümlerini burada yapmanız gerekecek
-    // log.logType = EnumLogType.values.firstWhere((e) => e.toString() == json['logType']);
-    log.errorString = json['errorString'];
-    log.stacktraceString = json['stacktraceString'];
-    log.version = json['version'];
-    // log.status = EnumStatus.values.firstWhere((e) => e.toString() == json['status']);
-    log.groupId = json['groupId'];
-    return log;
+  /// Starts a new error group
+  Future<void> increaseErrorIndex() async {
+    final store = await _store.future;
+    await store?.increaseErrorIndex();
   }
 
-  bool _isEnteredInDeleteMethode = false;
-
-  /// 7 gün önceki logları siler.
-  Future<int?> deleteLogsFrom7DaysAgo() async {
-    if (!_isEnteredInDeleteMethode) {
+  /// Reads the next batch of logs that have not been sent yet
+  Future<UnsentLogs> getUnsentLogs() async {
+    final store = await _store.future;
+    if (store == null) return const UnsentLogs([], null, false);
+    final batch = await store.readUnsent(maxLogs: batchSize);
+    final logs = <LogInfo>[];
+    for (final entry in batch.logs) {
       try {
-        _isEnteredInDeleteMethode = true;
-        int count = await db.deleteLogsSent7DaysEgo();
-        return count;
-      } on Exception catch (e) {
-        _isEnteredInDeleteMethode = false;
-        Log.e(e);
+        logs.add(LogInfo.fromJson(entry));
+      } catch (_) {
+        // An entry that no longer matches the model is skipped
       }
     }
-    return null;
+    return UnsentLogs(logs, batch.end, batch.hasMore);
   }
 
-  Future<List<LogInfo>> getUnsentLogs() async {
-    var mapList = await db.getLogsByStatus(EnumStatus.unsent.name);
-    var list = mapList.map((e) => _fromMap(e)).toList();
-    return list;
+  /// Marks the logs of [batch] (and everything before them) as sent
+  Future<void> markSent(UnsentLogs batch) async {
+    final end = batch.end;
+    if (end == null) return;
+    final store = await _store.future;
+    await store?.markSent(end);
   }
 
-  Future<List<LogInfo>> getUnsentLogByErrorIndex(int errorIndex) async {
-    var mapList = await db.getUnsentLogByErrorIndex(errorIndex);
-    var list = mapList.map((e) => _fromMap(e)).toList();
-    return list;
-  }
-
+  /// Kept for API compatibility; the store holds no open handles
   Future<void> close() {
     return Future.value(null);
+  }
+
+  /// Removes the files of the old index based storage (0.4.x) from the documents directory
+  Future<void> _deleteLegacyFiles() async {
+    try {
+      final documents = await getApplicationDocumentsDirectory();
+      final dir = Directory(path.join(documents.path, 'logs'));
+      if (!await dir.exists()) return;
+      const names = [
+        'logs.jsonl',
+        'logs.jsonl.temp',
+        'logs.jsonl.bak',
+        'status_index.json',
+        'logType_index.json',
+        'dateTime_index.json',
+        'errorIndex_index.json',
+      ];
+      for (final name in names) {
+        final file = File(path.join(dir.path, name));
+        if (await file.exists()) await file.delete();
+      }
+      if (await dir.list().isEmpty) await dir.delete();
+    } catch (e) {
+      _debugPrint(e);
+    }
+  }
+
+  static void _debugPrint(Object e) {
+    if (kDebugMode) debugPrint('log_tracking: $e');
   }
 }
