@@ -1,10 +1,14 @@
 import 'package:intl/intl.dart';
 
+/// Date format that additionally supports the `TZD` pattern for a numeric time zone offset.
 class CustomDateFormat extends DateFormat {
+  /// Pattern this formatter was created with
   String? newPattern;
 
+  /// Creates a formatter for [newPattern]
   CustomDateFormat([this.newPattern]) : super(newPattern);
 
+  /// Formats [date]; `TZD` in the pattern is replaced by the time zone offset
   @override
   String format(DateTime date) {
     if (newPattern != null && newPattern!.endsWith("TZD")) {
@@ -46,10 +50,5 @@ class CustomDateFormat extends DateFormat {
       }
     }
     return "";
-  }
-
-  @override
-  DateTime parse(String inputString, [bool utc = false]) {
-    return super.parse(inputString, utc);
   }
 }

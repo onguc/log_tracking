@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:log_tracking/src/enum/enum_log_level.dart';
@@ -51,7 +50,10 @@ class Log {
 
   /// This method is triggered with the logs that have not been sent to the server after each error occurs.
   Future<bool> Function(LogInfoRequest request)? _onSendToServer;
+
+  /// Which logs are kept in release builds: only production, or all
   late EnumLogTypeGroup logTypeGroup;
+
   late bool _saveToLocal;
 
   /// True while unsent logs are being sent, so only one send runs at a time
@@ -70,7 +72,8 @@ class Log {
   }) async {
     if (_instance != null) return true;
     bool isCanSentToServer = onSendToServer != null;
-    assert(!(isCanSentToServer && !saveToLocal), 'onSendToServer requires saveToLocal to be true');
+    assert(!(isCanSentToServer && !saveToLocal),
+        'onSendToServer requires saveToLocal to be true');
     // Local storage is file based and not available on web
     bool useLocalStorage = saveToLocal && !kIsWeb;
     var instance = Log._(
@@ -120,7 +123,10 @@ class Log {
 
   /// When Exceptions and Errors appear, we can log them with this method.
   /// If there is an Internet connection, it is instantly sent to the remote server along with the previous info and warning logs. Or it will be sent together with the first internet connection
-  static Future<void> e(dynamic error, {StackTrace? stack, EnumLogLevel? logLevel = EnumLogLevel.medium, String? message}) async {
+  static Future<void> e(dynamic error,
+      {StackTrace? stack,
+      EnumLogLevel? logLevel = EnumLogLevel.medium,
+      String? message}) async {
     try {
       assert(_instance != null, "_instanse can not be null!");
       LogInfo log = _instance!._newLog(EnumLogType.error, message);
@@ -195,7 +201,8 @@ class Log {
         if (batch.end == null) break;
         // A batch made only of unreadable lines is skipped without a request
         if (batch.logs.isNotEmpty) {
-          bool isSentSuccess = await onSendToServer(_getLogInfoRequest(batch.logs));
+          bool isSentSuccess =
+              await onSendToServer(_getLogInfoRequest(batch.logs));
           if (!isSentSuccess) break;
         }
         await LogInfoRepo.instance.markSent(batch);
@@ -265,7 +272,8 @@ class Log {
         if (kIsWeb) {
           // ignore: avoid_print
           print(log.toString());
-        } else if (Platform.isIOS || Platform.isMacOS) {
+        } else if (defaultTargetPlatform == TargetPlatform.iOS ||
+            defaultTargetPlatform == TargetPlatform.macOS) {
           // ignore: avoid_print
           print(log.toStringForIos());
         } else {
@@ -325,7 +333,8 @@ class Log {
     }
   }
 
-  close() async {
+  /// Releases local storage resources. Call it only when logging is no longer needed.
+  Future<void> close() async {
     await LogInfoRepo.instance.close();
   }
 }

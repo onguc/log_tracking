@@ -1,9 +1,6 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
 
 import '../db/log_store.dart';
 import '../model/log_info.dart';
@@ -47,13 +44,12 @@ class LogInfoRepo {
     if (_store.isCompleted) return;
     LogStore? store;
     try {
-      final support = await getApplicationSupportDirectory();
-      store = await LogStore.open(Directory(path.join(support.path, 'log_tracking')));
+      store = await openDefaultStore();
     } catch (e) {
       _debugPrint(e);
     }
     if (!_store.isCompleted) _store.complete(store);
-    unawaited(_deleteLegacyFiles());
+    unawaited(deleteLegacyLogFiles());
   }
 
   /// Turns local storage off; pending and later saves become no-ops
@@ -103,31 +99,6 @@ class LogInfoRepo {
   /// Kept for API compatibility; the store holds no open handles
   Future<void> close() {
     return Future.value(null);
-  }
-
-  /// Removes the files of the old index based storage (0.4.x) from the documents directory
-  Future<void> _deleteLegacyFiles() async {
-    try {
-      final documents = await getApplicationDocumentsDirectory();
-      final dir = Directory(path.join(documents.path, 'logs'));
-      if (!await dir.exists()) return;
-      const names = [
-        'logs.jsonl',
-        'logs.jsonl.temp',
-        'logs.jsonl.bak',
-        'status_index.json',
-        'logType_index.json',
-        'dateTime_index.json',
-        'errorIndex_index.json',
-      ];
-      for (final name in names) {
-        final file = File(path.join(dir.path, name));
-        if (await file.exists()) await file.delete();
-      }
-      if (await dir.list().isEmpty) await dir.delete();
-    } catch (e) {
-      _debugPrint(e);
-    }
   }
 
   static void _debugPrint(Object e) {

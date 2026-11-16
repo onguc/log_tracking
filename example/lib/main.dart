@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
+// ignore: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:log_tracking/log_tracking.dart';
 
@@ -38,9 +37,7 @@ Future<void> initializeLog() {
         //   fatal: true,
         // );
       },
-      onDebug: (log){
-
-      },
+      onDebug: (log) {},
       onSendToServer: (LogInfoRequest request) async {
         /// if you want to send logs to your own server, you can use this method.
         /// This method is called when it cathes an error log.
@@ -57,7 +54,7 @@ Future<bool> postLogs(LogInfoRequest request) async {
   var data = request.toJson();
 
   Response response = await dio.post(url, data: data);
-  if (response.statusCode == HttpStatus.ok) {
+  if (response.statusCode == 200) {
     return true;
   }
   return false;
@@ -70,14 +67,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     try {
-      Log.i("Test Info"); // If sending to the server is active, the first error that arrives is sent to the server.
-      Log.w("Test Warning"); // If sending to the server is active, the first error that arrives is sent to the server.
+      Log.i(
+          "Test Info"); // If sending to the server is active, the first error that arrives is sent to the server.
+      Log.w(
+          "Test Warning"); // If sending to the server is active, the first error that arrives is sent to the server.
       Log.d("Test Debug"); // just prints the screen
       if (1 == 1) {
         throw Exception("Test Error");
       }
     } catch (e) {
-      Log.e(e, message: "catch in build method (test)"); // It is sent to the server immediately if there is internet connection, or when there is an internet connection, along with the previous info and warning logs.
+      Log.e(e,
+          message:
+              "catch in build method (test)"); // It is sent to the server immediately if there is internet connection, or when there is an internet connection, along with the previous info and warning logs.
     }
 
     return MaterialApp(

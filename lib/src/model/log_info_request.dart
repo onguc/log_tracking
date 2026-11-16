@@ -6,32 +6,30 @@ import 'log_info.dart';
 
 part 'log_info_request.g.dart';
 
+/// Device details plus the logs being sent to the server.
 @JsonSerializable()
 class LogInfoRequest extends DeviceInfo {
+  /// Creates a request that carries [logList]
   LogInfoRequest({
     this.logList,
     EnumDeviceType? type,
-    versionSdkInt,
-    model,
-    brand,
-    deviceId,
-    appVersion,
-    required isPhysicalDevice,
-  }) : super(
-          deviceType: type,
-          versionSdkInt: versionSdkInt,
-          model: model,
-          brand: brand,
-          deviceId: deviceId,
-          appVersion: appVersion,
-          isPhysicalDevice: isPhysicalDevice,
-        );
+    super.versionSdkInt,
+    super.model,
+    super.brand,
+    super.deviceId,
+    super.appVersion,
+    required super.isPhysicalDevice,
+  }) : super(deviceType: type);
 
+  /// Logs included in this request
   List<LogInfo>? logList;
 
   // LogInfoRequest({required bool isPhysicalDevice}) : super(isPhysicalDevice: isPhysicalDevice);
 
-  factory LogInfoRequest.fromJson(Map<String, dynamic> json) => _$LogInfoRequestFromJson(json);
+  /// Creates a request from JSON
+  factory LogInfoRequest.fromJson(Map<String, dynamic> json) =>
+      _$LogInfoRequestFromJson(json);
 
+  /// Converts this request to JSON
   Map<String, dynamic> toJson() => _$LogInfoRequestToJson(this);
 }

@@ -15,11 +15,13 @@ void listenConnectivity(void Function() onOnline) {
   final connectivity = Connectivity();
 
   void handle(List<ConnectivityResult> result) {
-    final isOnline = result.isNotEmpty && !result.contains(ConnectivityResult.none);
+    final isOnline =
+        result.isNotEmpty && !result.contains(ConnectivityResult.none);
     if (isOnline && _wasOnline != true) onOnline();
     _wasOnline = isOnline;
   }
 
   connectivity.checkConnectivity().then(handle).catchError((_) {});
-  _subscription = connectivity.onConnectivityChanged.listen(handle, onError: (_) {});
+  _subscription =
+      connectivity.onConnectivityChanged.listen(handle, onError: (_) {});
 }

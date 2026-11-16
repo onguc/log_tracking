@@ -17,25 +17,32 @@ void main() {
 
   /// Segment files currently in the store, oldest first
   List<String> segmentNames() {
-    final names = dir.listSync().map((e) => path.basename(e.path)).where((n) => n.startsWith('logs_')).toList();
+    final names = dir
+        .listSync()
+        .map((e) => path.basename(e.path))
+        .where((n) => n.startsWith('logs_'))
+        .toList();
     names.sort();
     return names;
   }
 
-  test('reads unsent logs with non-ASCII text and honours the sent cursor', () async {
+  test('reads unsent logs with non-ASCII text and honours the sent cursor',
+      () async {
     final store = await LogStore.open(dir);
     await store.append({'text': 'Randevu kaydedildi — çğış'});
     await store.append({'text': 'مرحبا'});
 
     final first = await store.readUnsent();
-    expect(first.logs.map((e) => e['text']), ['Randevu kaydedildi — çğış', 'مرحبا']);
+    expect(first.logs.map((e) => e['text']),
+        ['Randevu kaydedildi — çğış', 'مرحبا']);
     expect(first.hasMore, isFalse);
 
     await store.markSent(first.end!);
     expect((await store.readUnsent()).logs, isEmpty);
 
     await store.append({'text': 'Tiếng Việt'});
-    expect((await store.readUnsent()).logs.map((e) => e['text']), ['Tiếng Việt']);
+    expect(
+        (await store.readUnsent()).logs.map((e) => e['text']), ['Tiếng Việt']);
   });
 
   test('keeps counters and cursor across launches', () async {
@@ -58,7 +65,8 @@ void main() {
     var store = await LogStore.open(dir);
     expect(store.launchIndex, 1);
 
-    await File(path.join(dir.path, 'state.json')).writeAsString('{"launchIndex": 4, "errorIn');
+    await File(path.join(dir.path, 'state.json'))
+        .writeAsString('{"launchIndex": 4, "errorIn');
     store = await LogStore.open(dir);
     expect(store.launchIndex, 1);
   });
@@ -66,11 +74,14 @@ void main() {
   test('skips a line left unfinished by a crash', () async {
     final store = await LogStore.open(dir, now: () => DateTime(2026, 10, 22));
     await store.append({'text': 'first'});
-    await File(path.join(dir.path, segmentNames().single)).writeAsString('{"text": "bro', mode: FileMode.append);
+    await File(path.join(dir.path, segmentNames().single))
+        .writeAsString('{"text": "bro', mode: FileMode.append);
 
-    final reopened = await LogStore.open(dir, now: () => DateTime(2026, 10, 22));
+    final reopened =
+        await LogStore.open(dir, now: () => DateTime(2026, 10, 22));
     await reopened.append({'text': 'after crash'});
-    expect((await reopened.readUnsent()).logs.map((e) => e['text']), ['first', 'after crash']);
+    expect((await reopened.readUnsent()).logs.map((e) => e['text']),
+        ['first', 'after crash']);
   });
 
   test('returns batches with hasMore', () async {
@@ -89,13 +100,17 @@ void main() {
   });
 
   test('rotates segments and keeps the total size under the limit', () async {
-    final store = await LogStore.open(dir, maxSegmentBytes: 200, maxTotalBytes: 600, now: () => DateTime(2026, 10, 22));
+    final store = await LogStore.open(dir,
+        maxSegmentBytes: 200,
+        maxTotalBytes: 600,
+        now: () => DateTime(2026, 10, 22));
     for (var i = 0; i < 40; i++) {
       await store.append({'text': 'entry $i'.padRight(40, '.')});
     }
     final names = segmentNames();
     expect(names.length, greaterThan(1));
-    final total = names.fold<int>(0, (sum, n) => sum + File(path.join(dir.path, n)).lengthSync());
+    final total = names.fold<int>(
+        0, (sum, n) => sum + File(path.join(dir.path, n)).lengthSync());
     expect(total, lessThanOrEqualTo(600 + 200));
 
     // The newest entry is always readable

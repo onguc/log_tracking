@@ -1,3 +1,7 @@
+## 0.5.1
+* WebAssembly (WASM) support: `dart:io` is now used only on native platforms, so the package is fully wasm-compatible
+* Static analysis is clean: fixed lints and added dartdoc comments to the public API
+* Example app builds for web and wasm
 ## 0.5.0
 * Local storage rewritten as append-only daily segments with a sent cursor; the JSON index files are gone
 * Fixed: index files grew on every launch, byte offsets broke on non-ASCII text, empty index files crashed startup
