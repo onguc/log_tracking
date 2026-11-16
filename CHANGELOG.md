@@ -1,3 +1,8 @@
+## 0.5.2
+* The package is fully WebAssembly (WASM) compatible: device and app info come from platform specific readers, so `dart:io` is never reached from the public library on web
+* Web builds no longer depend on `device_info_plus`, `flutter_udid` or `package_info_plus`; app version is read from `version.json`
+* Linux and Windows device info are now reported instead of the placeholder values
+* Removed the unused `Util` helper
 ## 0.5.1
 * WebAssembly (WASM) support: `dart:io` is now used only on native platforms, so the package is fully wasm-compatible
 * Static analysis is clean: fixed lints and added dartdoc comments to the public API

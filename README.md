@@ -144,6 +144,10 @@ With `saveToLocal: true`, logs are written to the app's support directory (`<app
 - Total size is limited to **5 MB**; the oldest logs are deleted first.
 - Storage is not available on the web. There, `saveToLocal` is ignored and only the callbacks run.
 
+## Platform support
+
+Android, iOS, macOS, Linux, Windows and web are supported. The package is also compatible with WebAssembly builds (`flutter build web --wasm`): web builds do not load the `dart:io` based plugins.
+
 ## Upgrading from 0.4.x
 
 No code changes are needed. On the first launch, 0.5.0 deletes the old `logs` folder from the documents directory and starts a new store. Logs from the old store are not uploaded.

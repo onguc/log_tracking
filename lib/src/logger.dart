@@ -8,9 +8,9 @@ import 'package:log_tracking/src/model/device_info.dart';
 import 'package:log_tracking/src/model/log_info.dart';
 import 'package:log_tracking/src/model/log_info_request.dart';
 import 'package:log_tracking/src/repo/log_info_repo.dart';
+import 'package:log_tracking/src/utils/app_info.dart';
 import 'package:log_tracking/src/utils/connectivity.dart';
 import 'package:log_tracking/src/utils/string_util.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 /// This is the class that will be called in the project that contains Error(Log.e), Warning(Log.w), Information(Log.i), and Debug(Log.d) methods
 class Log {
@@ -35,7 +35,7 @@ class Log {
     }
   }
 
-  PackageInfo? _packageInfo;
+  AppInfo? _packageInfo;
 
   /// Triggered when Log.i(...) method is called
   Function(LogInfo val)? _onInfo;
@@ -88,7 +88,7 @@ class Log {
 
     bool isSuccess = true;
     try {
-      instance._packageInfo = await PackageInfo.fromPlatform();
+      instance._packageInfo = await AppInfo.read();
       await DeviceInfo.init(instance._packageInfo!.version);
     } catch (e) {
       isSuccess = false;
